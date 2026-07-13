@@ -87,7 +87,7 @@ export default function Home() {
           <h1 className="text-[clamp(2.35rem,8.5vw,6rem)] font-extrabold leading-[1.12] text-[#03071e] max-w-[320px] sm:max-w-[480px] md:max-w-[700px] lg:max-w-[850px] tracking-tight mb-4 sm:mb-5 md:mb-6">
             Your Burger Party Starts Here!
           </h1>
-          <p className="text-[clamp(1.15rem,3.4vw,1.5rem)] text-[#4a5568] leading-relaxed mb-7 sm:mb-8 md:mb-10 max-w-[300px] sm:max-w-[460px] md:max-w-[560px] mx-auto">
+          <p className="text-[clamp(0.95rem,2.8vw,1.5rem)] text-[#4a5568] leading-relaxed mb-7 sm:mb-8 md:mb-10 max-w-[280px] sm:max-w-[420px] md:max-w-[560px] mx-auto">
             Gather your friends and family and enjoy the best burgers in town.
             Freshly made and delivered hot!
           </p>

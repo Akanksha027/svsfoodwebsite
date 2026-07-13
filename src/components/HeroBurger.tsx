@@ -63,7 +63,7 @@ export default function HeroBurger() {
             alt="Delicious SVS Food hamburger"
             width={1500}
             height={1500}
-            className="w-[min(96vw,520px)] sm:w-[min(95vw,560px)] md:w-[min(95vw,640px)] lg:w-[min(100vw,820px)] xl:w-[min(110vw,980px)] h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.18)]"
+            className="w-[min(88vw,400px)] sm:w-[min(90vw,480px)] md:w-[min(90vw,560px)] lg:w-[min(85vw,680px)] xl:w-[min(80vw,760px)] h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.18)]"
             loading="eager"
             priority
           />
