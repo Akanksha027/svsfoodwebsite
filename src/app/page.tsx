@@ -60,7 +60,7 @@ export default function Home() {
         />
         <Image
           src="/images/tomato.png"
-          alt="Tomato"
+          alt="Tomato" 
           width={188}
           height={188}
           className={`${ingredientClass} top-[32%] right-[-4%] sm:right-[0%] md:right-[-1%] lg:right-[6%] rotate-[15deg] animate-float4`}
@@ -85,10 +85,10 @@ export default function Home() {
           className="relative z-10 flex-1 w-full flex flex-col items-center justify-center text-center px-5 sm:px-10 md:px-8 pb-[22%] sm:pb-[24%] md:pb-[18%] lg:pb-[14%]"
           id="hero-text"
         >
-          <h1 className="text-[clamp(2.35rem,8.5vw,6rem)] font-extrabold leading-[1.12] text-[#03071e] max-w-[320px] sm:max-w-[480px] md:max-w-[700px] lg:max-w-[850px] tracking-tight mb-4 sm:mb-5 md:mb-6">
-            Cravings, Sorted.
+          <h1 className="text-[clamp(2.35rem,8.5vw,6rem)] font-extrabold leading-[1.12] text-[#03071e] max-w-[320px] sm:max-w-[480px] md:max-w-[700px] lg:max-w-[850px] tracking-tight mb-5 sm:mb-5 md:mb-6">
+            Cravings, sorted.
           </h1>
-          <p className="text-[clamp(0.95rem,2.8vw,1.5rem)] text-[#4a5568] leading-relaxed mb-6 sm:mb-7 md:mb-8 max-w-[280px] sm:max-w-[420px] md:max-w-[560px] mx-auto">
+          <p className="text-[clamp(0.95rem,2.8vw,1.5rem)] text-[#4a5568] leading-relaxed mb-6 sm:mb-7 md:mb-9 max-w-[280px] sm:max-w-[420px] md:max-w-[560px] mx-auto">
             From bold wraps to loaded sides. Order dine-in, takeaway, or
             delivery. Fresh from our kitchen, every time.
           </p>
