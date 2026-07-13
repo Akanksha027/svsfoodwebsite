@@ -22,6 +22,18 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Keyframe animations — can't do these with pure Tailwind utility classes */
 @keyframes heroFloat {
   0%,
@@ -127,7 +139,7 @@ body {
 .bag-top-handle {
   position: absolute;
   left: 50%;
-  top: -20px;
+  top: calc(50% - 82px);
   width: 30px;
   height: 25px;
   border: 3px solid #e5e7eb;

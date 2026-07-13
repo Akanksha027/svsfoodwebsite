@@ -1,172 +1,80 @@
-export default function DeliveringSection() {
-  const features = [
-    {
-      id: "creating-change",
-      icon: (
-        <svg
-          viewBox="0 0 48 48"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16"
-        >
-          <g transform="rotate(-15 24 24)">
-            <path
-              d="M24 38C13 29 8 21 8 13C8 8.5 11.5 5 16 5C20 5 23 8 24 10C25 8 28 5 32 5C36.5 5 40 8.5 40 13C40 21 35 29 24 38Z"
-              fill="#E84B10"
-            />
-          </g>
-          <path
-            d="M16 8L14 3M24 10L26 4M34 16L39 12"
-            stroke="#3a1e12"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      ),
-      title: "Creating Change",
-      desc: "Crafting solutions that uplift lives across MENA",
-    },
-    {
-      id: "local-lift",
-      icon: (
-        <svg
-          viewBox="0 0 48 48"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16"
-        >
-          <path d="M22 14L34 24L22 34Z" fill="#E84B10" />
-          <path d="M30 14L42 24L30 34Z" fill="#E84B10" />
-          <path
-            d="M6 18H14M10 24H18M6 30H14"
-            stroke="#3a1e12"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-          />
-        </svg>
-      ),
-      title: "Local Lift",
-      desc: "Helping businesses grow in their own way",
-    },
-    {
-      id: "rider-power",
-      icon: (
-        <svg
-          viewBox="0 0 48 48"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16"
-        >
-          <path d="M10 10H20V22H10Z" fill="#3a1e12" />
-          <path d="M8 22H24C28 22 32 25 32 30V32H8V22Z" fill="#E84B10" />
-          <path
-            d="M30 32C30 32 38 32 40 32C42 32 42 28 42 28L36 16H32"
-            stroke="#E84B10"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <circle cx="16" cy="34" r="5" fill="#f2ebe3" stroke="#3a1e12" strokeWidth="3.5" />
-          <circle cx="34" cy="34" r="5" fill="#f2ebe3" stroke="#3a1e12" strokeWidth="3.5" />
-          <path d="M30 16H34" stroke="#3a1e12" strokeWidth="3.5" strokeLinecap="round" />
-        </svg>
-      ),
-      title: "Rider Power",
-      desc: "Backing riders every step of the way",
-    },
-    {
-      id: "tech-ties",
-      icon: (
-        <svg
-          viewBox="0 0 48 48"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16"
-        >
-          <g transform="rotate(15 24 24)">
-            <rect x="14" y="8" width="20" height="32" rx="3" fill="#E84B10" />
-            <path d="M18 12H26" stroke="#3a1e12" strokeWidth="2.5" strokeLinecap="round" />
-            <circle cx="24" cy="36" r="1.5" fill="#3a1e12" />
-          </g>
-          <path
-            d="M30 6L32 1M38 12L43 8M14 10L10 6"
-            stroke="#3a1e12"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-        </svg>
-      ),
-      title: "Tech Ties",
-      desc: "Connecting communities through innovative technology",
-    },
-  ];
+import Image from "next/image";
 
+export default function DeliveringSection() {
   return (
     <section
-      className="relative w-full min-h-0 lg:min-h-screen bg-[#f2ebe3] overflow-hidden px-4 sm:px-6 md:px-10 pt-10 sm:pt-12 md:pt-16 pb-10 sm:pb-12 md:pb-0"
+      className="relative w-full bg-[#f2ebe3] px-4 sm:px-6 md:px-12 lg:px-24 py-12 sm:py-16 md:py-20 overflow-hidden"
       id="delivering-section"
     >
-      <div className="w-full max-w-[1400px] mx-auto">
-        <h2 className="text-[1.75rem] sm:text-[2.25rem] md:text-[3rem] lg:text-[4rem] font-bold text-[#1a0a00] mb-10 sm:mb-14 md:mb-20 leading-tight">
-          Delivering{" "}
-          <span className="relative inline-block text-[#E84B10]">
-            moments
-            <svg
-              className="absolute left-0 -bottom-1 w-full"
-              viewBox="0 0 120 8"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M2 6 Q30 2 60 5 Q90 8 118 4"
-                stroke="#E84B10"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-            </svg>
-          </span>
-        </h2>
+      <div className="max-w-[1400px] mx-auto">
+        <div className="mb-12 sm:mb-16 md:mb-20">
+          <h2 className="text-[1.75rem] sm:text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] font-bold text-[#3a1e12] mb-6 sm:mb-10 md:mb-12 tracking-tight leading-tight">
+            Numbers that deliver
+          </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-12 sm:mb-16 md:mb-24">
-          {features.map((f) => (
-            <div key={f.id} className="flex flex-col gap-3 sm:gap-4" id={f.id}>
-              <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 flex items-center justify-start mb-1 sm:mb-2">
-                {f.icon}
-              </div>
-              <h3 className="text-[1.2rem] sm:text-[1.35rem] lg:text-[1.5rem] font-extrabold text-[#1a0a00] leading-tight">
-                {f.title}
-              </h3>
-              <p className="text-[0.95rem] sm:text-[1.05rem] lg:text-[1.1rem] text-[#4B2B0A] leading-relaxed max-w-[300px]">
-                {f.desc}
-              </p>
-            </div>
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 md:gap-16 lg:gap-24 mb-8 sm:mb-12 max-w-[1200px]">
+            <p className="text-[1rem] sm:text-[1.1rem] text-[#4B2B0A] leading-relaxed">
+              Our numbers reflect more than growth—they tell the story of how
+              SVSFOOD connects communities and drives impact across the region.
+            </p>
+            <p className="text-[1rem] sm:text-[1.1rem] text-[#4B2B0A] leading-relaxed">
+              From empowering thousands of riders and partners to delivering
+              billions in value, we&apos;re building connections that move the
+              region forward every day.
+            </p>
+          </div>
+
+          <button className="bg-[#3a1e12] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-[0.95rem] sm:text-[1.05rem] hover:bg-[#5c3a28] transition-colors w-full sm:w-auto">
+            Read more about us
+          </button>
         </div>
-      </div>
 
-      <div className="hidden md:block absolute left-0 bottom-[100px] lg:bottom-[140px] w-[70%] lg:w-[65%] pointer-events-none select-none">
-        <svg
-          viewBox="0 0 900 260"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full"
-        >
-          <path
-            d="M-20 20 C 100 10, 300 10, 450 100 C 600 190, 750 240, 920 180"
-            stroke="#E84B10"
-            strokeWidth="18"
-            strokeLinecap="round"
-            fill="none"
-          />
-        </svg>
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 md:gap-12 items-center mb-12 sm:mb-16 md:mb-24">
+          <div className="relative w-full aspect-[4/5] max-h-[520px] md:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
+            <Image
+              src="/images/berlin.webp"
+              alt="Man enjoying a drink"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          </div>
 
-      <div className="w-full max-w-[1400px] mx-auto relative z-10 pt-6 sm:pt-10 md:pt-[80px]">
-        <p className="text-[clamp(1.75rem,7vw,7.5rem)] font-black uppercase leading-[1.05] text-[#1a0a00] tracking-tight">
-          Crafting Flavour And
-          <br />
-          Driving <span className="text-[#E84B10]">Taste</span>
-        </p>
+          <div className="relative w-full aspect-[4/3] max-h-[420px] md:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
+            <Image
+              src="/images/cheesyBurger.png"
+              alt="Hands holding a wrap"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          </div>
+        </div>
+
+        <div className="mb-4 sm:mb-8 md:mb-12">
+          <h2 className="text-[1.75rem] sm:text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] font-bold text-[#3a1e12] mb-6 sm:mb-10 md:mb-12 tracking-tight leading-tight">
+            About SVSFOOD
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 md:gap-16 lg:gap-24 mb-8 sm:mb-12 max-w-[1200px]">
+            <p className="text-[1rem] sm:text-[1.1rem] text-[#4B2B0A] leading-relaxed">
+              SVSFOOD&apos;s online marketplace offers customers a convenient,
+              personalised and simple way of ordering food, groceries and other
+              convenience products from a wide selection of restaurants and
+              retailers.
+            </p>
+            <p className="text-[1rem] sm:text-[1.1rem] text-[#4B2B0A] leading-relaxed">
+              SVSFOOD focuses on mobile platforms and continually enhances its
+              technology through data-driven insights. By optimizing the entire
+              order fulfillment process—picking, packing, and delivery—it
+              ensures efficient operations across the platform.
+            </p>
+          </div>
+
+          <button className="bg-[#3a1e12] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-[0.95rem] sm:text-[1.05rem] hover:bg-[#5c3a28] transition-colors w-full sm:w-auto">
+            Read more about us
+          </button>
+        </div>
       </div>
     </section>
   );
