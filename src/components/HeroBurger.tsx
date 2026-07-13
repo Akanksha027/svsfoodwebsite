@@ -52,7 +52,7 @@ export default function HeroBurger() {
       className="absolute bottom-0 left-1/2 -translate-x-1/2 z-[5] w-full flex justify-center pointer-events-none"
       aria-hidden={false}
     >
-      <div className="translate-y-[28%] sm:translate-y-[32%] md:translate-y-[35%]">
+      <div className="translate-y-[38%] sm:translate-y-[34%] md:translate-y-[35%]">
         <div
           ref={imgRef}
           className="will-change-transform origin-center"
@@ -63,7 +63,7 @@ export default function HeroBurger() {
             alt="Delicious SVS Food hamburger"
             width={1500}
             height={1500}
-            className="w-[min(88vw,280px)] sm:w-[min(92vw,480px)] md:w-[min(95vw,640px)] lg:w-[min(100vw,820px)] xl:w-[min(110vw,980px)] h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.18)]"
+            className="w-[min(96vw,520px)] sm:w-[min(95vw,560px)] md:w-[min(95vw,640px)] lg:w-[min(100vw,820px)] xl:w-[min(110vw,980px)] h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.18)]"
             loading="eager"
             priority
           />

@@ -63,7 +63,7 @@ export const journeyStops: JourneyStop[] = [
     imageAlt: "SVSFOOD menu favourites",
   },
   {
-    id: "stop-2015",
+    id: "stop-2025a",
     year: "2015",
     description: "Launch of our signature smash burgers and secret house sauces",
     image:
@@ -71,7 +71,7 @@ export const journeyStops: JourneyStop[] = [
     imageAlt: "Signature smash burger",
   },
   {
-    id: "stop-2018",
+    id: "stop-2025b",
     year: "2018",
     description:
       "SVSFOOD joins a wider food family and scales kitchens across the region",
@@ -80,7 +80,7 @@ export const journeyStops: JourneyStop[] = [
     imageAlt: "Growing SVSFOOD kitchens",
   },
   {
-    id: "stop-2021",
+    id: "stop-2025c",
     year: "2021",
     description: "Own-delivery fleet goes live — hotter burgers, faster doors",
     image:
@@ -88,7 +88,7 @@ export const journeyStops: JourneyStop[] = [
     imageAlt: "Delivery of fresh burgers",
   },
   {
-    id: "stop-2024",
+    id: "stop-2025d",
     year: "2024",
     description: "App-first ordering, loyalty rewards, and 50+ menu favourites",
     image:

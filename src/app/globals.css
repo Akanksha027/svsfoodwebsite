@@ -19,11 +19,12 @@ body {
   background-color: #ffffff;
   color: #171717;
   font-family: var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
-  overflow-x: hidden;
+  /* clip does not break position:sticky the way overflow-x:hidden does */
+  overflow-x: clip;
 }
 
 html {
-  overflow-x: hidden;
+  overflow-x: clip;
   scroll-behavior: smooth;
 }
 

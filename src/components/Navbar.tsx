@@ -116,7 +116,7 @@ export default function Navbar() {
           </button>
 
           <button
-            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900"
+            className="hidden md:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900"
             id="btn-account"
             aria-label="Account"
           >
@@ -209,9 +209,28 @@ export default function Navbar() {
           <Link
             href="/contact"
             onClick={closeMenu}
-            className="py-3 text-base font-medium text-gray-800 no-underline hover:text-[#FF003C]"
+            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#FF003C]"
           >
             Contact
+          </Link>
+          <Link
+            href="/account"
+            onClick={closeMenu}
+            className="py-3 text-base font-medium text-gray-800 no-underline hover:text-[#FF003C] flex items-center gap-2"
+          >
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            Profile
           </Link>
         </div>
       </div>
