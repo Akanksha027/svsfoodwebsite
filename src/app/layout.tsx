@@ -9,9 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SVSFOOD - Your Burger Party Starts Here",
+  title: "SVS Food | Order Online | Dine-in, Takeaway & Delivery",
   description:
-    "Gather your friends and family and enjoy the best burgers in town. Freshly made and delivered hot!",
+    "Order from SVS Food: wraps, sides, combos and more. Dine-in, takeaway, or home delivery, cooked fresh every time.",
 };
 
 export default function RootLayout({

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -22,11 +23,19 @@ export default function Navbar() {
     >
       <Link
         href="/"
-        className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-[1.5px] sm:tracking-[2px] uppercase text-gray-900 no-underline"
+        className="relative flex items-center no-underline shrink-0"
         id="navbar-brand"
         onClick={closeMenu}
+        aria-label="SVS Food home"
       >
-        SVSFOOD
+        <Image
+          src="/logo-with-no-bg.png"
+          alt="SVS Food"
+          width={96}
+          height={43}
+          className="h-6 sm:h-7 lg:h-8 w-auto object-contain"
+          priority
+        />
       </Link>
 
       <div className="flex items-center gap-2 sm:gap-4 lg:gap-10" id="navbar-icons">
@@ -195,28 +204,28 @@ export default function Navbar() {
           <Link
             href="/"
             onClick={closeMenu}
-            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#FF003C]"
+            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#f16a35]"
           >
             Home
           </Link>
           <Link
             href="/menu"
             onClick={closeMenu}
-            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#FF003C]"
+            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#f16a35]"
           >
             Menu
           </Link>
           <Link
             href="/contact"
             onClick={closeMenu}
-            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#FF003C]"
+            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#f16a35]"
           >
             Contact
           </Link>
           <Link
             href="/account"
             onClick={closeMenu}
-            className="py-3 text-base font-medium text-gray-800 no-underline hover:text-[#FF003C] flex items-center gap-2"
+            className="py-3 text-base font-medium text-gray-800 no-underline hover:text-[#f16a35] flex items-center gap-2"
           >
             <svg
               className="w-5 h-5"

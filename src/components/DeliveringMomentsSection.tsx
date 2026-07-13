@@ -29,56 +29,56 @@ export default function DeliveringMomentsSection() {
             <div className="flex flex-col items-start text-left">
               <img
                 src="https://d1i1r9ggjmyhzs.cloudfront.net/uploads/ic_imperfect_favorites_31a3c72077.svg"
-                alt="Creating Change"
+                alt="Fresh burgers"
                 className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6"
               />
               <h3 className="text-[1.15rem] sm:text-[1.35rem] font-extrabold text-[#3a1e12] mb-2 sm:mb-4">
-                Creating Change
+                Made Fresh
               </h3>
               <p className="text-[0.95rem] sm:text-[1rem] text-[#5c3a28] leading-relaxed">
-                Crafting solutions that uplift lives across MENA
+                Burgers grilled to order, never sitting under a lamp
               </p>
             </div>
 
             <div className="flex flex-col items-start text-left">
               <img
                 src="https://d1i1r9ggjmyhzs.cloudfront.net/uploads/ic_imperfect_forward_2a84eca16e.svg"
-                alt="Local Lift"
+                alt="Local kitchens"
                 className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6"
               />
               <h3 className="text-[1.15rem] sm:text-[1.35rem] font-extrabold text-[#3a1e12] mb-2 sm:mb-4">
-                Local Lift
+                Local Kitchens
               </h3>
               <p className="text-[0.95rem] sm:text-[1rem] text-[#5c3a28] leading-relaxed">
-                Helping businesses grow in their own way
+                Neighbourhood outlets built for dine-in, takeaway &amp; delivery
               </p>
             </div>
 
             <div className="flex flex-col items-start text-left">
               <img
                 src="https://d1i1r9ggjmyhzs.cloudfront.net/uploads/ic_imperfect_scooter_4252e3ccf0.svg"
-                alt="Rider Power"
+                alt="Fast delivery"
                 className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6"
               />
               <h3 className="text-[1.15rem] sm:text-[1.35rem] font-extrabold text-[#3a1e12] mb-2 sm:mb-4">
-                Rider Power
+                Hot Delivery
               </h3>
               <p className="text-[0.95rem] sm:text-[1rem] text-[#5c3a28] leading-relaxed">
-                Backing riders every step of the way
+                Doorstep delivery that keeps every bite piping hot
               </p>
             </div>
 
             <div className="flex flex-col items-start text-left">
               <img
                 src="https://d1i1r9ggjmyhzs.cloudfront.net/uploads/ic_imperfect_scooter_4252e3ccf0.svg"
-                alt="Tech Ties"
+                alt="Easy ordering"
                 className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6"
               />
               <h3 className="text-[1.15rem] sm:text-[1.35rem] font-extrabold text-[#3a1e12] mb-2 sm:mb-4">
-                Tech Ties
+                Easy Ordering
               </h3>
               <p className="text-[0.95rem] sm:text-[1rem] text-[#5c3a28] leading-relaxed">
-                Connecting communities through innovative technology
+                Order online, at the kiosk, or walk in. Same great menu.
               </p>
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function DeliveringMomentsSection() {
           <div className="relative w-full aspect-[4/5] max-h-[560px] lg:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
             <Image
               src="/images/delhi.jpg"
-              alt="Food delivery"
+              alt="SVS Food burgers ready to serve"
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 50vw"
@@ -97,49 +97,49 @@ export default function DeliveringMomentsSection() {
 
           <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 pt-0 lg:pt-4">
             <h2 className="text-[1.75rem] sm:text-[2.25rem] md:text-[2.75rem] font-bold text-[#3a1e12] leading-tight tracking-tight">
-              MENA&apos;s leading on demand delivery platform
+              India&apos;s favourite smash-burger kitchen
             </h2>
 
             <div className="flex flex-col gap-8 sm:gap-10">
               <div className="flex flex-col items-start gap-1">
                 <h3 className="text-[1.35rem] sm:text-[1.75rem] font-extrabold text-[#E84B10] mb-1">
-                  Rooted in tradition
+                  Bold Indian flavours
                 </h3>
                 <div className="bg-[#3a1e12] text-[#c4ea21] px-4 sm:px-5 py-1.5 skew-x-[-12deg] inline-block shadow-sm">
                   <span className="block skew-x-[12deg] font-bold text-[1rem] sm:text-[1.15rem] tracking-wide">
-                    Arabic
+                    Desi spice
                   </span>
                 </div>
                 <p className="text-[0.9rem] sm:text-[0.95rem] text-[#5c3a28] mt-3 font-medium">
-                  Region&apos;s top cuisine - flavors closest to home
+                  House sauces and spice blends made for local taste
                 </p>
               </div>
 
               <div className="flex flex-col items-start gap-1">
                 <h3 className="text-[1.35rem] sm:text-[1.75rem] font-extrabold text-[#E84B10] mb-1">
-                  Fresh, &amp; ultra fresh
+                  Fresh, every day
                 </h3>
                 <div className="bg-[#3a1e12] text-[#c4ea21] px-4 sm:px-5 py-1.5 skew-x-[-12deg] inline-block shadow-sm">
                   <span className="block skew-x-[12deg] font-bold text-[1rem] sm:text-[1.15rem] tracking-wide">
-                    17.6m potatoes
+                    Daily prep
                   </span>
                 </div>
                 <p className="text-[0.9rem] sm:text-[0.95rem] text-[#5c3a28] mt-3 font-medium">
-                  That&apos;s the weight of 400+ elephants!
+                  Patties, buns &amp; sides prepped fresh in every kitchen
                 </p>
               </div>
 
               <div className="flex flex-col items-start gap-1">
                 <h3 className="text-[1.35rem] sm:text-[1.75rem] font-extrabold text-[#E84B10] mb-1">
-                  Sky-High Cravings
+                  Cravings, served
                 </h3>
                 <div className="bg-[#3a1e12] text-[#c4ea21] px-4 sm:px-5 py-1.5 skew-x-[-12deg] inline-block shadow-sm">
                   <span className="block skew-x-[12deg] font-bold text-[1rem] sm:text-[1.15rem] tracking-wide">
-                    184m burgers
+                    50+ favourites
                   </span>
                 </div>
                 <p className="text-[0.9rem] sm:text-[0.95rem] text-[#5c3a28] mt-3 font-medium">
-                  Enough to out-climb Mount Everest 1,000+ times.
+                  Burgers, wraps, sides &amp; combos for every hunger level
                 </p>
               </div>
             </div>

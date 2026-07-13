@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import HeroBurger from "@/components/HeroBurger";
+import HeroSearchBox from "@/components/HeroSearchBox";
 import DeliveringSection from "@/components/DeliveringSection";
 import DealsSection from "@/components/DealsSection";
 import JourneySection from "@/components/JourneySection";
@@ -19,7 +20,7 @@ export default function Home() {
         className="relative w-full h-[100svh] min-h-[560px] max-h-[1100px] flex flex-col items-center overflow-hidden bg-white pt-[72px] md:pt-[88px] lg:pt-[100px]"
         id="hero-section"
       >
-        {/* ===== LEFT SIDE — visible on all screens ===== */}
+        {/* ===== LEFT SIDE - visible on all screens ===== */}
         <Image
           src="/images/cheese.png"
           alt="Cheese"
@@ -49,7 +50,7 @@ export default function Home() {
           className={`${ingredientClass} top-[68%] left-[-5%] sm:left-[-1%] md:left-[2%] lg:left-[4%] -rotate-[10deg] animate-float4`}
         />
 
-        {/* ===== RIGHT SIDE — visible on all screens ===== */}
+        {/* ===== RIGHT SIDE - visible on all screens ===== */}
         <Image
           src="/images/tikki.png"
           alt="Tikki"
@@ -81,23 +82,17 @@ export default function Home() {
 
         {/* ===== CENTERED HERO COPY ===== */}
         <div
-          className="relative z-10 flex-1 w-full flex flex-col items-center justify-center text-center px-10 sm:px-14 md:px-8 pb-[22%] sm:pb-[24%] md:pb-[18%] lg:pb-[14%]"
+          className="relative z-10 flex-1 w-full flex flex-col items-center justify-center text-center px-5 sm:px-10 md:px-8 pb-[22%] sm:pb-[24%] md:pb-[18%] lg:pb-[14%]"
           id="hero-text"
         >
           <h1 className="text-[clamp(2.35rem,8.5vw,6rem)] font-extrabold leading-[1.12] text-[#03071e] max-w-[320px] sm:max-w-[480px] md:max-w-[700px] lg:max-w-[850px] tracking-tight mb-4 sm:mb-5 md:mb-6">
-            Your Burger Party Starts Here!
+            Cravings, Sorted.
           </h1>
-          <p className="text-[clamp(0.95rem,2.8vw,1.5rem)] text-[#4a5568] leading-relaxed mb-7 sm:mb-8 md:mb-10 max-w-[280px] sm:max-w-[420px] md:max-w-[560px] mx-auto">
-            Gather your friends and family and enjoy the best burgers in town.
-            Freshly made and delivered hot!
+          <p className="text-[clamp(0.95rem,2.8vw,1.5rem)] text-[#4a5568] leading-relaxed mb-6 sm:mb-7 md:mb-8 max-w-[280px] sm:max-w-[420px] md:max-w-[560px] mx-auto">
+            From bold wraps to loaded sides. Order dine-in, takeaway, or
+            delivery. Fresh from our kitchen, every time.
           </p>
-          <a
-            href="/menu"
-            className="inline-flex items-center justify-center w-[200px] sm:w-[220px] md:w-[240px] h-12 sm:h-[52px] md:h-[56px] px-6 bg-[#FF003C] text-white text-[15px] sm:text-[17px] lg:text-[20px] font-semibold rounded-full cursor-pointer no-underline transition-all duration-300 ease-in-out hover:bg-[#e60036] hover:-translate-y-0.5 shadow-md"
-            id="hero-cta"
-          >
-            View Our Menu
-          </a>
+          <HeroSearchBox />
         </div>
 
         <HeroBurger />

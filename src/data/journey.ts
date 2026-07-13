@@ -1,6 +1,6 @@
 /**
  * Company journey timeline data.
- * Update this file to change years, copy, and images — the UI maps over it automatically.
+ * Update this file to change years, copy, and images - the UI maps over it automatically.
  */
 export type JourneyStop = {
   id: string;
@@ -16,10 +16,10 @@ export const journeyStops: JourneyStop[] = [
     id: "stop-2004",
     year: "2004",
     description:
-      "SVSFOOD launches its first kitchen with a goal: to make ordering burgers simple & easy",
+      "SVS Food launches its first kitchen with a goal: to make ordering burgers simple & easy",
     image:
       "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=80",
-    imageAlt: "First SVSFOOD burger kitchen",
+    imageAlt: "First SVS Food burger kitchen",
   },
   {
     id: "stop-2012",
@@ -41,15 +41,15 @@ export const journeyStops: JourneyStop[] = [
     id: "stop-2018",
     year: "2018",
     description:
-      "SVSFOOD joins a wider food family and scales kitchens across the region",
+      "SVS Food expands to more cities with kitchens built for dine-in, takeaway & delivery",
     image:
       "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&q=80",
-    imageAlt: "Growing SVSFOOD kitchens",
+    imageAlt: "Growing SVS Food kitchens",
   },
   {
     id: "stop-2021",
     year: "2021",
-    description: "Own-delivery fleet goes live — hotter burgers, faster doors",
+    description: "Own-delivery fleet goes live: hotter burgers, faster doors",
     image:
       "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=800&q=80",
     imageAlt: "Delivery of fresh burgers",
@@ -60,7 +60,7 @@ export const journeyStops: JourneyStop[] = [
     description: "App-first ordering, loyalty rewards, and 50+ menu favourites",
     image:
       "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&q=80",
-    imageAlt: "SVSFOOD menu favourites",
+    imageAlt: "SVS Food menu favourites",
   },
   {
     id: "stop-2025a",
@@ -74,15 +74,15 @@ export const journeyStops: JourneyStop[] = [
     id: "stop-2025b",
     year: "2018",
     description:
-      "SVSFOOD joins a wider food family and scales kitchens across the region",
+      "SVS Food expands to more cities with kitchens built for dine-in, takeaway & delivery",
     image:
       "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&q=80",
-    imageAlt: "Growing SVSFOOD kitchens",
+    imageAlt: "Growing SVS Food kitchens",
   },
   {
     id: "stop-2025c",
     year: "2021",
-    description: "Own-delivery fleet goes live — hotter burgers, faster doors",
+    description: "Own-delivery fleet goes live: hotter burgers, faster doors",
     image:
       "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=800&q=80",
     imageAlt: "Delivery of fresh burgers",
@@ -93,9 +93,9 @@ export const journeyStops: JourneyStop[] = [
     description: "App-first ordering, loyalty rewards, and 50+ menu favourites",
     image:
       "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&q=80",
-    imageAlt: "SVSFOOD menu favourites",
+    imageAlt: "SVS Food menu favourites",
   },
 ];
 
-/** Section heading — edit freely */
+/** Section heading - edit freely */
 export const journeySectionTitle = "The big moments that made us.";

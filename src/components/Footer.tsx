@@ -6,25 +6,25 @@ export default function Footer() {
       <div className="w-[95%] max-w-[1500px] bg-white rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 py-4 sm:py-5 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4 sm:mb-6 shadow-sm border border-gray-50">
         <div className="text-[13px] sm:text-[15px]">
           <p className="font-bold text-gray-900 mb-1 tracking-tight leading-snug">
-            Feel the Luxury of Premium Burgers with SVSFOOD - Best Fast Food
-            Brand in India
+            Feel the luxury of premium burgers with SVS Food, fast food done
+            right in India
           </p>
           <p className="text-gray-400 cursor-pointer hover:underline text-xs">
             Read more...
           </p>
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-2 sm:gap-5 text-[13px] sm:text-[15px] font-semibold text-gray-800">
-          <Link href="#" className="hover:text-black">
-            Popular searches
+          <Link href="/menu" className="hover:text-black">
+            View menu
           </Link>
           <Link href="#" className="hover:text-black">
-            Shop by category
+            Deals &amp; combos
           </Link>
           <Link href="#" className="hover:text-black">
-            Shop by style
+            Store locator
           </Link>
-          <Link href="#" className="hover:text-black">
-            Shop by color
+          <Link href="/contact" className="hover:text-black">
+            Contact us
           </Link>
         </div>
       </div>
@@ -57,28 +57,25 @@ export default function Footer() {
               Order Support
             </h4>
             <Link href="#" className="text-[14px] sm:text-[15px] text-gray-500 hover:text-black">
-              Make a return/Exchange
-            </Link>
-            <Link href="#" className="text-[14px] sm:text-[15px] text-gray-500 hover:text-black">
-              Refund/Exchange policy
-            </Link>
-            <Link href="#" className="text-[14px] sm:text-[15px] text-gray-500 hover:text-black">
               Track your order
             </Link>
             <Link href="#" className="text-[14px] sm:text-[15px] text-gray-500 hover:text-black">
-              Shipping policy
+              Delivery info
             </Link>
             <Link href="#" className="text-[14px] sm:text-[15px] text-gray-500 hover:text-black">
-              FAQ&apos;s
+              Cancellation policy
             </Link>
             <Link href="#" className="text-[14px] sm:text-[15px] text-gray-500 hover:text-black">
-              Terms
+              FAQs
+            </Link>
+            <Link href="#" className="text-[14px] sm:text-[15px] text-gray-500 hover:text-black">
+              Terms &amp; conditions
             </Link>
           </div>
 
           <div className="flex flex-col gap-2.5 sm:gap-3 sm:col-span-2 md:col-span-1">
             <h4 className="font-bold text-gray-900 mb-1 sm:mb-2 text-[15px] sm:text-[16px] tracking-wide">
-              We are SVSFOOD
+              We are SVS Food
             </h4>
             <Link href="#" className="text-[14px] sm:text-[15px] text-gray-500 hover:text-black">
               Our story

@@ -74,7 +74,7 @@ type PinMode = "before" | "pinning" | "after";
 
 /**
  * Uses position:fixed (not sticky) so the panel stays locked while
- * vertical scroll drives horizontal movement — works even when
+ * vertical scroll drives horizontal movement - works even when
  * ancestors use overflow clipping.
  */
 export default function JourneySection() {
@@ -235,7 +235,7 @@ export default function JourneySection() {
             {journeySectionTitle}
           </h2>
           <p className="mt-1.5 sm:mt-3 text-sm sm:text-lg md:text-xl text-[#7a5a3a] max-w-[500px]">
-            From a single kitchen to a nationwide favourite — our story in
+            From a single kitchen to a nationwide favourite. Our story in
             moments.
           </p>
         </div>

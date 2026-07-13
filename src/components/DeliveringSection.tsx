@@ -14,13 +14,14 @@ export default function DeliveringSection() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 md:gap-16 lg:gap-24 mb-8 sm:mb-12 max-w-[1200px]">
             <p className="text-[1rem] sm:text-[1.1rem] text-[#4B2B0A] leading-relaxed">
-              Our numbers reflect more than growth—they tell the story of how
-              SVSFOOD connects communities and drives impact across the region.
+              Every order tells a story: friends sharing a table, a late-night
+              craving, or a quick takeaway between meetings. SVS Food is built
+              around those everyday moments.
             </p>
             <p className="text-[1rem] sm:text-[1.1rem] text-[#4B2B0A] leading-relaxed">
-              From empowering thousands of riders and partners to delivering
-              billions in value, we&apos;re building connections that move the
-              region forward every day.
+              From our kitchens to your door (or tray), we focus on speed,
+              consistency, and burgers that taste the same every time you come
+              back.
             </p>
           </div>
 
@@ -33,7 +34,7 @@ export default function DeliveringSection() {
           <div className="relative w-full aspect-[4/5] max-h-[520px] md:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
             <Image
               src="/images/berlin.webp"
-              alt="Man enjoying a drink"
+              alt="Guest enjoying SVS Food"
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -43,7 +44,7 @@ export default function DeliveringSection() {
           <div className="relative w-full aspect-[4/3] max-h-[420px] md:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
             <Image
               src="/images/cheesyBurger.png"
-              alt="Hands holding a wrap"
+              alt="Hands holding a cheesy burger"
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -53,21 +54,19 @@ export default function DeliveringSection() {
 
         <div className="mb-4 sm:mb-8 md:mb-12">
           <h2 className="text-[1.75rem] sm:text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] font-bold text-[#3a1e12] mb-6 sm:mb-10 md:mb-12 tracking-tight leading-tight">
-            About SVSFOOD
+            About SVS Food
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 md:gap-16 lg:gap-24 mb-8 sm:mb-12 max-w-[1200px]">
             <p className="text-[1rem] sm:text-[1.1rem] text-[#4B2B0A] leading-relaxed">
-              SVSFOOD&apos;s online marketplace offers customers a convenient,
-              personalised and simple way of ordering food, groceries and other
-              convenience products from a wide selection of restaurants and
-              retailers.
+              SVS Food is a burger-first kitchen brand. Order dine-in,
+              takeaway, or home delivery from the same menu online, on our
+              self-ordering kiosks, or at the counter.
             </p>
             <p className="text-[1rem] sm:text-[1.1rem] text-[#4B2B0A] leading-relaxed">
-              SVSFOOD focuses on mobile platforms and continually enhances its
-              technology through data-driven insights. By optimizing the entire
-              order fulfillment process—picking, packing, and delivery—it
-              ensures efficient operations across the platform.
+              We keep the experience simple: clear menus, honest prices, and
+              kitchens that cook to order so your burger lands hot, whether
+              you&apos;re eating in or ordering for home.
             </p>
           </div>
 

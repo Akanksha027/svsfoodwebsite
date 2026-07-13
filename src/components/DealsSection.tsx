@@ -47,11 +47,11 @@ export default function DealsSection() {
         {/* Header */}
         <div className="text-center flex flex-col items-center gap-3 sm:gap-4 px-1">
           <h2 className="text-[1.75rem] sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#1a1a1a] tracking-tight leading-tight">
-            Hot Pizza, Hotter Deals
+            Hot Burgers, Hotter Deals
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-700 max-w-2xl">
-            From family-sized deals to solo slices, find the perfect offer for
-            your pizza cravings.
+            From shareable combos to solo cravings, pick the offer that matches
+            your hunger.
           </p>
         </div>
 
@@ -60,23 +60,23 @@ export default function DealsSection() {
           {/* Card 1: Red */}
           <div
             ref={card1Ref}
-            className="relative w-full min-h-[360px] sm:min-h-[400px] md:min-h-[460px] lg:min-h-[589px] rounded-[1.5rem] sm:rounded-[2rem] bg-[#FF003C] text-white p-5 sm:p-8 md:p-12 flex flex-col overflow-hidden shadow-sm"
+            className="relative w-full min-h-[360px] sm:min-h-[400px] md:min-h-[460px] lg:min-h-[589px] rounded-[1.5rem] sm:rounded-[2rem] bg-[#f16a35] text-white p-5 sm:p-8 md:p-12 flex flex-col overflow-hidden shadow-sm"
           >
             <div className="relative z-10 flex flex-col gap-4 sm:gap-6 lg:gap-8 pb-28 sm:pb-36">
               <h3 className="text-2xl sm:text-3xl font-black tracking-wide">
                 Spicy Duo Deal
               </h3>
               <ul className="flex flex-col gap-2 sm:gap-3 ml-5 list-disc text-base sm:text-lg font-medium">
-                <li>1 Medium Firecracker Inferno</li>
-                <li>1 Medium Buffalo Bliss</li>
+                <li>1 Classic Peri Peri Burger</li>
+                <li>1 Spicy Paneer Burger</li>
               </ul>
               <div className="mt-2 sm:mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pr-0 sm:pr-4">
                 <button className="bg-white text-black font-bold py-2.5 sm:py-3 px-5 sm:px-6 rounded-full text-sm hover:bg-gray-100 transition-colors shadow-sm">
                   Order Now
                 </button>
                 <div className="text-base sm:text-xl font-medium tracking-wide">
-                  <span className="font-black text-xl sm:text-2xl">$21.99</span>{" "}
-                  - Save $4
+                  <span className="font-black text-xl sm:text-2xl">₹399</span>{" "}
+                  - Save ₹80
                 </div>
               </div>
             </div>
@@ -126,16 +126,16 @@ export default function DealsSection() {
                 Cheese Lovers Pair
               </h3>
               <ul className="flex flex-col gap-2 sm:gap-3 ml-5 list-disc text-base sm:text-lg font-medium">
-                <li>1 Medium Cheese Avalanche</li>
-                <li>1 Medium Truffle Temptation</li>
+                <li>1 Double Cheese Burger</li>
+                <li>1 Loaded Fries</li>
               </ul>
               <div className="mt-2 sm:mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 pr-0 sm:pr-4">
                 <button className="bg-white text-black font-bold py-2.5 sm:py-3 px-5 sm:px-6 rounded-full text-sm hover:bg-gray-100 transition-colors shadow-sm">
                   Order Now
                 </button>
                 <div className="text-base sm:text-xl font-medium tracking-wide">
-                  <span className="font-black text-xl sm:text-2xl">$22.99</span>{" "}
-                  - Save $5
+                  <span className="font-black text-xl sm:text-2xl">₹349</span>{" "}
+                  - Save ₹70
                 </div>
               </div>
             </div>
@@ -183,11 +183,11 @@ export default function DealsSection() {
         >
           <div className="relative z-10 flex flex-col gap-4 sm:gap-6 lg:gap-10 w-full pb-32 sm:pb-40 md:pb-48">
             <h3 className="text-2xl sm:text-3xl lg:text-[40px] font-black tracking-wide leading-tight max-w-[800px]">
-              Meat Feast Combo
+              Family Feast Combo
             </h3>
             <ul className="flex flex-col gap-2 sm:gap-4 ml-5 list-disc text-base sm:text-lg lg:text-2xl font-medium text-gray-200 max-w-[800px]">
-              <li>1 Medium Meat Lover&apos;s Feast</li>
-              <li>1 Medium BBQ Blaze</li>
+              <li>2 Signature Smash Burgers</li>
+              <li>2 Soft Drinks + 1 Large Fries</li>
             </ul>
             <div className="mt-2 sm:mt-4 lg:mt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 w-full">
               <button className="bg-white text-black font-bold py-3 sm:py-4 px-8 sm:px-10 rounded-full text-sm sm:text-base lg:text-lg hover:bg-gray-100 transition-colors shadow-sm w-fit">
@@ -195,9 +195,9 @@ export default function DealsSection() {
               </button>
               <div className="text-lg sm:text-xl lg:text-3xl font-medium tracking-wide sm:text-right">
                 <span className="font-black text-xl sm:text-2xl lg:text-[40px]">
-                  $23.99
+                  ₹599
                 </span>{" "}
-                - Save $6
+                - Save ₹120
               </div>
             </div>
           </div>
