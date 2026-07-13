@@ -87,13 +87,13 @@ export default function Home() {
           <h1 className="text-[clamp(2.35rem,8.5vw,6rem)] font-extrabold leading-[1.12] text-[#03071e] max-w-[320px] sm:max-w-[480px] md:max-w-[700px] lg:max-w-[850px] tracking-tight mb-4 sm:mb-5 md:mb-6">
             Your Burger Party Starts Here!
           </h1>
-          <p className="text-[clamp(0.95rem,2.8vw,1.5rem)] text-[#4a5568] leading-relaxed mb-7 sm:mb-8 md:mb-10 max-w-[280px] sm:max-w-[420px] md:max-w-[560px] mx-auto">
+          <p className="text-[clamp(0.85rem,2.2vw,1.25rem)] text-[#4a5568] leading-relaxed mb-7 sm:mb-8 md:mb-10 lg:mb-6 max-w-[280px] sm:max-w-[420px] md:max-w-[560px] mx-auto">
             Gather your friends and family and enjoy the best burgers in town.
             Freshly made and delivered hot!
           </p>
           <a
             href="/menu"
-            className="inline-flex items-center justify-center w-[200px] sm:w-[220px] md:w-[240px] h-12 sm:h-[52px] md:h-[56px] px-6 bg-[#FF003C] text-white text-[15px] sm:text-[17px] lg:text-[20px] font-semibold rounded-full cursor-pointer no-underline transition-all duration-300 ease-in-out hover:bg-[#e60036] hover:-translate-y-0.5 shadow-md"
+            className="inline-flex items-center justify-center w-[200px] sm:w-[220px] md:w-[240px] h-12 sm:h-[52px] md:h-[56px] px-6 bg-[#FF003C] text-white text-[15px] sm:text-[17px] lg:text-[20px] font-semibold rounded-full cursor-pointer no-underline transition-all duration-300 ease-in-out shadow-md lg:-mt-3 hover:bg-[#e60036] hover:-translate-y-0.5"
             id="hero-cta"
           >
             View Our Menu
