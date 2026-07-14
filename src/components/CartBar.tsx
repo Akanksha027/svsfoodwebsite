@@ -134,21 +134,39 @@ function FlyingItem({
     );
 
     let drop: Animation | null = null;
-    const onRiseEnd = () => {
-      const target = getTarget(anim.slotIndex);
-      const toCx = target.left + target.size / 2;
-      const toCy = target.top + target.size / 2;
-      const dropEnd = at(toCx, toCy, 1);
 
-      drop = el.animate(
-        [{ transform: riseEnd, opacity: 1 }, { transform: dropEnd, opacity: 1 }],
-        {
-          duration: FLY_DROP_MS,
-          easing: "cubic-bezier(0.45, 0, 0.55, 1)",
-          fill: "forwards",
-        },
-      );
-      drop.onfinish = () => onDone();
+    const snapToTarget = () => {
+      const target = getTarget(anim.slotIndex);
+      const cx = target.left + target.size / 2;
+      const cy = target.top + target.size / 2;
+      el.style.transform = at(cx, cy, 1);
+    };
+
+    const onRiseEnd = () => {
+      // Re-measure after layout so the drop lands on the real chip slot.
+      requestAnimationFrame(() => {
+        const target = getTarget(anim.slotIndex);
+        const toCx = target.left + target.size / 2;
+        const toCy = target.top + target.size / 2;
+        const dropEnd = at(toCx, toCy, 1);
+        const handoff =
+          getComputedStyle(el).transform !== "none"
+            ? getComputedStyle(el).transform
+            : riseEnd;
+
+        drop = el.animate(
+          [{ transform: handoff, opacity: 1 }, { transform: dropEnd, opacity: 1 }],
+          {
+            duration: FLY_DROP_MS,
+            easing: "cubic-bezier(0.45, 0, 0.55, 1)",
+            fill: "forwards",
+          },
+        );
+        drop.onfinish = () => {
+          snapToTarget();
+          onDone();
+        };
+      });
     };
 
     rise.onfinish = onRiseEnd;
@@ -169,6 +187,7 @@ function FlyingItem({
         width: anim.to.size,
         height: anim.to.size,
         visibility: ready ? "visible" : "hidden",
+        willChange: "transform",
       }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -191,6 +210,7 @@ export default function CartBar() {
   const pillRef = useRef<HTMLAnchorElement>(null);
   const chipSlotRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [flyAnim, setFlyAnim] = useState<FlyAnim | null>(null);
+  const [cartBarReady, setCartBarReady] = useState(false);
   const completedFlyKeys = useRef<Set<number>>(new Set());
   const pendingFlyRef = useRef(lastAddFly);
 
@@ -217,6 +237,30 @@ export default function CartBar() {
   const totalSlots = slots.length;
   const chipsVisible = visibleChipCount(totalSlots);
   const hiddenCount = Math.max(0, totalSlots - MAX_VISIBLE_CHIPS);
+
+  useLayoutEffect(() => {
+    if (itemCount <= 0) {
+      setCartBarReady(false);
+      return;
+    }
+    setCartBarReady(false);
+
+    let frames = 0;
+    let cancelled = false;
+    const waitForLayout = () => {
+      if (cancelled) return;
+      frames += 1;
+      if (frames < 2) {
+        requestAnimationFrame(waitForLayout);
+        return;
+      }
+      setCartBarReady(true);
+    };
+    requestAnimationFrame(waitForLayout);
+    return () => {
+      cancelled = true;
+    };
+  }, [itemCount, chipsVisible, totalSlots]);
 
   const finishFly = useCallback(
     (key: number) => {
@@ -248,6 +292,7 @@ export default function CartBar() {
   useEffect(() => {
     const event = lastAddFly;
     if (!event || completedFlyKeys.current.has(event.key)) return;
+    if (!cartBarReady) return;
     if (!event.chipImageUrl) {
       acknowledgeAddFly(event.key);
       return;
@@ -279,16 +324,18 @@ export default function CartBar() {
         return;
       }
 
-      const to = chipTargetRect(pill, pending.slotIndex);
+      const slotEl = chipSlotRefs.current[pending.slotIndex];
+      if (!slotEl) {
+        if (attempts < 16) requestAnimationFrame(tryStart);
+        return;
+      }
+
       void preloadImage(pending.chipImageUrl).then(() => {
         if (cancelled) return;
         if (pendingFlyRef.current?.key !== event.key) return;
-        // Let cart bar finish layout before measuring landing slot.
         requestAnimationFrame(() => {
           if (cancelled) return;
-          const liveTarget = chipSlotRefs.current[pending.slotIndex]
-            ? getFlyTarget(pending.slotIndex)
-            : chipTargetRect(pillRef.current!, pending.slotIndex);
+          const liveTarget = getFlyTarget(pending.slotIndex);
           setFlyAnim({
             key: pending.key,
             imageUrl: pending.chipImageUrl!,
@@ -304,7 +351,7 @@ export default function CartBar() {
     return () => {
       cancelled = true;
     };
-  }, [acknowledgeAddFly, getFlyTarget, lastAddFly]);
+  }, [acknowledgeAddFly, cartBarReady, getFlyTarget, lastAddFly]);
 
   if (itemCount <= 0 && !flyAnim) return null;
 
@@ -335,38 +382,25 @@ export default function CartBar() {
                   const isFlyingSlot = flyAnim?.slotIndex === index;
                   const marginLeft = chipMarginLeft(index);
 
-                  if (isFlyingSlot) {
-                    return (
-                      <div
-                        key={`chip-slot-${index}`}
-                        ref={(el) => {
-                          chipSlotRefs.current[index] = el;
-                        }}
-                        className="relative shrink-0"
-                        style={{
-                          width: CHIP_SIZE,
-                          height: CHIP_SIZE,
-                          marginLeft,
-                        }}
-                        aria-hidden
-                      />
-                    );
-                  }
-
                   if (!slot) return null;
                   return (
                     <div
-                      key={`chip-${slot.itemId}-${index}`}
+                      key={`chip-slot-${index}`}
                       ref={(el) => {
                         chipSlotRefs.current[index] = el;
                       }}
                       className="relative shrink-0"
                       style={{ width: CHIP_SIZE, height: CHIP_SIZE, marginLeft }}
                     >
-                      <ItemChip
-                        imageUrl={slot.imageUrl}
-                        name={slot.name}
-                      />
+                      <div
+                        className="w-full h-full"
+                        style={{ opacity: isFlyingSlot ? 0 : 1 }}
+                      >
+                        <ItemChip
+                          imageUrl={slot.imageUrl}
+                          name={slot.name}
+                        />
+                      </div>
                     </div>
                   );
                 })}
