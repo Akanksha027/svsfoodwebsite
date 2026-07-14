@@ -9,7 +9,7 @@ export default function CartNavButton() {
   return (
     <Link
       href="/cart"
-      className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full no-underline text-gray-700 hover:bg-gray-100 hover:text-[#f16a35] transition-colors"
+      className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full no-underline text-svs-ink hover:bg-svs-cream hover:text-svs-orange transition-colors"
       aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
     >
       <svg
@@ -27,7 +27,7 @@ export default function CartNavButton() {
         <circle cx="18" cy="20" r="1" />
       </svg>
       {itemCount > 0 ? (
-        <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#f16a35] text-white text-[10px] font-bold flex items-center justify-center">
+        <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-svs-orange text-white text-[10px] font-bold flex items-center justify-center">
           {itemCount > 99 ? "99+" : itemCount}
         </span>
       ) : null}

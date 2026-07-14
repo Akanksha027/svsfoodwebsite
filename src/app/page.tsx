@@ -18,7 +18,7 @@ export default function Home() {
       <Navbar />
 
       <section
-        className="relative w-full h-[100svh] min-h-[560px] max-h-[1100px] flex flex-col items-center overflow-hidden bg-white pt-[72px] md:pt-[88px] lg:pt-[100px]"
+        className="relative w-full h-[100svh] min-h-[560px] max-h-[1100px] flex flex-col items-center overflow-hidden bg-svs-white pt-[72px] md:pt-[88px] lg:pt-[100px]"
         id="hero-section"
       >
         {/* ===== LEFT SIDE - visible on all screens ===== */}
@@ -86,10 +86,10 @@ export default function Home() {
           className="relative z-10 flex-1 w-full flex flex-col items-center justify-center text-center px-5 sm:px-10 md:px-8 pb-[22%] sm:pb-[24%] md:pb-[18%] lg:pb-[14%]"
           id="hero-text"
         >
-          <h1 className="text-[clamp(2.35rem,8.5vw,6rem)] font-extrabold leading-[1.12] text-[#03071e] max-w-[320px] sm:max-w-[480px] md:max-w-[700px] lg:max-w-[850px] tracking-tight mb-5 sm:mb-5 md:mb-6">
+          <h1 className="text-[clamp(2.35rem,8.5vw,6rem)] font-extrabold leading-[1.12] text-svs-ink max-w-[320px] sm:max-w-[480px] md:max-w-[700px] lg:max-w-[850px] tracking-tight mb-5 sm:mb-5 md:mb-6">
             Cravings, sorted.
           </h1>
-          <p className="text-[clamp(0.95rem,2.8vw,1.5rem)] text-[#4a5568] leading-relaxed mb-6 sm:mb-7 md:mb-9 max-w-[280px] sm:max-w-[420px] md:max-w-[560px] mx-auto">
+          <p className="text-[clamp(0.95rem,2.8vw,1.5rem)] text-svs-ink/65 leading-relaxed mb-6 sm:mb-7 md:mb-9 max-w-[280px] sm:max-w-[420px] md:max-w-[560px] mx-auto">
             From bold wraps to loaded sides. Order dine-in, takeaway, or
             delivery. Fresh from our kitchen, every time.
           </p>

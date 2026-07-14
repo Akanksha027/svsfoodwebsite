@@ -71,4 +71,4 @@ export default function HeroBurger() {
       </div>
     </div>
   );
-}
+}  

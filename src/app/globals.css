@@ -1,10 +1,23 @@
 @import "tailwindcss";
 
 @theme inline {
+  /* SVS brand palette */
+  --color-svs-orange: #f16a34;
+  --color-svs-orange-dark: #d95a2a;
+  --color-svs-white: #ffffff;
+  --color-svs-ink: #1a1a1a;
+  --color-svs-cream: #fff4ee;
+  --color-svs-green: #2d9e75;
+  --color-svs-yellow: #ffd166;
+
+  /* Semantic aliases */
   --color-background: #ffffff;
-  --color-foreground: #171717;
-  --color-accent: #e53e3e;
-  --color-accent-hover: #c53030;
+  --color-foreground: #1a1a1a;
+  --color-accent: #f16a34;
+  --color-accent-hover: #d95a2a;
+  --color-surface: #fff4ee;
+  --color-muted: color-mix(in srgb, #1a1a1a 55%, transparent);
+
   --font-sans: var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
   --font-bagoss: "Bagoss", var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
 }
@@ -17,8 +30,8 @@
 }
 
 body {
-  background-color: #ffffff;
-  color: #171717;
+  background-color: var(--color-svs-white);
+  color: var(--color-svs-ink);
   font-family: var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
   /* clip does not break position:sticky the way overflow-x:hidden does */
   overflow-x: clip;
@@ -149,8 +162,8 @@ html {
   position: absolute;
   left: 50%;
   top: 50%;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--color-svs-white);
+  border: 1px solid color-mix(in srgb, var(--color-svs-ink) 12%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -167,7 +180,7 @@ html {
 .bag-right {
   width: 40px;
   height: 120px;
-  background: #f9fafb;
+  background: var(--color-svs-cream);
 }
 
 .bag-front {
@@ -192,7 +205,7 @@ html {
   top: calc(50% - 82px);
   width: 30px;
   height: 25px;
-  border: 3px solid #e5e7eb;
+  border: 3px solid color-mix(in srgb, var(--color-svs-ink) 12%, transparent);
   border-bottom: none;
   border-radius: 15px 15px 0 0;
 }

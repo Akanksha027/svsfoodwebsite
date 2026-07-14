@@ -93,33 +93,33 @@ function PayInner() {
   return (
     <>
       <Navbar />
-      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[100px] px-4 sm:px-6 lg:px-8 pb-16 bg-[#fff8f3]">
+      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[100px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
         <div className="max-w-[440px] mx-auto py-10 text-center">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1a1a1a] mb-2">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-svs-ink mb-2">
             Pay with UPI
           </h1>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-svs-ink/50 mb-6">
             Scan the QR or open your UPI app. We&apos;ll confirm automatically.
           </p>
 
           {error && !pending ? (
-            <div className="rounded-2xl bg-white border border-red-100 p-6">
-              <p className="text-red-600 font-semibold mb-4">{error}</p>
-              <Link href="/checkout" className="text-[#f16a35] font-bold">
+            <div className="rounded-2xl bg-svs-white border border-svs-orange/20 p-6">
+              <p className="text-svs-orange-dark font-semibold mb-4">{error}</p>
+              <Link href="/checkout" className="text-svs-orange font-bold">
                 Back to checkout
               </Link>
             </div>
           ) : pending ? (
-            <div className="rounded-2xl border border-[#efe4da] bg-white p-6 space-y-4">
-              <p className="text-lg font-extrabold text-[#1a1a1a]">
+            <div className="rounded-2xl border border-svs-cream bg-svs-white p-6 space-y-4">
+              <p className="text-lg font-extrabold text-svs-ink">
                 {formatInr(pending.amount)}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-svs-ink/50">
                 Order #{pending.orderNumber}
               </p>
 
               {qrSrc ? (
-                <div className="mx-auto w-[240px] h-[240px] relative bg-white">
+                <div className="mx-auto w-[240px] h-[240px] relative bg-svs-white">
                   <Image
                     src={qrSrc}
                     alt="UPI QR code"
@@ -132,12 +132,12 @@ function PayInner() {
 
               <a
                 href={pending.qrPayload}
-                className="inline-flex w-full items-center justify-center h-12 rounded-full bg-[#f16a35] text-white font-bold no-underline"
+                className="inline-flex w-full items-center justify-center h-12 rounded-full bg-svs-orange text-white font-bold no-underline"
               >
                 Open UPI app
               </a>
 
-              <p className="text-sm font-semibold text-[#f16a35] animate-pulse">
+              <p className="text-sm font-semibold text-svs-orange animate-pulse">
                 {status === "waiting"
                   ? "Waiting for payment..."
                   : status === "failed"
@@ -146,7 +146,7 @@ function PayInner() {
               </p>
 
               {error ? (
-                <p className="text-sm text-red-600 font-semibold">{error}</p>
+                <p className="text-sm text-svs-orange-dark font-semibold">{error}</p>
               ) : null}
 
               {pending.isMock ? (
@@ -156,7 +156,7 @@ function PayInner() {
               ) : null}
             </div>
           ) : (
-            <p className="text-gray-500">Loading payment...</p>
+            <p className="text-svs-ink/50">Loading payment...</p>
           )}
         </div>
       </main>
@@ -168,7 +168,7 @@ export default function PayPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-[50svh] pt-[120px] text-center text-gray-500">
+        <main className="min-h-[50svh] pt-[120px] text-center text-svs-ink/50">
           Loading...
         </main>
       }

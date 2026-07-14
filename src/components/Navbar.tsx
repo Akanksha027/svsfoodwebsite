@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 const iconBtn =
-  "flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-colors duration-200 hover:bg-gray-100 hover:text-gray-900 no-underline shrink-0";
+  "flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-none bg-transparent text-svs-ink cursor-pointer transition-colors duration-200 hover:bg-svs-cream hover:text-svs-orange no-underline shrink-0";
 
 const iconSvg = "w-[18px] h-[18px] sm:w-5 sm:h-5 lg:w-6 lg:h-6";
 
@@ -25,20 +25,20 @@ function NavIcons({ onNavigate }: { onNavigate?: () => void }) {
               style={{ perspective: "800px" }}
             >
               <span className="block w-full h-full relative revolving-bag">
-                <span className="bag-top-handle bag-front-handle !border-gray-500" />
-                <span className="bag-top-handle bag-back-handle !border-gray-500" />
-                <span className="bag-face bag-front !bg-gray-300 !border-gray-400">
-                  <span className="text-[14px] font-black tracking-widest text-gray-900">
+                <span className="bag-top-handle bag-front-handle" />
+                <span className="bag-top-handle bag-back-handle" />
+                <span className="bag-face bag-front">
+                  <span className="text-[14px] font-black tracking-widest text-svs-ink">
                     SVS
                   </span>
                 </span>
-                <span className="bag-face bag-back !bg-gray-300 !border-gray-400">
-                  <span className="text-[14px] font-black tracking-widest text-gray-900 transform rotate-y-180">
+                <span className="bag-face bag-back">
+                  <span className="text-[14px] font-black tracking-widest text-svs-ink transform rotate-y-180">
                     SVS
                   </span>
                 </span>
-                <span className="bag-face bag-left !bg-gray-400 !border-gray-400" />
-                <span className="bag-face bag-right !bg-gray-400 !border-gray-400" />
+                <span className="bag-face bag-left" />
+                <span className="bag-face bag-right" />
               </span>
             </span>
           </span>
@@ -148,7 +148,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[100px] px-3 sm:px-4 md:px-6 lg:px-8 bg-white/95 backdrop-blur-sm border-b border-gray-100/80"
+      className="fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[100px] px-3 sm:px-4 md:px-6 lg:px-8 bg-svs-white/95 backdrop-blur-sm border-b border-svs-cream"
       id="main-navbar"
     >
       {/* Logo: centered on small screens, left-aligned from md up */}
@@ -186,7 +186,7 @@ export default function Navbar() {
         >
           <button
             type="button"
-            className={`${iconBtn} bg-gray-50 border border-gray-200/80`}
+            className={`${iconBtn} bg-svs-cream border border-svs-cream`}
             id="btn-nav-actions"
             aria-label={iconsOpen ? "Close actions" : "Open actions"}
             aria-expanded={iconsOpen}
@@ -239,7 +239,7 @@ export default function Navbar() {
           <div
             id="nav-actions-panel"
             role="menu"
-            className={`absolute top-full mt-2 right-0 z-[1001] flex flex-nowrap items-center gap-0.5 p-1.5 rounded-full bg-white shadow-[0_10px_40px_rgba(0,0,0,0.14)] border border-gray-100 transition-all duration-200 origin-top-right ${iconsOpen
+            className={`absolute top-full mt-2 right-0 z-[1001] flex flex-nowrap items-center gap-0.5 p-1.5 rounded-full bg-svs-white shadow-[0_10px_40px_rgba(241,106,52,0.14)] border border-svs-cream transition-all duration-200 origin-top-right ${iconsOpen
               ? "opacity-100 scale-100 visible"
               : "opacity-0 scale-95 invisible pointer-events-none"
               }`}

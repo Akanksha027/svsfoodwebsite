@@ -74,59 +74,59 @@ function OrderInner() {
   return (
     <>
       <Navbar />
-      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[100px] px-4 sm:px-6 lg:px-8 pb-16 bg-[#fff8f3]">
+      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[100px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
         <div className="max-w-[560px] mx-auto py-10">
           {loading && !order ? (
-            <p className="text-center text-gray-500">Loading order...</p>
+            <p className="text-center text-svs-ink/50">Loading order...</p>
           ) : error || !order ? (
             <div className="text-center">
-              <p className="text-red-600 font-semibold mb-4">
+              <p className="text-svs-orange-dark font-semibold mb-4">
                 {error || "Order not found"}
               </p>
-              <Link href="/menu" className="text-[#f16a35] font-bold">
+              <Link href="/menu" className="text-svs-orange font-bold">
                 Back to menu
               </Link>
             </div>
           ) : (
-            <div className="rounded-2xl border border-[#efe4da] bg-white p-6 space-y-4 text-center">
-              <p className="text-sm font-bold uppercase tracking-wider text-[#f16a35]">
+            <div className="rounded-2xl border border-svs-cream bg-svs-white p-6 space-y-4 text-center">
+              <p className="text-sm font-bold uppercase tracking-wider text-svs-orange">
                 {statusLabel({ ...order, cod: isCod })}
               </p>
-              <h1 className="text-3xl font-extrabold text-[#1a1a1a]">
+              <h1 className="text-3xl font-extrabold text-svs-ink">
                 #{order.order_number}
               </h1>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-svs-ink/40">
                 {String(order.order_number).startsWith("2018")
                   ? "Website order"
                   : "Kiosk order"}
               </p>
-              <p className="text-lg font-bold text-[#1a1a1a]">
+              <p className="text-lg font-bold text-svs-ink">
                 {formatInr(order.grand_total)}
               </p>
-              <p className="text-sm text-gray-500 capitalize">
+              <p className="text-sm text-svs-ink/50 capitalize">
                 {order.order_type.replace(/_/g, " ")}
                 {order.customer_mobile
                   ? ` · ${order.customer_mobile}`
                   : ""}
               </p>
               {order.customer_address ? (
-                <p className="text-sm text-gray-600">{order.customer_address}</p>
+                <p className="text-sm text-svs-ink/60">{order.customer_address}</p>
               ) : null}
 
               {order.rider_name || order.rider_phone ? (
-                <div className="rounded-xl bg-[#fff1e8] px-4 py-3 text-left">
-                  <p className="text-xs font-bold uppercase tracking-wide text-[#f16a35] mb-1">
+                <div className="rounded-xl bg-svs-cream px-4 py-3 text-left">
+                  <p className="text-xs font-bold uppercase tracking-wide text-svs-orange mb-1">
                     Rider
                   </p>
                   {order.rider_name ? (
-                    <p className="font-semibold text-[#1a1a1a]">
+                    <p className="font-semibold text-svs-ink">
                       {order.rider_name}
                     </p>
                   ) : null}
                   {order.rider_phone ? (
                     <a
                       href={`tel:${order.rider_phone}`}
-                      className="text-sm text-[#f16a35] font-semibold"
+                      className="text-sm text-svs-orange font-semibold"
                     >
                       {order.rider_phone}
                     </a>
@@ -134,14 +134,14 @@ function OrderInner() {
                 </div>
               ) : null}
 
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-svs-ink/50">
                 {isCod
                   ? "Pay the restaurant / rider in cash. Status updates on WhatsApp."
                   : "We'll update you on WhatsApp when the kitchen is ready."}
               </p>
               <Link
                 href="/menu"
-                className="inline-flex h-11 items-center justify-center rounded-full bg-[#f16a35] text-white font-bold px-6 no-underline"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-svs-orange text-white font-bold px-6 no-underline"
               >
                 Order more
               </Link>
@@ -158,7 +158,7 @@ export default function OrderPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-[50svh] pt-[120px] text-center text-gray-500">
+        <main className="min-h-[50svh] pt-[120px] text-center text-svs-ink/50">
           Loading...
         </main>
       }

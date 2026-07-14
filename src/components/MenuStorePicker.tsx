@@ -34,8 +34,8 @@ function MenuStorePickerInner({ currentStoreId }: { currentStoreId: string }) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pt-3 mt-3 border-t border-gray-100 w-full">
-      <span className="text-[13px] sm:text-[14px] font-semibold text-gray-500 shrink-0">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 pt-3 mt-3 border-t border-svs-cream w-full">
+      <span className="text-[13px] sm:text-[14px] font-semibold text-svs-ink/50 shrink-0">
         Ordering from
       </span>
       <label htmlFor="menu-store-picker" className="sr-only">
@@ -45,7 +45,7 @@ function MenuStorePickerInner({ currentStoreId }: { currentStoreId: string }) {
         id="menu-store-picker"
         value={currentStoreId}
         onChange={(e) => onSelect(e.target.value)}
-        className="flex-1 min-w-0 max-w-full sm:max-w-[320px] h-9 rounded-lg border border-gray-200 bg-gray-50/80 px-2.5 text-[13px] sm:text-[14px] font-semibold text-gray-800 cursor-pointer focus:outline-none focus:ring-1 focus:ring-gray-300"
+        className="flex-1 min-w-0 max-w-full sm:max-w-[320px] h-9 rounded-lg border border-svs-cream bg-svs-cream/80 px-2.5 text-[13px] sm:text-[14px] font-semibold text-svs-ink cursor-pointer focus:outline-none focus:ring-1 focus:ring-svs-orange/30"
       >
         {storeLocations.map((s) => (
           <option key={s.id} value={s.id}>
@@ -53,7 +53,7 @@ function MenuStorePickerInner({ currentStoreId }: { currentStoreId: string }) {
           </option>
         ))}
       </select>
-      <span className="text-[11px] font-mono text-gray-400 tabular-nums shrink-0">
+      <span className="text-[11px] font-mono text-svs-ink/40 tabular-nums shrink-0">
         {current.backendStoreId}
       </span>
     </div>

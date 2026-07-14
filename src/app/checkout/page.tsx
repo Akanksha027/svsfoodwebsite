@@ -29,10 +29,10 @@ const PHONE_RE = /^[6-9][0-9]{9}$/;
 type PayMethod = "online" | "cod";
 
 const inputClass =
-  "mt-1.5 w-full h-11 rounded-xl border border-[#e8d5c8] bg-[#fffdfb] px-3.5 text-[15px] text-[#1a1a1a] outline-none transition-colors focus:border-[#f16a35] focus:ring-2 focus:ring-[#f16a35]/15";
+  "mt-1.5 w-full h-11 rounded-xl border border-svs-cream bg-svs-cream px-3.5 text-[15px] text-svs-ink outline-none transition-colors focus:border-svs-orange focus:ring-2 focus:ring-svs-orange/15";
 
 const textareaClass =
-  "mt-1.5 w-full min-h-[88px] rounded-xl border border-[#e8d5c8] bg-[#fffdfb] px-3.5 py-2.5 text-[15px] text-[#1a1a1a] outline-none transition-colors focus:border-[#f16a35] focus:ring-2 focus:ring-[#f16a35]/15 resize-y";
+  "mt-1.5 w-full min-h-[88px] rounded-xl border border-svs-cream bg-svs-cream px-3.5 py-2.5 text-[15px] text-svs-ink outline-none transition-colors focus:border-svs-orange focus:ring-2 focus:ring-svs-orange/15 resize-y";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -98,9 +98,9 @@ export default function CheckoutPage() {
     return (
       <>
         <Navbar />
-        <main className="min-h-[60svh] pt-[100px] px-4 text-center bg-[#fff8f3]">
-          <p className="text-gray-500 mb-4">Your cart is empty.</p>
-          <Link href="/menu" className="text-[#f16a35] font-bold">
+        <main className="min-h-[60svh] pt-[100px] px-4 text-center bg-svs-cream">
+          <p className="text-svs-ink/50 mb-4">Your cart is empty.</p>
+          <Link href="/menu" className="text-svs-orange font-bold">
             Browse menu
           </Link>
         </main>
@@ -212,38 +212,38 @@ export default function CheckoutPage() {
       }}
       className={`flex-1 rounded-2xl px-3 py-3.5 text-left cursor-pointer border transition-all ${
         orderType === type
-          ? "bg-[#fff1e8] border-[#f16a35] ring-1 ring-[#f16a35]/30"
-          : "bg-white border-[#ece8e4] hover:border-[#f0c9b0]"
+          ? "bg-svs-cream border-svs-orange ring-1 ring-svs-orange/30"
+          : "bg-svs-white border-svs-cream hover:border-svs-orange/30"
       }`}
     >
       <span
         className={`block text-sm font-extrabold ${
-          orderType === type ? "text-[#f16a35]" : "text-[#1a1a1a]"
+          orderType === type ? "text-svs-orange" : "text-svs-ink"
         }`}
       >
         {label}
       </span>
-      <span className="block text-[11px] text-gray-500 mt-0.5">{sub}</span>
+      <span className="block text-[11px] text-svs-ink/50 mt-0.5">{sub}</span>
     </button>
   );
 
   return (
     <>
       <Navbar />
-      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[100px] px-4 sm:px-6 lg:px-8 pb-16 bg-[#fff8f3]">
+      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[100px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
         <div className="max-w-[1040px] mx-auto py-8 sm:py-10">
           <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8">
             <div>
               <Link
                 href="/cart"
-                className="text-sm font-semibold text-[#f16a35] no-underline hover:underline"
+                className="text-sm font-semibold text-svs-orange no-underline hover:underline"
               >
                 ← Back to cart
               </Link>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1a1a1a] tracking-tight mt-2">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-svs-ink tracking-tight mt-2">
                 Checkout
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-svs-ink/50 mt-1">
                 {storeDisplayName(store)} · {itemCount} item
                 {itemCount === 1 ? "" : "s"}
               </p>
@@ -252,8 +252,8 @@ export default function CheckoutPage() {
 
           <div className="grid lg:grid-cols-[minmax(0,1fr)_300px] gap-5 lg:gap-8 items-start">
             <div className="space-y-4 sm:space-y-5">
-              <section className="rounded-2xl border border-[#efe4da] bg-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(58,30,18,0.04)]">
-                <h2 className="text-sm font-extrabold uppercase tracking-wider text-gray-400 mb-3">
+              <section className="rounded-2xl border border-svs-cream bg-svs-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(58,30,18,0.04)]">
+                <h2 className="text-sm font-extrabold uppercase tracking-wider text-svs-ink/40 mb-3">
                   How would you like it?
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -264,29 +264,29 @@ export default function CheckoutPage() {
               </section>
 
               {orderType === "delivery" ? (
-                <section className="rounded-2xl border-2 border-[#f16a35]/25 bg-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(58,30,18,0.04)] space-y-4">
+                <section className="rounded-2xl border-2 border-svs-orange/25 bg-svs-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(58,30,18,0.04)] space-y-4">
                   <div>
-                    <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#f16a35]">
+                    <h2 className="text-sm font-extrabold uppercase tracking-wider text-svs-orange">
                       Deliver to
                     </h2>
                     {addressLoading ? (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-svs-ink/50 mt-1">
                         Finding your area from GPS…
                       </p>
                     ) : addressHint ? (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-svs-ink/50 mt-1">
                         Area pre-filled from your location — add flat no. &amp;
                         street below
                       </p>
                     ) : (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-svs-ink/50 mt-1">
                         Enter where we should deliver your order
                       </p>
                     )}
                   </div>
 
                   <label className="block text-sm">
-                    <span className="font-semibold text-gray-700">
+                    <span className="font-semibold text-svs-ink/80">
                       Flat / House no. / Floor *
                     </span>
                     <input
@@ -299,7 +299,7 @@ export default function CheckoutPage() {
                   </label>
 
                   <label className="block text-sm">
-                    <span className="font-semibold text-gray-700">
+                    <span className="font-semibold text-svs-ink/80">
                       Street / Building / Society *
                     </span>
                     <input
@@ -312,7 +312,7 @@ export default function CheckoutPage() {
                   </label>
 
                   <label className="block text-sm">
-                    <span className="font-semibold text-gray-700">
+                    <span className="font-semibold text-svs-ink/80">
                       Area / Locality *
                     </span>
                     <textarea
@@ -327,7 +327,7 @@ export default function CheckoutPage() {
 
                   <div className="grid sm:grid-cols-2 gap-4">
                     <label className="block text-sm">
-                      <span className="font-semibold text-gray-700">
+                      <span className="font-semibold text-svs-ink/80">
                         Landmark
                       </span>
                       <input
@@ -338,7 +338,7 @@ export default function CheckoutPage() {
                       />
                     </label>
                     <label className="block text-sm">
-                      <span className="font-semibold text-gray-700">
+                      <span className="font-semibold text-svs-ink/80">
                         PIN code
                       </span>
                       <input
@@ -357,12 +357,12 @@ export default function CheckoutPage() {
                   </div>
                 </section>
               ) : (
-                <section className="rounded-2xl border border-dashed border-[#e8d5c8] bg-[#fffdfb] px-4 py-3 text-sm text-gray-600">
+                <section className="rounded-2xl border border-dashed border-svs-cream bg-svs-cream px-4 py-3 text-sm text-svs-ink/60">
                   Need delivery?{" "}
                   <button
                     type="button"
                     onClick={() => setOrderType("delivery")}
-                    className="font-bold text-[#f16a35] bg-transparent border-0 cursor-pointer p-0 underline"
+                    className="font-bold text-svs-orange bg-transparent border-0 cursor-pointer p-0 underline"
                   >
                     Switch to Delivery
                   </button>{" "}
@@ -371,8 +371,8 @@ export default function CheckoutPage() {
               )}
 
               {codAllowed ? (
-                <section className="rounded-2xl border border-[#efe4da] bg-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(58,30,18,0.04)]">
-                  <h2 className="text-sm font-extrabold uppercase tracking-wider text-gray-400 mb-3">
+                <section className="rounded-2xl border border-svs-cream bg-svs-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(58,30,18,0.04)]">
+                  <h2 className="text-sm font-extrabold uppercase tracking-wider text-svs-ink/40 mb-3">
                     Payment
                   </h2>
                   <div className="grid sm:grid-cols-2 gap-2">
@@ -381,8 +381,8 @@ export default function CheckoutPage() {
                       onClick={() => setPayMethod("online")}
                       className={`rounded-2xl px-4 py-3.5 text-sm font-bold cursor-pointer border text-left transition-all ${
                         effectivePay === "online"
-                          ? "bg-[#f16a35] text-white border-[#f16a35]"
-                          : "bg-white text-gray-800 border-[#ece8e4] hover:border-[#f0c9b0]"
+                          ? "bg-svs-orange text-white border-svs-orange"
+                          : "bg-svs-white text-svs-ink border-svs-cream hover:border-svs-orange/30"
                       }`}
                     >
                       Pay online
@@ -390,7 +390,7 @@ export default function CheckoutPage() {
                         className={`block text-xs font-medium mt-0.5 ${
                           effectivePay === "online"
                             ? "text-white/85"
-                            : "text-gray-500"
+                            : "text-svs-ink/50"
                         }`}
                       >
                         UPI QR
@@ -401,8 +401,8 @@ export default function CheckoutPage() {
                       onClick={() => setPayMethod("cod")}
                       className={`rounded-2xl px-4 py-3.5 text-sm font-bold cursor-pointer border text-left transition-all ${
                         effectivePay === "cod"
-                          ? "bg-[#f16a35] text-white border-[#f16a35]"
-                          : "bg-white text-gray-800 border-[#ece8e4] hover:border-[#f0c9b0]"
+                          ? "bg-svs-orange text-white border-svs-orange"
+                          : "bg-svs-white text-svs-ink border-svs-cream hover:border-svs-orange/30"
                       }`}
                     >
                       {orderType === "delivery"
@@ -412,7 +412,7 @@ export default function CheckoutPage() {
                         className={`block text-xs font-medium mt-0.5 ${
                           effectivePay === "cod"
                             ? "text-white/85"
-                            : "text-gray-500"
+                            : "text-svs-ink/50"
                         }`}
                       >
                         {orderType === "delivery"
@@ -424,14 +424,14 @@ export default function CheckoutPage() {
                 </section>
               ) : null}
 
-              <section className="rounded-2xl border border-[#efe4da] bg-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(58,30,18,0.04)] space-y-4">
-                <h2 className="text-sm font-extrabold uppercase tracking-wider text-gray-400">
+              <section className="rounded-2xl border border-svs-cream bg-svs-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(58,30,18,0.04)] space-y-4">
+                <h2 className="text-sm font-extrabold uppercase tracking-wider text-svs-ink/40">
                   Your details
                 </h2>
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <label className="block text-sm sm:col-span-2">
-                    <span className="font-semibold text-gray-700">Name</span>
+                    <span className="font-semibold text-svs-ink/80">Name</span>
                     <input
                       value={name}
                       onChange={(e) => setName(e.target.value)}
@@ -441,7 +441,7 @@ export default function CheckoutPage() {
                     />
                   </label>
                   <label className="block text-sm sm:col-span-2">
-                    <span className="font-semibold text-gray-700">
+                    <span className="font-semibold text-svs-ink/80">
                       Mobile number *
                     </span>
                     <input
@@ -458,7 +458,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <label className="block text-sm">
-                  <span className="font-semibold text-gray-700">
+                  <span className="font-semibold text-svs-ink/80">
                     Notes for kitchen
                   </span>
                   <input
@@ -471,7 +471,7 @@ export default function CheckoutPage() {
               </section>
 
               {error ? (
-                <p className="text-sm font-semibold text-red-600 rounded-xl bg-red-50 border border-red-100 px-4 py-3">
+                <p className="text-sm font-semibold text-svs-orange-dark rounded-xl bg-svs-cream border border-svs-orange/20 px-4 py-3">
                   {error}
                 </p>
               ) : null}
@@ -480,7 +480,7 @@ export default function CheckoutPage() {
                 type="button"
                 disabled={busy}
                 onClick={placeOrder}
-                className="lg:hidden w-full h-12 rounded-full bg-[#f16a35] hover:bg-[#d45a2b] disabled:bg-gray-300 text-white font-bold cursor-pointer shadow-[0_8px_24px_rgba(241,106,53,0.28)]"
+                className="lg:hidden w-full h-12 rounded-full bg-svs-orange hover:bg-svs-orange-dark disabled:bg-svs-ink/20 text-white font-bold cursor-pointer shadow-[0_8px_24px_rgba(241,106,52,0.28)]"
               >
                 {busy
                   ? "Placing order…"
@@ -491,13 +491,13 @@ export default function CheckoutPage() {
             </div>
 
             <aside className="lg:sticky lg:top-[100px] space-y-4">
-              <section className="rounded-2xl border border-[#efe4da] bg-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(58,30,18,0.04)] space-y-3">
-                <h2 className="font-extrabold text-[#1a1a1a]">Order summary</h2>
+              <section className="rounded-2xl border border-svs-cream bg-svs-white p-4 sm:p-5 shadow-[0_2px_12px_rgba(58,30,18,0.04)] space-y-3">
+                <h2 className="font-extrabold text-svs-ink">Order summary</h2>
                 <ul className="space-y-2 max-h-[220px] overflow-y-auto pr-1 text-sm">
                   {lines.map((line) => (
                     <li
                       key={line.key}
-                      className="flex justify-between gap-2 text-gray-700"
+                      className="flex justify-between gap-2 text-svs-ink/80"
                     >
                       <span className="truncate">
                         {line.quantity}× {line.name}
@@ -508,28 +508,28 @@ export default function CheckoutPage() {
                     </li>
                   ))}
                 </ul>
-                <div className="space-y-2 text-sm pt-2 border-t border-[#f3e0d4]">
+                <div className="space-y-2 text-sm pt-2 border-t border-svs-cream">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Item total</span>
+                    <span className="text-svs-ink/60">Item total</span>
                     <span className="font-semibold">{formatInr(subtotal)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">GST (5%)</span>
+                    <span className="text-svs-ink/60">GST (5%)</span>
                     <span className="font-semibold">
                       {formatInr(totals.gstAmount)}
                     </span>
                   </div>
                   {totals.deliveryCharges > 0 ? (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Delivery</span>
+                      <span className="text-svs-ink/60">Delivery</span>
                       <span className="font-semibold">
                         {formatInr(totals.deliveryCharges)}
                       </span>
                     </div>
                   ) : null}
-                  <div className="flex justify-between text-base font-extrabold pt-2 border-t border-[#f3e0d4]">
+                  <div className="flex justify-between text-base font-extrabold pt-2 border-t border-svs-cream">
                     <span>To pay</span>
-                    <span className="text-[#f16a35]">
+                    <span className="text-svs-orange">
                       {formatInr(totals.grandTotal)}
                     </span>
                   </div>
@@ -540,7 +540,7 @@ export default function CheckoutPage() {
                 type="button"
                 disabled={busy}
                 onClick={placeOrder}
-                className="hidden lg:flex w-full h-12 items-center justify-center rounded-full bg-[#f16a35] hover:bg-[#d45a2b] disabled:bg-gray-300 text-white font-bold cursor-pointer shadow-[0_8px_24px_rgba(241,106,53,0.28)]"
+                className="hidden lg:flex w-full h-12 items-center justify-center rounded-full bg-svs-orange hover:bg-svs-orange-dark disabled:bg-svs-ink/20 text-white font-bold cursor-pointer shadow-[0_8px_24px_rgba(241,106,52,0.28)]"
               >
                 {busy
                   ? "Placing order…"

@@ -147,14 +147,14 @@ export default function HeroSearchBox() {
   return (
     <div className="w-full max-w-[560px] mx-auto" id="hero-search">
       <form
-        className="flex items-stretch rounded-2xl sm:rounded-[1.25rem] overflow-hidden bg-white shadow-[0_8px_30px_rgba(241,106,53,0.18)] border-2 border-[#f16a35] focus-within:shadow-[0_10px_36px_rgba(241,106,53,0.28)] transition-shadow"
+        className="flex items-stretch rounded-2xl sm:rounded-[1.25rem] overflow-hidden bg-svs-white shadow-[0_8px_30px_rgba(241,106,52,0.18)] border-2 border-svs-orange focus-within:shadow-[0_10px_36px_rgba(241,106,52,0.28)] transition-shadow"
         onSubmit={(e) => {
           e.preventDefault();
           goToMenu();
         }}
         onClick={handleActivate}
       >
-        <div className="flex items-center pl-3 sm:pl-4 text-[#f16a35] shrink-0 pointer-events-none">
+        <div className="flex items-center pl-3 sm:pl-4 text-svs-orange shrink-0 pointer-events-none">
           <svg
             className="w-5 h-5 sm:w-6 sm:h-6"
             viewBox="0 0 24 24"
@@ -180,19 +180,19 @@ export default function HeroSearchBox() {
           placeholder="What do you want to eat?"
           autoComplete="off"
           enterKeyHint="search"
-          className="flex-1 min-w-0 h-12 sm:h-[56px] md:h-[60px] px-3 sm:px-4 text-[15px] sm:text-[17px] text-[#1a1a1a] placeholder:text-gray-400 bg-transparent border-none outline-none"
+          className="flex-1 min-w-0 h-12 sm:h-[56px] md:h-[60px] px-3 sm:px-4 text-[15px] sm:text-[17px] text-svs-ink placeholder:text-svs-ink/40 bg-transparent border-none outline-none"
           aria-label="Search menu"
         />
 
         <button
           type="submit"
-          className="shrink-0 px-4 sm:px-6 md:px-8 bg-[#f16a35] hover:bg-[#d45a2b] text-white text-[13px] sm:text-[15px] font-bold tracking-wide uppercase transition-colors"
+          className="shrink-0 px-4 sm:px-6 md:px-8 bg-svs-orange hover:bg-svs-orange-dark text-white text-[13px] sm:text-[15px] font-bold tracking-wide uppercase transition-colors"
         >
           Find Food
         </button>
       </form>
 
-      <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-[#6b7280] font-medium">
+      <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-svs-ink/55 font-medium">
         {locationHint}
       </p>
     </div>

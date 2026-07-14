@@ -45,16 +45,33 @@ function buildLandPoints(isLand: (lat: number, lon: number) => boolean) {
 
 type Projected = { x: number; y: number; z: number };
 
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+function easeInOutSine(t: number) {
+  return -(Math.cos(Math.PI * t) - 1) / 2;
+}
+
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t;
+}
+
 export default function DottedGlobe() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const yawRef = useRef(20);
-  const pitchRef = useRef(-12);
+  const pitchRef = useRef(-26);
   const velYawRef = useRef(0);
   const velPitchRef = useRef(0);
   const draggingRef = useRef(false);
   const lastXRef = useRef(0);
   const lastYRef = useRef(0);
   const lastTRef = useRef(0);
+  const cycleStartRef = useRef(0);
+  const cycleYawBaseRef = useRef(8);
+  const lastElapsedRef = useRef(0);
+  const pitchAfterDownRef = useRef(false);
+  const waveRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -67,10 +84,25 @@ export default function DottedGlobe() {
     let frameId: number;
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    const AUTO_SPIN = 0.18; // continuous yaw ° per frame
-    // Orbiting key light (radians / second) — drives the white specular that comes & goes
-    const LIGHT_SPEED = 0.55;
-    const startT = performance.now();
+    // Choreographed spin: left→right, then top→bottom with glow wave
+    const PITCH_START = -28;
+    const PITCH_END = 22;
+    const HORIZONTAL_TRAVEL = 68;
+    const HORIZONTAL_MS = 6000;
+    const VERTICAL_MS = 4800;
+    const CYCLE_MS = HORIZONTAL_MS + VERTICAL_MS;
+
+    cycleStartRef.current = performance.now();
+    cycleYawBaseRef.current = yawRef.current;
+    lastElapsedRef.current = 0;
+    pitchAfterDownRef.current = false;
+
+    // Lighter SVS palette for the globe body
+    const COL = {
+      lit: "#FFD4B8",
+      mid: "#F5B08A",
+      shadow: "#E8956A",
+    };
 
     const resize = () => {
       const parent = canvas.parentElement;
@@ -91,6 +123,7 @@ export default function DottedGlobe() {
       lastTRef.current = performance.now();
       velYawRef.current = 0;
       velPitchRef.current = 0;
+      waveRef.current = 0;
       canvas.setPointerCapture(e.pointerId);
       canvas.style.cursor = "grabbing";
     };
@@ -126,6 +159,10 @@ export default function DottedGlobe() {
       canvas.style.cursor = "grab";
       velYawRef.current = Math.max(-0.3, Math.min(0.3, velYawRef.current));
       velPitchRef.current = Math.max(-0.2, Math.min(0.2, velPitchRef.current));
+      cycleYawBaseRef.current = yawRef.current;
+      cycleStartRef.current = performance.now();
+      lastElapsedRef.current = 0;
+      pitchAfterDownRef.current = pitchRef.current > PITCH_END - 8;
     };
 
     canvas.addEventListener("pointerdown", onPointerDown);
@@ -135,77 +172,86 @@ export default function DottedGlobe() {
     canvas.style.cursor = "grab";
     canvas.style.touchAction = "none";
 
+    const updateChoreography = (now: number) => {
+      const elapsed = (now - cycleStartRef.current) % CYCLE_MS;
+
+      // Advance yaw base each loop
+      if (elapsed < lastElapsedRef.current - 200) {
+        cycleYawBaseRef.current += HORIZONTAL_TRAVEL;
+        if (!pitchAfterDownRef.current) {
+          pitchAfterDownRef.current = true;
+        }
+      }
+      lastElapsedRef.current = elapsed;
+
+      const yawBase = cycleYawBaseRef.current;
+      const yawEnd = yawBase + HORIZONTAL_TRAVEL;
+      let wave = 0;
+
+      if (elapsed < HORIZONTAL_MS) {
+        const t = easeInOutSine(elapsed / HORIZONTAL_MS);
+        yawRef.current = lerp(yawBase, yawEnd, t);
+        pitchRef.current = pitchAfterDownRef.current ? PITCH_END : PITCH_START;
+        wave = 0;
+      } else if (!pitchAfterDownRef.current) {
+        // First descent only — tilt down with glow wave, yaw held
+        const t = easeInOutSine((elapsed - HORIZONTAL_MS) / VERTICAL_MS);
+        yawRef.current = yawEnd;
+        pitchRef.current = lerp(PITCH_START, PITCH_END, t);
+        wave = t;
+      } else {
+        // Already down — keep moving right, never pitch back up
+        const t = easeInOutSine((elapsed - HORIZONTAL_MS) / VERTICAL_MS);
+        yawRef.current = lerp(yawEnd, yawEnd + HORIZONTAL_TRAVEL, t);
+        pitchRef.current = PITCH_END;
+        wave = 0;
+      }
+
+      waveRef.current = wave;
+    };
+
     const render = () => {
       const w = canvas.width;
       const h = canvas.height;
       const cx = w / 2;
       const cy = h * 0.52;
       const radius = w * 0.495;
-      const t = (performance.now() - startT) / 1000;
+      const now = performance.now();
 
-      // Orbiting light — specular enters from one side, crosses, fades behind the globe
-      const lightAz = t * LIGHT_SPEED;
-      const lightEl = 0.42 + Math.sin(t * 0.35) * 0.12;
-      let lx = Math.sin(lightAz) * Math.cos(lightEl);
-      let ly = Math.sin(lightEl);
-      let lz = Math.cos(lightAz) * Math.cos(lightEl);
-      const lLen = Math.hypot(lx, ly, lz) || 1;
-      lx /= lLen;
-      ly /= lLen;
-      lz /= lLen;
+      if (!draggingRef.current) {
+        updateChoreography(now);
+      } else {
+        waveRef.current = 0;
+        yawRef.current += velYawRef.current;
+        pitchRef.current = Math.max(
+          -50,
+          Math.min(40, pitchRef.current + velPitchRef.current)
+        );
+        velYawRef.current *= 0.93;
+        velPitchRef.current *= 0.9;
+      }
 
-      // Specular lobe center on the sphere (Blinn half-vector toward camera +Z)
-      const hx = lx;
-      const hy = ly;
-      const hz = lz + 1.15;
-      const hLen = Math.hypot(hx, hy, hz) || 1;
-      const snx = hx / hLen;
-      const sny = hy / hLen;
-      const snz = hz / hLen;
-      // How “present” the highlight is — strong when light faces camera, gone when behind
-      const shinePresence = Math.max(0, snz);
-      const shinePower = Math.pow(shinePresence, 1.35);
+      const wave = waveRef.current;
 
       ctx.clearRect(0, 0, w, h);
-
-      // Soft near-limb aura
-      const aura = ctx.createRadialGradient(cx, cy, radius * 0.9, cx, cy, radius * 1.1);
-      aura.addColorStop(0, "rgba(190, 228, 255, 0.18)");
-      aura.addColorStop(1, "rgba(190, 228, 255, 0)");
-      ctx.fillStyle = aura;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius * 1.1, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Soft glass-ocean body (no static white stuck at the center)
-      const shadeX = cx + lx * radius * 0.35;
-      const shadeY = cy - ly * radius * 0.45;
-      const baseGrad = ctx.createRadialGradient(
-        shadeX,
-        shadeY,
-        radius * 0.05,
-        cx,
-        cy + radius * 0.15,
-        radius * 1.05
-      );
-      baseGrad.addColorStop(0, "#f4fbff");
-      baseGrad.addColorStop(0.18, "#c8ebff");
-      baseGrad.addColorStop(0.4, "#6fc8f5");
-      baseGrad.addColorStop(0.62, "#2d96e6");
-      baseGrad.addColorStop(0.82, "#186fcf");
-      baseGrad.addColorStop(1, "#0a3f9a");
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.fillStyle = baseGrad;
-      ctx.fill();
-      ctx.clip();
 
       const yaw = (yawRef.current * Math.PI) / 180;
       const pitch = (pitchRef.current * Math.PI) / 180;
       const cosP = Math.cos(pitch);
       const sinP = Math.sin(pitch);
+
+      // Uniform orange body — subtle top-to-bottom depth only (no white hotspot)
+      const bodyGrad = ctx.createLinearGradient(cx, cy - radius, cx, cy + radius);
+      bodyGrad.addColorStop(0, COL.lit);
+      bodyGrad.addColorStop(0.5, COL.mid);
+      bodyGrad.addColorStop(1, COL.shadow);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.fillStyle = bodyGrad;
+      ctx.fill();
+      ctx.clip();
 
       const projected: Projected[] = landPoints.map(({ lat, lon }) => {
         const lonRad = (lon * Math.PI) / 180 + yaw;
@@ -225,75 +271,80 @@ export default function DottedGlobe() {
         const px = cx + p.x * radius;
         const py = cy - p.y * radius;
         const depth = Math.max(p.z, 0);
-        const NdotL = Math.max(0, p.x * lx + p.y * ly + p.z * lz);
-        const HdotN = Math.max(0, p.x * snx + p.y * sny + p.z * snz);
-        const spec = Math.pow(HdotN, 28) * shinePower;
-        const lit = 0.38 + depth * 0.35 + NdotL * 0.35 + spec * 0.9;
-        const size = (0.9 + depth * 1.45 + spec * 0.8) * (dpr * 0.95);
-        const alpha = Math.min(1, lit);
-        ctx.fillStyle = "rgba(255, 255, 255, " + alpha.toFixed(3) + ")";
+        const lit = 0.55 + depth * 0.38;
+        const size = (0.78 + depth * 0.95) * (dpr * 0.9);
+        const alpha = Math.min(0.95, lit);
+        ctx.fillStyle = "rgba(92, 36, 18, " + alpha.toFixed(3) + ")";
         ctx.fillRect(px - size / 2, py - size / 2, size, size);
       }
 
-      // Moving specular bloom — only drawn while the light is on the front/side
-      if (shinePower > 0.02) {
-        const sx = cx + snx * radius * 0.92;
-        const sy = cy - sny * radius * 0.92;
-        const bloomR = radius * (0.55 + shinePower * 0.35);
+      // White glow wave — only during top→bottom vertical spin
+      if (wave > 0.02) {
+        const waveEnvelope = Math.sin(wave * Math.PI);
+        const waveY = cy - radius * 0.92 + wave * radius * 1.84;
+        const waveR = radius * (0.38 + waveEnvelope * 0.18);
 
-        const bloom = ctx.createRadialGradient(sx, sy, 0, sx, sy, bloomR);
-        bloom.addColorStop(0, `rgba(255,255,255,${(0.95 * shinePower).toFixed(3)})`);
-        bloom.addColorStop(0.18, `rgba(255,255,255,${(0.72 * shinePower).toFixed(3)})`);
-        bloom.addColorStop(0.4, `rgba(255,255,255,${(0.28 * shinePower).toFixed(3)})`);
-        bloom.addColorStop(0.7, `rgba(230,248,255,${(0.08 * shinePower).toFixed(3)})`);
-        bloom.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.fillStyle = bloom;
+        const waveGrad = ctx.createRadialGradient(
+          cx,
+          waveY,
+          0,
+          cx,
+          waveY,
+          waveR
+        );
+        waveGrad.addColorStop(
+          0,
+          `rgba(255,255,255,${(0.55 * waveEnvelope).toFixed(3)})`
+        );
+        waveGrad.addColorStop(
+          0.28,
+          `rgba(255,255,255,${(0.28 * waveEnvelope).toFixed(3)})`
+        );
+        waveGrad.addColorStop(
+          0.58,
+          `rgba(255,244,238,${(0.1 * waveEnvelope).toFixed(3)})`
+        );
+        waveGrad.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = waveGrad;
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.fill();
 
-        // Tight hot core that travels with the bloom
-        const core = ctx.createRadialGradient(sx, sy, 0, sx, sy, radius * 0.28);
-        core.addColorStop(0, `rgba(255,255,255,${(1.0 * shinePower).toFixed(3)})`);
-        core.addColorStop(0.35, `rgba(255,255,255,${(0.55 * shinePower).toFixed(3)})`);
-        core.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.fillStyle = core;
+        // Soft trailing band behind the wave front
+        const trailY = waveY - radius * 0.12;
+        const trailGrad = ctx.createLinearGradient(
+          cx,
+          trailY - radius * 0.35,
+          cx,
+          waveY + radius * 0.08
+        );
+        trailGrad.addColorStop(0, "rgba(255,255,255,0)");
+        trailGrad.addColorStop(
+          0.45,
+          `rgba(255,255,255,${(0.12 * waveEnvelope).toFixed(3)})`
+        );
+        trailGrad.addColorStop(
+          0.72,
+          `rgba(255,255,255,${(0.22 * waveEnvelope).toFixed(3)})`
+        );
+        trailGrad.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = trailGrad;
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Soft fresnel rim (atmosphere)
-      const rimGrad = ctx.createRadialGradient(cx, cy, radius * 0.72, cx, cy, radius * 1.01);
-      rimGrad.addColorStop(0, "rgba(8, 50, 130, 0)");
-      rimGrad.addColorStop(0.75, "rgba(8, 50, 130, 0)");
-      rimGrad.addColorStop(1, "rgba(6, 30, 95, 0.42)");
+      // Thin warm atmosphere at the limb
+      const rimGrad = ctx.createRadialGradient(cx, cy, radius * 0.86, cx, cy, radius * 1.01);
+      rimGrad.addColorStop(0, "rgba(241, 106, 52, 0)");
+      rimGrad.addColorStop(0.9, "rgba(241, 106, 52, 0)");
+      rimGrad.addColorStop(1, "rgba(217, 90, 42, 0.1)");
       ctx.fillStyle = rimGrad;
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.restore();
-
-      const haloGrad = ctx.createRadialGradient(cx, cy, radius * 0.98, cx, cy, radius * 1.07);
-      haloGrad.addColorStop(0, "rgba(180, 225, 255, 0.22)");
-      haloGrad.addColorStop(1, "rgba(180, 225, 255, 0)");
-      ctx.fillStyle = haloGrad;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius * 1.07, 0, Math.PI * 2);
-      ctx.fill();
-
-      yawRef.current += AUTO_SPIN + (draggingRef.current ? 0 : velYawRef.current);
-
-      if (!draggingRef.current) {
-        pitchRef.current = Math.max(
-          -50,
-          Math.min(40, pitchRef.current + velPitchRef.current)
-        );
-        velYawRef.current *= 0.93;
-        velPitchRef.current *= 0.9;
-        pitchRef.current += (-12 - pitchRef.current) * 0.012;
-      }
 
       frameId = requestAnimationFrame(render);
     };
@@ -314,7 +365,7 @@ export default function DottedGlobe() {
     <div className="globe-wrap relative z-10">
       <canvas
         ref={canvasRef}
-        aria-label="Interactive revolving globe — white specular highlight sweeps as it spins"
+        aria-label="Interactive globe — spins left to right, then top to bottom with a glowing wave"
       />
     </div>
   );

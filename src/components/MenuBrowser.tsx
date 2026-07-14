@@ -20,13 +20,13 @@ function VegDot({ isVeg }: { isVeg: boolean }) {
   return (
     <span
       className={`inline-flex h-4 w-4 items-center justify-center rounded-[3px] border shrink-0 ${
-        isVeg ? "border-green-700" : "border-red-700"
+        isVeg ? "border-svs-green" : "border-svs-orange"
       }`}
       aria-label={isVeg ? "Veg" : "Non-veg"}
       title={isVeg ? "Veg" : "Non-veg"}
     >
       <span
-        className={`h-2 w-2 rounded-full ${isVeg ? "bg-green-700" : "bg-red-700"}`}
+        className={`h-2 w-2 rounded-full ${isVeg ? "bg-svs-green" : "bg-svs-orange"}`}
       />
     </span>
   );
@@ -143,7 +143,7 @@ export default function MenuBrowser({
   return (
     <div className="max-w-[1100px] mx-auto">
       {visibleCategories.length > 0 && (
-        <div className="sticky top-[72px] md:top-[88px] lg:top-[100px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 bg-[#fff8f3]/95 backdrop-blur-md">
+        <div className="sticky top-[72px] md:top-[88px] lg:top-[100px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 bg-svs-cream/95 backdrop-blur-md">
           <div className="flex gap-4 sm:gap-5 overflow-x-auto pb-1">
             {visibleCategories.map((cat) => {
               const active = cat.id === activeCategoryId;
@@ -169,7 +169,7 @@ export default function MenuBrowser({
                           sizes="88px"
                         />
                       ) : (
-                        <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-[#f16a35]/70">
+                        <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-svs-orange/70">
                           SVS
                         </div>
                       )}
@@ -177,7 +177,7 @@ export default function MenuBrowser({
                   </div>
                   <span
                     className={`pointer-events-none text-xs sm:text-sm font-bold leading-tight text-center line-clamp-2 ${
-                      active ? "text-[#f16a35]" : "text-gray-700"
+                      active ? "text-svs-orange" : "text-svs-ink/80"
                     }`}
                   >
                     {titleCaseName(cat.name)}
@@ -190,19 +190,19 @@ export default function MenuBrowser({
       )}
 
       {errorMessage && (
-        <div className="mt-8 rounded-2xl border border-red-100 bg-red-50 px-5 py-8 text-center text-red-700">
+        <div className="mt-8 rounded-2xl border border-svs-orange/20 bg-svs-cream px-5 py-8 text-center text-svs-orange-dark">
           {errorMessage}
         </div>
       )}
 
       {!errorMessage && !menu && (
-        <div className="mt-8 rounded-2xl border border-dashed border-gray-200 bg-white px-5 py-16 text-center text-gray-400">
+        <div className="mt-8 rounded-2xl border border-dashed border-svs-cream bg-svs-white px-5 py-16 text-center text-svs-ink/40">
           Loading menu...
         </div>
       )}
 
       {!errorMessage && menu && visibleCategories.length === 0 && (
-        <div className="mt-8 rounded-2xl border border-dashed border-gray-200 bg-white px-5 py-16 text-center text-gray-500">
+        <div className="mt-8 rounded-2xl border border-dashed border-svs-cream bg-svs-white px-5 py-16 text-center text-svs-ink/50">
           {query
             ? `No items match "${initialQuery.trim()}".`
             : "No published items for this outlet yet."}
@@ -252,10 +252,10 @@ function CategorySection({
             />
           </div>
         ) : null}
-        <h2 className="text-xl sm:text-2xl font-extrabold text-[#1a1a1a] tracking-tight">
+        <h2 className="text-xl sm:text-2xl font-extrabold text-svs-ink tracking-tight">
           {titleCaseName(category.name)}
         </h2>
-        <span className="text-sm font-medium text-gray-400">
+        <span className="text-sm font-medium text-svs-ink/40">
           {items.length} item{items.length === 1 ? "" : "s"}
         </span>
       </div>
@@ -347,7 +347,7 @@ function MenuItemCard({
 
   return (
     <article
-      className={`flex flex-col h-full rounded-xl border border-[#ece8e4] bg-white p-2.5 sm:p-3 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ${
+      className={`flex flex-col h-full rounded-xl border border-svs-cream bg-svs-white p-2.5 sm:p-3 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ${
         available ? "" : "opacity-60"
       }`}
     >
@@ -366,11 +366,11 @@ function MenuItemCard({
             draggable={false}
           />
         ) : (
-          <div className="text-xs font-semibold text-[#f16a35]/40">SVS</div>
+          <div className="text-xs font-semibold text-svs-orange/40">SVS</div>
         )}
         {!available ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/70 rounded-lg">
-            <span className="text-[11px] font-bold text-red-600 uppercase tracking-wide">
+          <div className="absolute inset-0 flex items-center justify-center bg-svs-white/70 rounded-lg">
+            <span className="text-[11px] font-bold text-svs-orange-dark uppercase tracking-wide">
               Sold out
             </span>
           </div>
@@ -381,39 +381,39 @@ function MenuItemCard({
       <div className="flex items-center gap-1.5 mb-1 min-h-[18px]">
         <VegDot isVeg={item.is_veg !== false} />
         {customisable ? (
-          <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+          <span className="text-[10px] font-semibold text-svs-ink/40 uppercase tracking-wide">
             Options
           </span>
         ) : null}
       </div>
 
       {/* Title */}
-      <h3 className="text-[13px] sm:text-sm font-semibold text-[#1a1a1a] leading-snug line-clamp-2 min-h-[2.6em] mb-0.5">
+      <h3 className="text-[13px] sm:text-sm font-semibold text-svs-ink leading-snug line-clamp-2 min-h-[2.6em] mb-0.5">
         {item.name}
       </h3>
 
       {/* Subtitle — weight / description line */}
-      <p className="text-[11px] sm:text-xs text-gray-400 line-clamp-1 mb-auto">
+      <p className="text-[11px] sm:text-xs text-svs-ink/40 line-clamp-1 mb-auto">
         {subtitle}
       </p>
 
       {/* Footer — price left, ADD / stepper right */}
       <div className="flex items-end justify-between gap-2 mt-3 pt-1">
         <div className="min-w-0">
-          <p className="text-[15px] sm:text-base font-bold text-[#1a1a1a] leading-none tabular-nums">
+          <p className="text-[15px] sm:text-base font-bold text-svs-ink leading-none tabular-nums">
             {formatInr(unitPrice)}
           </p>
           {customisable ? (
-            <p className="text-[10px] text-gray-400 mt-0.5">onwards</p>
+            <p className="text-[10px] text-svs-ink/40 mt-0.5">onwards</p>
           ) : null}
         </div>
 
         {quantity > 0 ? (
-          <div className="shrink-0 inline-flex items-center h-8 rounded-lg bg-[#f16a35] text-white overflow-hidden shadow-sm">
+          <div className="shrink-0 inline-flex items-center h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm">
             <button
               type="button"
               onClick={onDecrement}
-              className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-[#d45a2b]"
+              className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
               aria-label={`Remove one ${item.name}`}
             >
               −
@@ -425,7 +425,7 @@ function MenuItemCard({
               type="button"
               disabled={!available}
               onClick={onIncrement}
-              className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-[#d45a2b] disabled:opacity-40"
+              className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
               aria-label={`Add one ${item.name}`}
             >
               +
@@ -436,7 +436,7 @@ function MenuItemCard({
             type="button"
             disabled={!available}
             onClick={onAdd}
-            className="shrink-0 h-8 min-w-[64px] px-3 rounded-lg border-2 border-[#f16a35] bg-[#fff8f3] text-[#f16a35] text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-[#fff1e8] disabled:border-gray-300 disabled:text-gray-400 disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors"
+            className="shrink-0 h-8 min-w-[64px] px-3 rounded-lg border-2 border-svs-orange bg-svs-cream text-svs-orange text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
           >
             Add
           </button>

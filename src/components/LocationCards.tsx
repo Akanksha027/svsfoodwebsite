@@ -37,13 +37,13 @@ function StoreCard({
 }) {
   const statusColor =
     status === "Open now"
-      ? "text-[#12a107]"
+      ? "text-svs-green"
       : status === "Closing soon"
-        ? "text-[#a10707]"
-        : "text-gray-500";
+        ? "text-svs-orange-dark"
+        : "text-svs-ink/50";
 
   return (
-    <article className="store-card w-full min-w-0 rounded-[20px_20px_12px_14px] sm:rounded-[24px_24px_12px_14px] md:rounded-[27px_27px_14px_16px] bg-[#f3f3f3] p-2 sm:p-3 md:p-3.5 pb-0 shadow-[0_10px_28px_rgba(0,0,0,0.07)] sm:shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
+    <article className="store-card w-full min-w-0 rounded-[20px_20px_12px_14px] sm:rounded-[24px_24px_12px_14px] md:rounded-[27px_27px_14px_16px] bg-svs-cream p-2 sm:p-3 md:p-3.5 pb-0 shadow-[0_10px_28px_rgba(241,106,52,0.08)] sm:shadow-[0_12px_40px_rgba(241,106,52,0.1)]">
       <div className="relative w-full overflow-hidden rounded-[12px] sm:rounded-[15px] md:rounded-[18px] aspect-[1826/1028] cursor-pointer group">
         <Image
           src={store.image}
@@ -54,7 +54,7 @@ function StoreCard({
           priority
         />
         <span
-          className={`absolute top-2 left-2 sm:top-3 sm:left-3 md:top-3.5 md:left-3.5 z-10 bg-white text-[10px] sm:text-xs md:text-sm px-2 py-1 sm:px-2.5 sm:py-1.5 md:px-3 rounded-md leading-none font-medium ${statusColor}`}
+          className={`absolute top-2 left-2 sm:top-3 sm:left-3 md:top-3.5 md:left-3.5 z-10 bg-svs-white text-[10px] sm:text-xs md:text-sm px-2 py-1 sm:px-2.5 sm:py-1.5 md:px-3 rounded-md leading-none font-medium ${statusColor}`}
         >
           {status}
         </span>
@@ -63,11 +63,11 @@ function StoreCard({
       {/* Phone (1 col): side-by-side. Tablet (2 col): stacked. Desktop: side-by-side */}
       <div className="flex flex-row sm:flex-col lg:flex-row items-start justify-between gap-3 sm:gap-3 md:gap-4 lg:gap-6 px-1.5 sm:px-2 pt-3 sm:pt-4 pb-3 sm:pb-4 md:pb-5">
         <div className="flex flex-col items-start gap-1 sm:gap-1.5 md:gap-2 shrink-0 max-w-[42%] sm:max-w-none lg:max-w-[36%]">
-          <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-gray-900 leading-tight tracking-tight">
+          <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-svs-ink leading-tight tracking-tight">
             {store.city}
           </h2>
           {store.label ? (
-            <p className="text-[10px] sm:text-xs md:text-sm text-gray-500 leading-tight">
+            <p className="text-[10px] sm:text-xs md:text-sm text-svs-ink/50 leading-tight">
               {store.label}
             </p>
           ) : null}
@@ -75,7 +75,7 @@ function StoreCard({
             href={store.directionsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 sm:gap-1.5 min-h-[36px] text-xs sm:text-sm md:text-base text-gray-800 underline underline-offset-2 decoration-gray-400 hover:decoration-gray-800"
+            className="inline-flex items-center gap-1 sm:gap-1.5 min-h-[36px] text-xs sm:text-sm md:text-base text-svs-ink underline underline-offset-2 decoration-svs-orange/40 hover:decoration-svs-orange"
           >
             Get Direction
             <DirectionArrow />
@@ -83,12 +83,12 @@ function StoreCard({
         </div>
 
         <div className="flex flex-col justify-between gap-1.5 sm:gap-2 md:gap-2.5 min-w-0 flex-1 text-right sm:text-left">
-          <p className="text-[10px] sm:text-xs md:text-sm lg:text-[15px] text-gray-800 leading-snug break-words">
+          <p className="text-[10px] sm:text-xs md:text-sm lg:text-[15px] text-svs-ink leading-snug break-words">
             {store.address}
           </p>
           <a
             href={`tel:+91${store.phone}`}
-            className="text-[10px] sm:text-xs md:text-sm text-gray-800/50 hover:text-gray-800 transition-colors min-h-[32px] inline-flex items-center justify-end sm:justify-start"
+            className="text-[10px] sm:text-xs md:text-sm text-svs-ink/50 hover:text-svs-ink transition-colors min-h-[32px] inline-flex items-center justify-end sm:justify-start"
           >
             +91{store.phone}
           </a>

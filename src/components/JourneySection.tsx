@@ -23,7 +23,7 @@ function JourneyCard({
 
   return (
     <article className="relative flex flex-col shrink-0 w-[210px] sm:w-[260px] md:w-[300px] lg:w-[320px]">
-      <div className="relative mb-8 sm:mb-12 md:mb-14 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-full overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-[#e8ddd0]">
+      <div className="relative mb-8 sm:mb-12 md:mb-14 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-full overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-svs-cream">
         <Image
           src={stop.image}
           alt={stop.imageAlt ?? stop.year}
@@ -37,13 +37,13 @@ function JourneyCard({
         className="relative flex flex-col items-start"
         style={{ marginTop: textOffset }}
       >
-        <div className="relative z-10 w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-[#E84B10] mb-3 sm:mb-4" />
+        <div className="relative z-10 w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-svs-orange mb-3 sm:mb-4" />
 
-        <h3 className="mb-2 sm:mb-3 text-2xl sm:text-4xl md:text-5xl font-black text-[#4a1c0a] leading-none text-left">
+        <h3 className="mb-2 sm:mb-3 text-2xl sm:text-4xl md:text-5xl font-black text-svs-ink leading-none text-left">
           {stop.year}
         </h3>
 
-        <p className="text-[0.85rem] sm:text-[0.95rem] md:text-[1.05rem] leading-relaxed text-[#5c3a28] max-w-[280px] text-left">
+        <p className="text-[0.85rem] sm:text-[0.95rem] md:text-[1.05rem] leading-relaxed text-svs-ink/75 max-w-[280px] text-left">
           {stop.description}
         </p>
 
@@ -58,7 +58,7 @@ function JourneyCard({
               y1="0"
               x2="100%"
               y2={isEven ? 32 : -32}
-              stroke="#E84B10"
+              stroke="#F16A34"
               strokeWidth="3"
               strokeDasharray="10 14"
               strokeLinecap="round"
@@ -224,17 +224,17 @@ export default function JourneySection() {
       style={{
         height: sectionHeight > 0 ? `${sectionHeight}px` : "100vh",
       }}
-      className="relative w-full bg-[#f2ebe3]"
+      className="relative w-full bg-svs-cream"
       aria-label="Company journey"
     >
       <div
-        className={`${panelClass} h-[100svh] w-full overflow-hidden flex flex-col bg-[#f2ebe3]`}
+        className={`${panelClass} h-[100svh] w-full overflow-hidden flex flex-col bg-svs-cream`}
       >
         <div className="shrink-0 px-4 sm:px-6 md:px-10 lg:px-16 pt-[80px] sm:pt-[96px] md:pt-[108px] lg:pt-[116px]">
-          <h2 className="text-[1.5rem] sm:text-[2rem] md:text-[3rem] lg:text-[3.5rem] font-black text-[#1a0a00] leading-tight tracking-tight">
+          <h2 className="text-[1.5rem] sm:text-[2rem] md:text-[3rem] lg:text-[3.5rem] font-black text-svs-ink leading-tight tracking-tight">
             {journeySectionTitle}
           </h2>
-          <p className="mt-1.5 sm:mt-3 text-sm sm:text-lg md:text-xl text-[#7a5a3a] max-w-[500px]">
+          <p className="mt-1.5 sm:mt-3 text-sm sm:text-lg md:text-xl text-svs-ink/60 max-w-[500px]">
             From a single kitchen to a nationwide favourite. Our story in
             moments.
           </p>

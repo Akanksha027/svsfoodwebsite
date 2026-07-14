@@ -370,7 +370,7 @@ export default function CartBar() {
           <Link
             ref={pillRef}
             href="/cart"
-            className="pointer-events-auto mx-auto max-w-[560px] relative flex items-center h-[72px] rounded-2xl bg-[#f16a35] text-white shadow-[0_12px_32px_rgba(241,106,53,0.38)] no-underline overflow-visible"
+            className="pointer-events-auto mx-auto max-w-[560px] relative flex items-center h-[72px] rounded-2xl bg-svs-orange text-white shadow-[0_12px_32px_rgba(241,106,52,0.38)] no-underline overflow-visible"
           >
             <div
               className="absolute left-0 top-0 bottom-0 flex items-center overflow-visible z-[2]"
