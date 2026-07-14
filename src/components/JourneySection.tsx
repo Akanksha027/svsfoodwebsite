@@ -231,7 +231,7 @@ export default function JourneySection() {
         className={`${panelClass} h-[100svh] w-full overflow-hidden flex flex-col bg-svs-cream`}
       >
         <div className="shrink-0 px-4 sm:px-6 md:px-10 lg:px-16 pt-[80px] sm:pt-[96px] md:pt-[108px] lg:pt-[116px]">
-          <h2 className="text-[1.5rem] sm:text-[2rem] md:text-[3rem] lg:text-[3.5rem] font-black text-svs-ink leading-tight tracking-tight">
+          <h2 className="text-[1.5rem] sm:text-[1.85rem] md:text-[2.25rem] lg:text-[2.75rem] font-black text-svs-ink leading-tight tracking-tight">
             {journeySectionTitle}
           </h2>
           <p className="mt-1.5 sm:mt-3 text-sm sm:text-lg md:text-xl text-svs-ink/60 max-w-[500px]">
