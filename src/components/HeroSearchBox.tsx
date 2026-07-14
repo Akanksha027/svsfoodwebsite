@@ -2,56 +2,43 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-
-const LOCATION_KEY = "svs_user_location";
-
-type SavedLocation = {
-  lat: number;
-  lng: number;
-  accuracy?: number;
-  savedAt: string;
-};
+import { SELECTED_STORE_KEY } from "@/lib/config";
+import {
+  readSavedUserLocation,
+  rememberNearestStoreFromCoords,
+  rememberNearestStoreFromSavedLocation,
+  USER_LOCATION_KEY,
+  type SavedUserLocation,
+} from "@/lib/user-location";
+import { prefetchStoreMenu } from "@/lib/menu-api";
 
 type LocationState =
   | { status: "idle" }
   | { status: "prompting" }
-  | { status: "ready"; location: SavedLocation }
+  | { status: "ready"; location: SavedUserLocation }
   | { status: "denied" }
   | { status: "unavailable" };
 
-function readSavedLocation(): SavedLocation | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(LOCATION_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as SavedLocation;
-    if (typeof parsed?.lat === "number" && typeof parsed?.lng === "number") {
-      return parsed;
-    }
-  } catch {
-    /* ignore corrupt storage */
-  }
-  return null;
-}
-
-function saveLocation(coords: GeolocationCoordinates): SavedLocation {
-  const location: SavedLocation = {
+function saveLocation(coords: GeolocationCoordinates): SavedUserLocation {
+  const location: SavedUserLocation = {
     lat: coords.latitude,
     lng: coords.longitude,
     accuracy: coords.accuracy,
     savedAt: new Date().toISOString(),
   };
-  localStorage.setItem(LOCATION_KEY, JSON.stringify(location));
-  localStorage.removeItem(`${LOCATION_KEY}_denied`);
+  localStorage.setItem(USER_LOCATION_KEY, JSON.stringify(location));
+  localStorage.removeItem(`${USER_LOCATION_KEY}_denied`);
+  const nearest = rememberNearestStoreFromCoords(location.lat, location.lng);
+  prefetchStoreMenu(nearest.backendStoreId);
   return location;
 }
 
 function markDenied() {
-  localStorage.setItem(`${LOCATION_KEY}_denied`, "1");
+  localStorage.setItem(`${USER_LOCATION_KEY}_denied`, "1");
 }
 
 function wasDeniedBefore(): boolean {
-  return localStorage.getItem(`${LOCATION_KEY}_denied`) === "1";
+  return localStorage.getItem(`${USER_LOCATION_KEY}_denied`) === "1";
 }
 
 export default function HeroSearchBox() {
@@ -64,8 +51,10 @@ export default function HeroSearchBox() {
   });
 
   useEffect(() => {
-    const saved = readSavedLocation();
+    const saved = readSavedUserLocation();
     if (saved) {
+      const nearest = rememberNearestStoreFromSavedLocation();
+      if (nearest) prefetchStoreMenu(nearest.backendStoreId);
       setLocationState({ status: "ready", location: saved });
       return;
     }
@@ -83,8 +72,10 @@ export default function HeroSearchBox() {
   const requestLocationThenFocus = () => {
     if (askingRef.current) return;
 
-    const saved = readSavedLocation();
+    const saved = readSavedUserLocation();
     if (saved) {
+      const nearest = rememberNearestStoreFromSavedLocation();
+      if (nearest) prefetchStoreMenu(nearest.backendStoreId);
       setLocationState({ status: "ready", location: saved });
       focusInput();
       return;
@@ -123,13 +114,30 @@ export default function HeroSearchBox() {
   };
 
   const goToMenu = () => {
+    const params = new URLSearchParams();
     const q = query.trim();
-    router.push(q ? `/menu?q=${encodeURIComponent(q)}` : "/menu");
+    if (q) params.set("q", q);
+
+    // Prefer nearest store from GPS; fall back to any previously selected store.
+    const nearest = rememberNearestStoreFromSavedLocation();
+    if (nearest) {
+      params.set("store", nearest.id);
+    } else {
+      try {
+        const stored = localStorage.getItem(SELECTED_STORE_KEY);
+        if (stored) params.set("store", stored);
+      } catch {
+        /* ignore */
+      }
+    }
+
+    const qs = params.toString();
+    router.push(qs ? `/menu?${qs}` : "/menu");
   };
 
   const locationHint =
     locationState.status === "prompting"
-      ? "Getting your location…"
+      ? "Getting your location..."
       : locationState.status === "ready"
         ? "Delivering near you"
         : locationState.status === "denied"

@@ -1,32 +1,41 @@
 import Link from "next/link";
+import MenuStorePicker from "@/components/MenuStorePicker";
 
-export default function Footer() {
+type FooterProps = {
+  /** When set, shows outlet switcher on menu page only. */
+  menuStoreId?: string;
+};
+
+export default function Footer({ menuStoreId }: FooterProps = {}) {
   return (
     <footer className="w-full bg-white pt-6 sm:pt-8 md:pt-10 pb-4 sm:pb-6 flex flex-col items-center overflow-hidden font-sans">
-      <div className="w-[95%] max-w-[1500px] bg-white rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 py-4 sm:py-5 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4 sm:mb-6 shadow-sm border border-gray-50">
-        <div className="text-[13px] sm:text-[15px]">
-          <p className="font-bold text-gray-900 mb-1 tracking-tight leading-snug">
-            Feel the luxury of premium burgers with SVS Food, fast food done
-            right in India
-          </p>
-          <p className="text-gray-400 cursor-pointer hover:underline text-xs">
-            Read more...
-          </p>
+      <div className="w-[95%] max-w-[1500px] bg-white rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 py-4 sm:py-5 flex flex-col gap-0 mb-4 sm:mb-6 shadow-sm border border-gray-50">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+          <div className="text-[13px] sm:text-[15px]">
+            <p className="font-bold text-gray-900 mb-1 tracking-tight leading-snug">
+              Feel the luxury of premium burgers with SVS Food, fast food done
+              right in India
+            </p>
+            <p className="text-gray-400 cursor-pointer hover:underline text-xs">
+              Read more...
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-2 sm:gap-5 text-[13px] sm:text-[15px] font-semibold text-gray-800">
+            <Link href="/menu" className="hover:text-black">
+              View menu
+            </Link>
+            <Link href="#" className="hover:text-black">
+              Deals &amp; combos
+            </Link>
+            <Link href="#" className="hover:text-black">
+              Store locator
+            </Link>
+            <Link href="/contact" className="hover:text-black">
+              Contact us
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-x-4 gap-y-2 sm:gap-5 text-[13px] sm:text-[15px] font-semibold text-gray-800">
-          <Link href="/menu" className="hover:text-black">
-            View menu
-          </Link>
-          <Link href="#" className="hover:text-black">
-            Deals &amp; combos
-          </Link>
-          <Link href="#" className="hover:text-black">
-            Store locator
-          </Link>
-          <Link href="/contact" className="hover:text-black">
-            Contact us
-          </Link>
-        </div>
+        {menuStoreId ? <MenuStorePicker currentStoreId={menuStoreId} /> : null}
       </div>
 
       <div className="w-[95%] max-w-[1500px] bg-white rounded-2xl sm:rounded-[2rem] px-4 sm:px-8 md:px-10 py-8 sm:py-12 md:py-16 flex flex-col gap-10 lg:flex-row lg:justify-between lg:items-start relative shadow-sm border border-gray-100">

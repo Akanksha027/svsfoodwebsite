@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import CartNavButton from "@/components/CartNavButton";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -61,30 +62,7 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-0.5 sm:gap-2 lg:gap-3">
-          <button
-            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-none bg-transparent cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 relative"
-            id="btn-cart"
-            aria-label="Cart"
-          >
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none scale-[0.14] sm:scale-[0.16] lg:scale-[0.2]">
-              <div className="w-[120px] h-[150px] relative" style={{ perspective: "800px" }}>
-                <div className="w-full h-full relative revolving-bag">
-                  <div className="bag-top-handle bag-front-handle !border-gray-500"></div>
-                  <div className="bag-top-handle bag-back-handle !border-gray-500"></div>
-                  <div className="bag-face bag-front !bg-gray-300 !border-gray-400">
-                    <span className="text-[14px] font-black tracking-widest text-gray-900">SVS</span>
-                  </div>
-                  <div className="bag-face bag-back !bg-gray-300 !border-gray-400">
-                    <span className="text-[14px] font-black tracking-widest text-gray-900 transform rotate-y-180">
-                      SVS
-                    </span>
-                  </div>
-                  <div className="bag-face bag-left !bg-gray-400 !border-gray-400"></div>
-                  <div className="bag-face bag-right !bg-gray-400 !border-gray-400"></div>
-                </div>
-              </div>
-            </div>
-          </button>
+          <CartNavButton />
 
           <Link
             href="/locations"

@@ -1,33 +1,66 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import MenuLoader from "@/components/MenuLoader";
+import NearestStoreGate from "@/components/NearestStoreGate";
+import CartBar from "@/components/CartBar";
+import { resolveStoreLocation, storeDisplayName } from "@/data/locations";
+import { fetchStoreMenu } from "@/lib/menu-api";
 
 type MenuPageProps = {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; store?: string }>;
 };
 
+export async function generateMetadata({
+  searchParams,
+}: MenuPageProps): Promise<Metadata> {
+  const { store: storeParam } = await searchParams;
+  const store = resolveStoreLocation(storeParam);
+  return {
+    title: `Menu · ${storeDisplayName(store)} | SVS Food`,
+    description: `Browse the SVS Food menu at ${storeDisplayName(store)}. Burgers, wraps, pizza, sides and more.`,
+  };
+}
+
 export default async function MenuPage({ searchParams }: MenuPageProps) {
-  const { q } = await searchParams;
+  const { q, store: storeParam } = await searchParams;
+  const hasStoreParam = Boolean(storeParam?.trim());
+  const store = resolveStoreLocation(storeParam);
   const query = (q || "").trim();
+
+  let menu = null;
+  let errorMessage: string | null = null;
+
+  try {
+    menu = await fetchStoreMenu(store.backendStoreId);
+  } catch (err) {
+    errorMessage =
+      err instanceof Error
+        ? err.message
+        : "Could not load the menu. Please try again.";
+  }
 
   return (
     <>
       <Navbar />
-      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[100px] px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="max-w-[1100px] mx-auto py-12 sm:py-16">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-[#1a1a1a] tracking-tight mb-3">
-            Menu
-          </h1>
-          <p className="text-base sm:text-lg text-gray-500 mb-10">
-            {query
-              ? `Showing results for “${query}”`
-              : "Browse our full menu. Coming soon."}
-          </p>
-          <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-16 text-center text-gray-400">
-            Menu items will appear here.
-          </div>
+      <NearestStoreGate
+        hasStoreParam={hasStoreParam}
+        currentStoreId={store.id}
+        query={query}
+      />
+      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[100px] px-4 sm:px-6 lg:px-8 pb-24 bg-[#fff8f3]">
+        <div className="py-8 sm:py-10">
+          <MenuLoader
+            key={store.backendStoreId}
+            store={store}
+            initialQuery={query}
+            initialMenu={menu}
+            initialError={errorMessage}
+          />
         </div>
       </main>
-      <Footer />
+      <CartBar />
+      <Footer menuStoreId={store.id} />
     </>
   );
 }

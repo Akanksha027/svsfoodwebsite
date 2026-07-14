@@ -36,6 +36,19 @@ svg {
 }
 
 /* Keyframe animations - can't do these with pure Tailwind utility classes */
+@keyframes cart-bar-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.cart-bar-shell {
+  animation: cart-bar-enter 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 @keyframes heroFloat {
 
   0%,
