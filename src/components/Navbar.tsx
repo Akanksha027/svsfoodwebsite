@@ -2,265 +2,250 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+const iconBtn =
+  "flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-colors duration-200 hover:bg-gray-100 hover:text-gray-900 no-underline shrink-0";
+
+const iconSvg = "w-[18px] h-[18px] sm:w-5 sm:h-5 lg:w-6 lg:h-6";
+
+function NavIcons({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <>
+      <button
+        className={`${iconBtn} relative overflow-hidden`}
+        id="btn-cart"
+        aria-label="Cart"
+        type="button"
+      >
+        <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+          <span className="scale-[0.12] sm:scale-[0.14] lg:scale-[0.17]">
+            <span
+              className="block w-[120px] h-[150px] relative"
+              style={{ perspective: "800px" }}
+            >
+              <span className="block w-full h-full relative revolving-bag">
+                <span className="bag-top-handle bag-front-handle !border-gray-500" />
+                <span className="bag-top-handle bag-back-handle !border-gray-500" />
+                <span className="bag-face bag-front !bg-gray-300 !border-gray-400">
+                  <span className="text-[14px] font-black tracking-widest text-gray-900">
+                    SVS
+                  </span>
+                </span>
+                <span className="bag-face bag-back !bg-gray-300 !border-gray-400">
+                  <span className="text-[14px] font-black tracking-widest text-gray-900 transform rotate-y-180">
+                    SVS
+                  </span>
+                </span>
+                <span className="bag-face bag-left !bg-gray-400 !border-gray-400" />
+                <span className="bag-face bag-right !bg-gray-400 !border-gray-400" />
+              </span>
+            </span>
+          </span>
+        </span>
+      </button>
+
+      <Link
+        href="/locations"
+        className={iconBtn}
+        id="btn-location"
+        aria-label="Locations"
+        onClick={onNavigate}
+      >
+        <svg
+          className={iconSvg}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
+      </Link>
+
+      <button
+        className={iconBtn}
+        id="btn-account"
+        aria-label="Account"
+        type="button"
+      >
+        <svg
+          className={iconSvg}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </button>
+
+      <Link
+        href="/menu"
+        className={iconBtn}
+        id="btn-menu"
+        aria-label="Menu"
+        onClick={onNavigate}
+      >
+        <svg
+          className={iconSvg}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
+        >
+          <path d="M4 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
+          <path d="M17 3h1a2 2 0 0 1 2 2v2H17V3z" />
+          <path d="M17 9h3v10a2 2 0 0 1-2 2h-1" />
+          <path d="M8 7h4" />
+          <path d="M8 11h5" />
+          <path d="M8 15h3" />
+        </svg>
+      </Link>
+    </>
+  );
+}
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [iconsOpen, setIconsOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [menuOpen]);
+    if (!iconsOpen) return;
 
-  const closeMenu = () => setMenuOpen(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIconsOpen(false);
+    };
+    const onPointer = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      if (panelRef.current && !panelRef.current.contains(target)) {
+        setIconsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("touchstart", onPointer);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("touchstart", onPointer);
+    };
+  }, [iconsOpen]);
+
+  const closeIcons = () => setIconsOpen(false);
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-[1000] flex items-center justify-between px-4 sm:px-6 lg:px-8 h-[72px] md:h-[88px] lg:h-[100px] bg-white"
+      className="fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[100px] px-3 sm:px-4 md:px-6 lg:px-8 bg-white/95 backdrop-blur-sm border-b border-gray-100/80"
       id="main-navbar"
     >
+      {/* Logo: centered on small screens, left-aligned from md up */}
       <Link
         href="/"
-        className="relative flex items-center no-underline shrink-0"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:static md:translate-x-0 md:translate-y-0 md:left-auto md:top-auto flex items-center justify-center no-underline shrink-0 z-[1]"
         id="navbar-brand"
-        onClick={closeMenu}
         aria-label="SVS Food home"
+        onClick={closeIcons}
       >
         <Image
           src="/logo-with-no-bg.png"
           alt="SVS Food"
-          width={96}
-          height={43}
-          className="h-6 sm:h-7 lg:h-8 w-auto object-contain"
+          width={65}
+          height={65}
+          className="h-8 w-auto sm:h-3 md:h-9 lg:h-11 xl:h-12 object-contain"
           priority
         />
       </Link>
-
-      <div className="flex items-center gap-2 sm:gap-4 lg:gap-10" id="navbar-icons">
-        <div className="hidden md:flex items-center gap-6 lg:gap-10">
-          <Link
-            href="/"
-            className="text-sm lg:text-base font-medium text-gray-700 no-underline hover:text-gray-900 transition-colors duration-200"
-          >
-            Home
-          </Link>
-          <Link
-            href="/menu"
-            className="text-sm lg:text-base font-medium text-gray-700 no-underline hover:text-gray-900 transition-colors duration-200"
-          >
-            Menu
-          </Link>
-          <Link
-            href="/contact"
-            className="text-sm lg:text-base font-medium text-gray-700 no-underline hover:text-gray-900 transition-colors duration-200"
-          >
-            Contact
-          </Link>
+      {/* Right cluster — stays on one row inside the bar */}
+      <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2]">
+        {/* Desktop / tablet+: all icons */}
+        <div
+          className="hidden md:flex flex-nowrap items-center gap-1.5 lg:gap-2"
+          id="navbar-icons"
+        >
+          <NavIcons />
         </div>
 
-        <div className="flex items-center gap-0.5 sm:gap-2 lg:gap-3">
+        {/* Small screens: 3-dot toggles icon pill */}
+        <div
+          ref={panelRef}
+          className="relative flex items-center md:hidden"
+          id="navbar-icons-mobile"
+        >
           <button
-            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-none bg-transparent cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 relative"
-            id="btn-cart"
-            aria-label="Cart"
-          >
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none scale-[0.14] sm:scale-[0.16] lg:scale-[0.2]">
-              <div className="w-[120px] h-[150px] relative" style={{ perspective: "800px" }}>
-                <div className="w-full h-full relative revolving-bag">
-                  <div className="bag-top-handle bag-front-handle !border-gray-500"></div>
-                  <div className="bag-top-handle bag-back-handle !border-gray-500"></div>
-                  <div className="bag-face bag-front !bg-gray-300 !border-gray-400">
-                    <span className="text-[14px] font-black tracking-widest text-gray-900">SVS</span>
-                  </div>
-                  <div className="bag-face bag-back !bg-gray-300 !border-gray-400">
-                    <span className="text-[14px] font-black tracking-widest text-gray-900 transform rotate-y-180">
-                      SVS
-                    </span>
-                  </div>
-                  <div className="bag-face bag-left !bg-gray-400 !border-gray-400"></div>
-                  <div className="bag-face bag-right !bg-gray-400 !border-gray-400"></div>
-                </div>
-              </div>
-            </div>
-          </button>
-
-          <Link
-            href="/locations"
-            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900 no-underline"
-            id="btn-location"
-            aria-label="Locations"
+            type="button"
+            className={`${iconBtn} bg-gray-50 border border-gray-200/80`}
+            id="btn-nav-actions"
+            aria-label={iconsOpen ? "Close actions" : "Open actions"}
+            aria-expanded={iconsOpen}
+            aria-controls="nav-actions-panel"
+            onClick={() => setIconsOpen((open) => !open)}
           >
             <svg
-              className="w-5 h-5 lg:w-6 lg:h-6"
+              className={iconSvg}
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden
             >
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-          </Link>
-
-          <button
-            className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900"
-            id="btn-search"
-            aria-label="Search"
-          >
-            <svg
-              className="w-5 h-5 lg:w-6 lg:h-6"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </button>
-
-          <button
-            className="hidden md:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900"
-            id="btn-account"
-            aria-label="Account"
-          >
-            <svg
-              className="w-5 h-5 lg:w-6 lg:h-6"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
+              {iconsOpen ? (
+                <>
+                  <path d="M18 6L6 18" />
+                  <path d="M6 6l12 12" />
+                </>
+              ) : (
+                <>
+                  <circle
+                    cx="12"
+                    cy="5"
+                    r="1.5"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="1.5"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <circle
+                    cx="12"
+                    cy="19"
+                    r="1.5"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                </>
+              )}
             </svg>
           </button>
 
-          <button
-            className="hidden lg:flex items-center justify-center w-12 h-12 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900"
-            id="btn-bookmark"
-            aria-label="Saved"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-            </svg>
-          </button>
-        </div>
-
-        <div className="flex items-center gap-1 md:hidden">
-          <div className="w-px h-6 bg-gray-200 mx-0.5" />
-          <button
-            className="flex flex-col items-center justify-center gap-1.5 w-10 h-10 border-none bg-transparent cursor-pointer p-2"
-            id="btn-menu"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            <span
-              className={`block w-5 h-0.5 bg-gray-700 rounded-sm transition-all duration-300 ease-in-out ${
-                menuOpen ? "translate-y-[7px] rotate-45" : ""
+          <div
+            id="nav-actions-panel"
+            role="menu"
+            className={`absolute top-full mt-2 right-0 z-[1001] flex flex-nowrap items-center gap-0.5 p-1.5 rounded-full bg-white shadow-[0_10px_40px_rgba(0,0,0,0.14)] border border-gray-100 transition-all duration-200 origin-top-right ${iconsOpen
+              ? "opacity-100 scale-100 visible"
+              : "opacity-0 scale-95 invisible pointer-events-none"
               }`}
-            />
-            <span
-              className={`block w-5 h-0.5 bg-gray-700 rounded-sm transition-all duration-300 ease-in-out ${
-                menuOpen ? "opacity-0" : ""
-              }`}
-            />
-            <span
-              className={`block w-5 h-0.5 bg-gray-700 rounded-sm transition-all duration-300 ease-in-out ${
-                menuOpen ? "-translate-y-[7px] -rotate-45" : ""
-              }`}
-            />
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile menu panel */}
-      <div
-        className={`md:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-lg transition-all duration-300 ease-in-out origin-top ${
-          menuOpen
-            ? "opacity-100 scale-y-100 visible"
-            : "opacity-0 scale-y-95 invisible pointer-events-none"
-        }`}
-        id="mobile-menu"
-      >
-        <div className="flex flex-col px-6 py-4 gap-1">
-          <Link
-            href="/"
-            onClick={closeMenu}
-            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#f16a35]"
           >
-            Home
-          </Link>
-          <Link
-            href="/menu"
-            onClick={closeMenu}
-            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#f16a35]"
-          >
-            Menu
-          </Link>
-          <Link
-            href="/contact"
-            onClick={closeMenu}
-            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#f16a35]"
-          >
-            Contact
-          </Link>
-          <Link
-            href="/locations"
-            onClick={closeMenu}
-            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#f16a35] flex items-center gap-2"
-          >
-            <svg
-              className="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-            Locations
-          </Link>
-          <Link
-            href="/account"
-            onClick={closeMenu}
-            className="py-3 text-base font-medium text-gray-800 no-underline hover:text-[#f16a35] flex items-center gap-2"
-          >
-            <svg
-              className="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            Profile
-          </Link>
+            <NavIcons onNavigate={closeIcons} />
+          </div>
         </div>
       </div>
     </nav>
