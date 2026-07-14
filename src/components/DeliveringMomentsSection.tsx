@@ -96,7 +96,7 @@ export default function DeliveringMomentsSection() {
           </div>
 
           <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 pt-0 lg:pt-4">
-            <h2 className="text-[1.25rem] sm:text-[1.5rem] md:text-[1.75rem] lg:text-[2rem] font-bold text-svs-ink leading-tight tracking-tight">
+            <h2 className="text-[1.5rem] sm:text-[1.85rem] md:text-[2.25rem] lg:text-[2.25rem] font-bold text-svs-ink leading-tight tracking-tight">
               India&apos;s favourite smash-burger kitchen
             </h2>
 
