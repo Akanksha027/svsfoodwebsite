@@ -28,12 +28,6 @@ html {
   scroll-behavior: smooth;
 }
 
-img,
-video,
-svg {
-  max-width: 100%;
-  height: auto;
-}
 
 /* Keyframe animations - can't do these with pure Tailwind utility classes */
 @keyframes cart-bar-enter {
