@@ -8,7 +8,7 @@ export default function DeliveringSection() {
     >
       <div className="max-w-[1400px] mx-auto">
         <div className="mb-12 sm:mb-16 md:mb-20">
-          <h2 className="text-[1.5rem] sm:text-[2rem] md:text-[2.5rem] lg:text-[3rem] font-bold text-svs-ink mb-6 sm:mb-10 md:mb-12 tracking-tight leading-tight">
+          <h2 className="text-[1.25rem] sm:text-[1.5rem] md:text-[2rem] lg:text-[2.25rem] font-bold text-svs-ink mb-6 sm:mb-10 md:mb-12 tracking-tight leading-tight">
             Numbers that deliver
           </h2>
 
@@ -64,7 +64,7 @@ export default function DeliveringSection() {
         </div>
 
         <div className="mb-4 sm:mb-8 md:mb-12">
-          <h2 className="text-[1.5rem] sm:text-[2rem] md:text-[2.5rem] lg:text-[3rem] font-bold text-svs-ink mb-6 sm:mb-10 md:mb-12 tracking-tight leading-tight">
+          <h2 className="text-[1.25rem] sm:text-[1.5rem] md:text-[2rem] lg:text-[2.25rem] font-bold text-svs-ink mb-6 sm:mb-10 md:mb-12 tracking-tight leading-tight">
             About SVS Food
           </h2>
 

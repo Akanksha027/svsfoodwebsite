@@ -46,7 +46,7 @@ export default function DealsSection() {
       <div className="w-full max-w-[1500px] mx-auto flex flex-col gap-8 sm:gap-10 md:gap-12">
         {/* Header */}
         <div className="text-center flex flex-col items-center gap-3 sm:gap-4 px-1">
-          <h2 className="text-[1.75rem] sm:text-3xl md:text-[2.25rem] lg:text-[2.5rem] font-black text-svs-ink tracking-tight leading-tight">
+          <h2 className="text-[1.25rem] sm:text-[1.5rem] md:text-[1.75rem] lg:text-[2rem] font-black text-svs-ink tracking-tight leading-tight">
             Hot Burgers, Hotter Deals
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-svs-ink/80 max-w-2xl">
