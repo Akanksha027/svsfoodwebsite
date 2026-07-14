@@ -18,7 +18,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-[1000] flex items-center justify-between px-4 sm:px-6 lg:px-8 h-[72px] md:h-[88px] lg:h-[100px] bg-white border-b border-gray-100"
+      className="fixed top-0 left-0 right-0 z-[1000] flex items-center justify-between px-4 sm:px-6 lg:px-8 h-[72px] md:h-[88px] lg:h-[100px] bg-white"
       id="main-navbar"
     >
       <Link
@@ -86,10 +86,11 @@ export default function Navbar() {
             </div>
           </button>
 
-          <button
-            className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900"
+          <Link
+            href="/locations"
+            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900 no-underline"
             id="btn-location"
-            aria-label="Location"
+            aria-label="Locations"
           >
             <svg
               className="w-5 h-5 lg:w-6 lg:h-6"
@@ -103,7 +104,7 @@ export default function Navbar() {
               <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
-          </button>
+          </Link>
 
           <button
             className="hidden sm:flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full border-none bg-transparent text-gray-700 cursor-pointer transition-all duration-200 ease-in-out hover:bg-gray-100 hover:text-gray-900"
@@ -221,6 +222,25 @@ export default function Navbar() {
             className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#f16a35]"
           >
             Contact
+          </Link>
+          <Link
+            href="/locations"
+            onClick={closeMenu}
+            className="py-3 text-base font-medium text-gray-800 no-underline border-b border-gray-100 hover:text-[#f16a35] flex items-center gap-2"
+          >
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            Locations
           </Link>
           <Link
             href="/account"

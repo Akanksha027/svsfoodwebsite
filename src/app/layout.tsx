@@ -9,6 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://svsfood.com"),
   title: "SVS Food | Order Online | Dine-in, Takeaway & Delivery",
   description:
     "Order from SVS Food: wraps, sides, combos and more. Dine-in, takeaway, or home delivery, cooked fresh every time.",
