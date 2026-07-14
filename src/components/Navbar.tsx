@@ -162,9 +162,9 @@ export default function Navbar() {
         <Image
           src="/logo-with-no-bg.png"
           alt="SVS Food"
-          width={60}
-          height={60}
-          className="h-8 w-auto sm:h-3 md:h-9 lg:h-11 xl:h-12 object-contain"
+          width={65}
+          height={64}
+          className="h-12 w-auto sm:h-12 md:h-14 lg:h-20 xl:h-24 object-contain"
           priority
         />
       </Link>
