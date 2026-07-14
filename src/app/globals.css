@@ -218,6 +218,35 @@ html {
   transform: translateX(-50%) translateZ(-20px);
 }
 
+/* Navbar cart bag — orange on cream circle (not white-on-white) */
+.nav-revolving-bag .bag-front,
+.nav-revolving-bag .bag-back {
+  background: var(--color-svs-orange);
+  border: 1.5px solid var(--color-svs-orange-dark);
+  box-shadow: inset -4px 0 12px rgba(0, 0, 0, 0.12);
+}
+
+.nav-revolving-bag .bag-left,
+.nav-revolving-bag .bag-right {
+  background: var(--color-svs-orange-dark);
+  border: 1.5px solid color-mix(in srgb, var(--color-svs-ink) 18%, transparent);
+}
+
+.nav-revolving-bag .bag-top-handle {
+  border-color: var(--color-svs-orange-dark);
+  border-width: 3px;
+}
+
+#btn-cart:hover .nav-revolving-bag .bag-front,
+#btn-cart:hover .nav-revolving-bag .bag-back {
+  background: var(--color-svs-orange-dark);
+}
+
+#btn-cart:hover .nav-revolving-bag .bag-left,
+#btn-cart:hover .nav-revolving-bag .bag-right {
+  background: color-mix(in srgb, var(--color-svs-orange-dark) 85%, var(--color-svs-ink));
+}
+
 
 .hero {
   position: relative;

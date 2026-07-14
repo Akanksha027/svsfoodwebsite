@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useCart } from "@/context/CartContext";
 
 const iconBtn =
   "flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-none bg-transparent text-svs-ink cursor-pointer transition-colors duration-200 hover:bg-svs-cream hover:text-svs-orange no-underline shrink-0";
@@ -10,30 +11,33 @@ const iconBtn =
 const iconSvg = "w-[18px] h-[18px] sm:w-5 sm:h-5 lg:w-6 lg:h-6";
 
 function NavIcons({ onNavigate }: { onNavigate?: () => void }) {
+  const { itemCount } = useCart();
+
   return (
     <>
-      <button
-        className={`${iconBtn} relative overflow-hidden`}
+      <Link
+        href="/cart"
+        className="relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full border border-svs-orange/25 bg-svs-cream text-svs-ink cursor-pointer transition-colors duration-200 hover:bg-svs-orange hover:border-svs-orange no-underline shrink-0 overflow-hidden"
         id="btn-cart"
-        aria-label="Cart"
-        type="button"
+        aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
+        onClick={onNavigate}
       >
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <span className="scale-[0.12] sm:scale-[0.14] lg:scale-[0.17]">
+          <span className="scale-[0.17] sm:scale-[0.2] lg:scale-[0.24]">
             <span
-              className="block w-[120px] h-[150px] relative"
+              className="block w-[120px] h-[150px] relative nav-revolving-bag"
               style={{ perspective: "800px" }}
             >
               <span className="block w-full h-full relative revolving-bag">
                 <span className="bag-top-handle bag-front-handle" />
                 <span className="bag-top-handle bag-back-handle" />
                 <span className="bag-face bag-front">
-                  <span className="text-[14px] font-black tracking-widest text-svs-ink">
+                  <span className="text-[14px] font-black tracking-widest text-svs-white">
                     SVS
                   </span>
                 </span>
                 <span className="bag-face bag-back">
-                  <span className="text-[14px] font-black tracking-widest text-svs-ink transform rotate-y-180">
+                  <span className="text-[14px] font-black tracking-widest text-svs-white transform rotate-y-180">
                     SVS
                   </span>
                 </span>
@@ -43,7 +47,12 @@ function NavIcons({ onNavigate }: { onNavigate?: () => void }) {
             </span>
           </span>
         </span>
-      </button>
+        {itemCount > 0 ? (
+          <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-svs-ink text-white text-[10px] font-bold flex items-center justify-center z-10 ring-2 ring-svs-white">
+            {itemCount > 99 ? "99+" : itemCount}
+          </span>
+        ) : null}
+      </Link>
 
       <Link
         href="/locations"
