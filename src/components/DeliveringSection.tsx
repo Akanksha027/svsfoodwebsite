@@ -30,10 +30,10 @@ export default function DeliveringSection() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 md:gap-12 items-center mb-12 sm:mb-16 md:mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 md:gap-12 items-start mb-12 sm:mb-16 md:mb-24">
           <div className="relative w-full aspect-[4/5] max-h-[520px] md:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
             <Image
-              src="/images/berlin.webp"
+              src="/images/cust1.jpg"
               alt="Guest enjoying SVS Food"
               fill
               className="object-cover"
@@ -41,14 +41,25 @@ export default function DeliveringSection() {
             />
           </div>
 
-          <div className="relative w-full aspect-[4/3] max-h-[420px] md:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
-            <Image
-              src="/images/cheesyBurger.png"
-              alt="Hands holding a cheesy burger"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
+          <div className="flex flex-col gap-5 sm:gap-8 md:gap-12">
+            <div className="relative w-full aspect-[4/3] rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
+              <Image
+                src="/images/cust2.jpg"
+                alt="Hands holding a cheesy burger"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
+            <div className="relative w-full aspect-[4/3] rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
+              <Image
+                src="/images/cust3.png"
+                alt="Delicious SVS Hamburger"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
           </div>
         </div>
 
