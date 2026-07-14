@@ -154,7 +154,7 @@ export default function Navbar() {
       {/* Logo: centered on small screens, left-aligned from md up */}
       <Link
         href="/"
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:static md:translate-x-0 md:translate-y-0 md:left-auto md:top-auto flex items-center justify-center no-underline shrink-0 z-[1]"
+        className="flex items-center justify-center no-underline shrink-0 z-[1]"
         id="navbar-brand"
         aria-label="SVS Food home"
         onClick={closeIcons}
@@ -162,8 +162,8 @@ export default function Navbar() {
         <Image
           src="/logo-with-no-bg.png"
           alt="SVS Food"
-          width={65}
-          height={65}
+          width={60}
+          height={60}
           className="h-8 w-auto sm:h-3 md:h-9 lg:h-11 xl:h-12 object-contain"
           priority
         />
