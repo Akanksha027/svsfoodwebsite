@@ -145,7 +145,7 @@ export default function HeroSearchBox() {
           : "Tap to set your location";
 
   return (
-    <div className="w-full max-w-[560px] mx-auto" id="hero-search">
+    <div className="w-[75%] max-w-[280px] sm:w-full sm:max-w-[560px] mx-auto" id="hero-search">
       <form
         className="flex items-stretch rounded-2xl sm:rounded-[1.25rem] overflow-hidden bg-svs-white shadow-[0_8px_30px_rgba(241,106,52,0.18)] border-2 border-svs-orange focus-within:shadow-[0_10px_36px_rgba(241,106,52,0.28)] transition-shadow"
         onSubmit={(e) => {
@@ -156,7 +156,7 @@ export default function HeroSearchBox() {
       >
         <div className="flex items-center pl-3 sm:pl-4 text-svs-orange shrink-0 pointer-events-none">
           <svg
-            className="w-5 h-5 sm:w-6 sm:h-6"
+            className="w-[18px] h-[18px] sm:w-6 sm:h-6"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -180,13 +180,13 @@ export default function HeroSearchBox() {
           placeholder="What do you want to eat?"
           autoComplete="off"
           enterKeyHint="search"
-          className="flex-1 min-w-0 h-12 sm:h-[56px] md:h-[60px] px-3 sm:px-4 text-[15px] sm:text-[17px] text-svs-ink placeholder:text-svs-ink/40 bg-transparent border-none outline-none"
+          className="flex-1 min-w-0 h-[40px] sm:h-[56px] md:h-[60px] px-3 sm:px-4 text-[14px] sm:text-[17px] text-svs-ink placeholder:text-svs-ink/40 bg-transparent border-none outline-none"
           aria-label="Search menu"
         />
 
         <button
           type="submit"
-          className="shrink-0 px-4 sm:px-6 md:px-8 bg-svs-orange hover:bg-svs-orange-dark text-white text-[13px] sm:text-[15px] font-bold tracking-wide uppercase transition-colors"
+          className="shrink-0 px-3.5 sm:px-6 md:px-8 bg-svs-orange hover:bg-svs-orange-dark text-white text-[12px] sm:text-[15px] font-bold tracking-wide uppercase transition-colors"
         >
           Find Food
         </button>
