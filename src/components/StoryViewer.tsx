@@ -159,18 +159,18 @@ export default function StoryViewer({
         </button>
       ) : null}
 
-      {/* Story panel — bars above, wider image frame below */}
-      <div className="flex min-h-[100svh] w-full flex-col items-center justify-center px-3 sm:px-4 py-4 sm:py-6">
-        <div className="flex w-full max-w-[560px] flex-col">
-          {/* Progress + header — above image */}
-          <div className="shrink-0 px-1 pb-3 pt-[max(0.25rem,env(safe-area-inset-top))]">
-            <div className="mb-3 flex gap-1">
+      {/* Story panel — header first, image fills remaining viewport */}
+      <div className="flex h-[100svh] w-full justify-center px-3 sm:px-4">
+        <div className="flex h-full w-full max-w-[560px] flex-col">
+          {/* Progress + header — fixed strip at top */}
+          <div className="shrink-0 px-1 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
+            <div className="mb-3 flex gap-1.5">
               {slides.map((s, i) => {
                 const filled = i < index ? 1 : i === index ? progress : 0;
                 return (
                   <div
                     key={s.id}
-                    className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/30"
+                    className="h-1 sm:h-[3px] flex-1 overflow-hidden rounded-full bg-white/40"
                   >
                     <div
                       className="h-full rounded-full bg-white"
@@ -215,8 +215,8 @@ export default function StoryViewer({
             </div>
           </div>
 
-          {/* Image / video frame */}
-          <div className="relative h-[min(88vh,840px)] w-full overflow-hidden bg-black">
+          {/* Image / video frame — fills space below bars */}
+          <div className="relative min-h-0 flex-1 w-full overflow-hidden bg-black">
             <div className="absolute inset-0">
               {slide.type === "video" ? (
                 <video
