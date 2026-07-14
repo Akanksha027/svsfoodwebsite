@@ -1,0 +1,56 @@
+/* Bagoss Standard trial — files live in public/fonts/bagoss/Bagoss Standard/ */
+
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Regular.woff2") format("woff2"),
+    url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Medium.woff2") format("woff2"),
+    url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-SemiBold.woff2") format("woff2"),
+    url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Bold.woff2") format("woff2"),
+    url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Trial pack has no ExtraBold/Black — reuse Bold for heavy headings */
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Bold.woff2") format("woff2"),
+    url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Bold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Bold.woff2") format("woff2"),
+    url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Bold.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}

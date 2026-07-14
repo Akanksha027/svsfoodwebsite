@@ -6,6 +6,7 @@
   --color-accent: #e53e3e;
   --color-accent-hover: #c53030;
   --font-sans: var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
+  --font-bagoss: "Bagoss", var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
 }
 
 /* Reset - do not zero margin/padding here; it overrides Tailwind utilities */
@@ -26,6 +27,10 @@ body {
 html {
   overflow-x: clip;
   scroll-behavior: smooth;
+}
+
+.font-bagoss {
+  font-family: var(--font-bagoss);
 }
 
 
