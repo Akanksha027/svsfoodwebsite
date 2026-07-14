@@ -17,13 +17,13 @@ function NavIcons({ onNavigate }: { onNavigate?: () => void }) {
     <>
       <Link
         href="/cart"
-        className="relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full border border-svs-orange/25 bg-svs-cream text-svs-ink cursor-pointer transition-colors duration-200 hover:bg-svs-orange hover:border-svs-orange no-underline shrink-0 overflow-hidden"
+        className={`${iconBtn} relative overflow-hidden w-11 h-11 sm:w-12 sm:h-12 lg:w-14 lg:h-14`}
         id="btn-cart"
         aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
         onClick={onNavigate}
       >
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-          <span className="scale-[0.17] sm:scale-[0.2] lg:scale-[0.24]">
+          <span className="scale-[0.17] sm:scale-[0.19] lg:scale-[0.23]">
             <span
               className="block w-[120px] h-[150px] relative nav-revolving-bag"
               style={{ perspective: "800px" }}
@@ -32,12 +32,12 @@ function NavIcons({ onNavigate }: { onNavigate?: () => void }) {
                 <span className="bag-top-handle bag-front-handle" />
                 <span className="bag-top-handle bag-back-handle" />
                 <span className="bag-face bag-front">
-                  <span className="text-[14px] font-black tracking-widest text-svs-white">
+                  <span className="text-[14px] font-black tracking-widest text-svs-ink">
                     SVS
                   </span>
                 </span>
                 <span className="bag-face bag-back">
-                  <span className="text-[14px] font-black tracking-widest text-svs-white transform rotate-y-180">
+                  <span className="text-[14px] font-black tracking-widest text-svs-ink transform rotate-y-180">
                     SVS
                   </span>
                 </span>
@@ -48,7 +48,7 @@ function NavIcons({ onNavigate }: { onNavigate?: () => void }) {
           </span>
         </span>
         {itemCount > 0 ? (
-          <span className="absolute top-0.5 right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-svs-ink text-white text-[10px] font-bold flex items-center justify-center z-10 ring-2 ring-svs-white">
+          <span className="absolute top-0 right-0 min-w-[16px] h-4 px-1 rounded-full bg-svs-orange text-white text-[9px] sm:text-[10px] font-bold flex items-center justify-center z-10">
             {itemCount > 99 ? "99+" : itemCount}
           </span>
         ) : null}
