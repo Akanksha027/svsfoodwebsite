@@ -4,17 +4,56 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
+import StoryViewer from "@/components/StoryViewer";
 
 const iconBtn =
   "flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-none bg-transparent text-svs-ink cursor-pointer transition-colors duration-200 hover:bg-svs-cream hover:text-svs-orange no-underline shrink-0";
 
 const iconSvg = "w-[18px] h-[18px] sm:w-5 sm:h-5 lg:w-6 lg:h-6";
 
-function NavIcons({ onNavigate }: { onNavigate?: () => void }) {
+function StoryTriggerButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      className={`${iconBtn} p-0`}
+      id="btn-stories"
+      aria-label="Open SVS stories"
+      onClick={onClick}
+    >
+      <span className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full p-[2px] bg-gradient-to-tr from-svs-orange via-svs-yellow to-svs-orange shadow-sm">
+        <span className="w-full h-full rounded-full bg-svs-ink overflow-hidden flex items-center justify-center">
+          <Image
+            src="/images/story-trigger.png"
+            alt=""
+            width={28}
+            height={28}
+            className="w-[70%] h-[70%] object-contain"
+            aria-hidden
+          />
+        </span>
+      </span>
+    </button>
+  );
+}
+
+function NavIcons({
+  onNavigate,
+  onOpenStories,
+}: {
+  onNavigate?: () => void;
+  onOpenStories: () => void;
+}) {
   const { itemCount } = useCart();
 
   return (
     <>
+      <StoryTriggerButton
+        onClick={() => {
+          onOpenStories();
+          onNavigate?.();
+        }}
+      />
+
       <Link
         href="/cart"
         className={`${iconBtn} relative overflow-hidden w-11 h-11 sm:w-12 sm:h-12 lg:w-14 lg:h-14`}
@@ -128,6 +167,7 @@ function NavIcons({ onNavigate }: { onNavigate?: () => void }) {
 
 export default function Navbar() {
   const [iconsOpen, setIconsOpen] = useState(false);
+  const [storiesOpen, setStoriesOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -184,7 +224,7 @@ export default function Navbar() {
           className="hidden md:flex flex-nowrap items-center gap-1.5 lg:gap-2"
           id="navbar-icons"
         >
-          <NavIcons />
+          <NavIcons onOpenStories={() => setStoriesOpen(true)} />
         </div>
 
         {/* Small screens: 3-dot toggles icon pill */}
@@ -253,10 +293,15 @@ export default function Navbar() {
               : "opacity-0 scale-95 invisible pointer-events-none"
               }`}
           >
-            <NavIcons onNavigate={closeIcons} />
+            <NavIcons
+              onNavigate={closeIcons}
+              onOpenStories={() => setStoriesOpen(true)}
+            />
           </div>
         </div>
       </div>
+
+      <StoryViewer open={storiesOpen} onClose={() => setStoriesOpen(false)} />
     </nav>
   );
 }

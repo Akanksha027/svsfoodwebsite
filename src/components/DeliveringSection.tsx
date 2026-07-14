@@ -70,14 +70,10 @@ export default function DeliveringSection() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 md:gap-16 lg:gap-24 mb-8 sm:mb-12 max-w-[1200px]">
             <p className="text-[1rem] sm:text-[1.1rem] text-svs-ink/80 leading-relaxed">
-              SVS Food is a burger-first kitchen brand. Order dine-in,
-              takeaway, or home delivery from the same menu online, on our
-              self-ordering kiosks, or at the counter.
+              Established in 2018 in Satna, Madhya Pradesh, SVS Food is a 100% Pure Vegetarian Quick Service Restaurant (QSR) brand committed to delivering fresh, hygienic, and high-quality food with speed and innovation. From the very beginning, our focus has been on combining traditional purity with modern technology to create an exceptional customer experience.
             </p>
             <p className="text-[1rem] sm:text-[1.1rem] text-svs-ink/80 leading-relaxed">
-              We keep the experience simple: clear menus, honest prices, and
-              kitchens that cook to order so your burger lands hot, whether
-              you&apos;re eating in or ordering for home.
+              Our fully high-tech stores are equipped with self-order kiosks and WhatsApp order tracking, while our own mobile app and website enable seamless ordering. We currently serve over 800 orders daily and more than 1200 orders on weekends, reflecting the trust and growing love of our customers.
             </p>
           </div>
 
