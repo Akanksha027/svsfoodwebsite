@@ -5,7 +5,7 @@ export default function DeliveringMomentsSection() {
     <section className="relative w-full bg-svs-cream px-4 sm:px-6 md:px-12 lg:px-24 pb-12 sm:pb-16 md:pb-20 overflow-hidden">
       <div className="max-w-[1400px] mx-auto">
         <div className="pt-12 sm:pt-16 md:pt-24 border-t border-svs-cream">
-          <h2 className="text-[1.25rem] sm:text-[1.5rem] md:text-[2rem] lg:text-[2.25rem] font-bold text-svs-ink mb-10 sm:mb-12 md:mb-16 leading-tight tracking-tight">
+          <h2 className="text-[1.75rem] sm:text-[2rem] md:text-[2.5rem] lg:text-[2.5rem] font-bold text-svs-ink mb-10 sm:mb-12 md:mb-16 leading-tight tracking-tight">
             Delivering{" "}
             <span className="relative inline-block text-svs-orange">
               moments
