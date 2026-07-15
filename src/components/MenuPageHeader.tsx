@@ -34,14 +34,22 @@ export default function MenuPageHeader({ store }: MenuPageHeaderProps) {
   );
 
   return (
-    <header
-      className={`hidden lg:flex fixed top-[96px] z-[70] max-w-[1100px] items-center justify-between gap-4 border border-gray-200 rounded-2xl bg-white px-6 xl:px-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 ease-out -translate-x-1/2 ${
-        isOpen
-          ? "h-16 w-[calc(90vw-324px)] xl:w-[calc(80vw-304px)] left-[calc(50%-180px)] xl:left-[calc(50%-190px)]"
-          : "h-20 w-[90%] xl:w-[80%] left-1/2"
-      }`}
-      id="menu-page-header"
-    >
+    <>
+      {/* Background curtain to hide items scrolling up behind the pill header */}
+      <div
+        className={`hidden lg:block fixed left-0 right-0 top-[72px] z-[60] bg-svs-cream transition-all duration-300 ease-out ${
+          isOpen ? "h-[76px]" : "h-[92px]"
+        }`}
+        aria-hidden="true"
+      />
+      <header
+        className={`hidden lg:flex fixed top-[84px] z-[70] max-w-[1100px] items-center justify-between gap-4 border border-gray-200 rounded-2xl bg-white px-6 xl:px-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 ease-out -translate-x-1/2 ${
+          isOpen
+            ? "h-16 w-[calc(100vw-424px)] xl:w-[calc(100vw-444px)] left-[calc(50%-180px)] xl:left-[calc(50%-190px)]"
+            : "h-20 w-[calc(100vw-64px)] left-1/2"
+        }`}
+        id="menu-page-header"
+      >
       <Link
         href="/locations"
         className="min-w-0 flex flex-col justify-center no-underline group"
@@ -93,5 +101,6 @@ export default function MenuPageHeader({ store }: MenuPageHeaderProps) {
         </span>
       </button>
     </header>
+    </>
   );
 }

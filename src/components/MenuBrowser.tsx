@@ -146,7 +146,7 @@ export default function MenuBrowser({
     <div className="max-w-[1100px] mx-auto">
       {visibleCategories.length > 0 && (
         <div className={`sticky top-[72px] md:top-[88px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 bg-svs-cream/95 backdrop-blur-md transition-all duration-300 ${
-          isOpen ? "lg:top-[160px]" : "lg:top-[176px]"
+          isOpen ? "lg:top-[148px]" : "lg:top-[164px]"
         }`}>
           <div className="flex gap-4 sm:gap-5 overflow-x-auto pb-1">
             {visibleCategories.map((cat) => {
