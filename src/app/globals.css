@@ -234,8 +234,8 @@ html {
   display: block;
   transform: translateX(-50%);
   will-change: transform;
-  animation: festive-slide-x var(--festive-slide-duration, 0.7s)
-    cubic-bezier(0.22, 0.05, 0.25, 1) var(--festive-slide-delay, 2.5s) forwards;
+  animation: festive-slide-x var(--festive-slide-duration, 0.45s)
+    cubic-bezier(0.45, 0, 0.55, 1) var(--festive-slide-delay, 2.5s) forwards;
   filter: drop-shadow(0 2px 4px rgba(26, 26, 26, 0.14));
 }
 

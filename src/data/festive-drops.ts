@@ -90,8 +90,8 @@ export function getFestiveViewportProfile(width: number): FestiveViewportProfile
       centerSpread: [42, 58],
       rightSpread: [64, 90],
       fallStaggerSec: 0.09,
-      slideStaggerSec: 0.11,
-      slideSpeedVwPerSec: 22,
+      slideStaggerSec: 0.07,
+      slideSpeedVwPerSec: 38,
     };
   }
 
@@ -107,8 +107,8 @@ export function getFestiveViewportProfile(width: number): FestiveViewportProfile
       centerSpread: [40, 60],
       rightSpread: [64, 92],
       fallStaggerSec: 0.1,
-      slideStaggerSec: 0.12,
-      slideSpeedVwPerSec: 24,
+      slideStaggerSec: 0.075,
+      slideSpeedVwPerSec: 40,
     };
   }
 
@@ -133,8 +133,8 @@ export const FESTIVE_FALL_DURATION_SEC = 2.4;
 /** Stagger when each ball starts falling (spread impact on the rail). */
 export const FESTIVE_FALL_STAGGER_SEC = 0.11;
 /** Gap between each ball starting its rail move (follow train). */
-export const FESTIVE_SLIDE_STAGGER_SEC = 0.14;
-export const FESTIVE_SLIDE_SPEED_VW_PER_SEC = 26;
+export const FESTIVE_SLIDE_STAGGER_SEC = 0.08;
+export const FESTIVE_SLIDE_SPEED_VW_PER_SEC = 44;
 export const FESTIVE_PIPE_DURATION_SEC = 1.45;
 
 function pickFood(
@@ -227,7 +227,7 @@ function applySideQueue(
     particle.slideDelaySec =
       landedAt + queueIndex * profile.slideStaggerSec;
     particle.slideDurationSec = Math.max(
-      0.4,
+      0.22,
       travelVw / profile.slideSpeedVwPerSec,
     );
     particle.pipeDelaySec =
