@@ -145,8 +145,8 @@ export default function MenuBrowser({
   return (
     <div className="max-w-[1100px] mx-auto">
       {visibleCategories.length > 0 && (
-        <div className={`sticky top-[72px] md:top-[88px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 bg-svs-cream/95 backdrop-blur-md transition-all duration-300 ${
-          isOpen ? "lg:top-[148px]" : "lg:top-[164px]"
+        <div className={`sticky top-[72px] md:top-[88px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-2 bg-svs-cream/95 backdrop-blur-md transition-all duration-300 ${
+          isOpen ? "lg:top-[140px]" : "lg:top-[152px]"
         }`}>
           <div className="flex gap-4 sm:gap-5 overflow-x-auto pb-1">
             {visibleCategories.map((cat) => {
@@ -162,7 +162,7 @@ export default function MenuBrowser({
                   }`}
                 >
                   <div className={`relative shrink-0 transition-all duration-300 ${
-                    isOpen ? "w-[60px] h-[60px] sm:w-[68px] sm:h-[68px]" : "w-[76px] h-[76px] sm:w-[88px] sm:h-[88px]"
+                    isOpen ? "w-[56px] h-[56px] sm:w-[60px] sm:h-[60px]" : "w-[68px] h-[68px] sm:w-[76px] sm:h-[76px]"
                   }`}>
                     <div className="absolute inset-0 pointer-events-none transition-transform duration-200 ease-out will-change-transform origin-center scale-100 group-hover:scale-110">
                       {catImage ? (
