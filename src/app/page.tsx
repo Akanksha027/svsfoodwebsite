@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import HeroVideoSection from "@/components/HeroVideoSection";
 import DeliveringSection from "@/components/DeliveringSection";
 import DealsSection from "@/components/DealsSection";
@@ -11,7 +10,6 @@ import FestiveDrops from "@/components/FestiveDrops";
 export default function Home() {
   return (
     <BagossScope>
-      <Navbar variant="hero" />
       {/* <FestiveDrops /> */}
       <HeroVideoSection />
 

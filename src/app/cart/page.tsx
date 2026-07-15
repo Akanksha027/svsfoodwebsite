@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useCart, computeTotals } from "@/context/CartContext";
 import { formatInr } from "@/lib/menu-api";
@@ -15,7 +14,6 @@ export default function CartPage() {
 
   return (
     <>
-      <Navbar />
       <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
         <div className="max-w-[720px] mx-auto py-8 sm:py-10">
           <h1 className="text-3xl font-extrabold text-svs-ink tracking-tight mb-1">

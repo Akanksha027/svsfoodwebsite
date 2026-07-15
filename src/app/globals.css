@@ -364,6 +364,16 @@ html {
 }
 
 /* Navbar cart bag — matches ink icon style, visible on white bar */
+#main-navbar[data-navbar-variant="default"] {
+  background-color: var(--color-svs-white);
+  color: var(--color-svs-ink);
+}
+
+#main-navbar[data-navbar-variant="default"] #navbar-icons a,
+#main-navbar[data-navbar-variant="default"] #navbar-icons button {
+  color: color-mix(in srgb, var(--color-svs-ink) 70%, transparent);
+}
+
 .nav-revolving-bag .bag-front,
 .nav-revolving-bag .bag-back {
   background: var(--color-svs-cream);
@@ -384,7 +394,7 @@ html {
   box-shadow: none;
 }
 
-#main-navbar.text-white .nav-revolving-bag .bag-top-handle {
+#main-navbar[data-navbar-variant="hero"] .nav-revolving-bag .bag-top-handle {
   border-color: var(--color-svs-white);
 }
 
@@ -400,7 +410,7 @@ html {
   background: transparent;
 }
 
-#main-navbar.text-white #btn-cart:hover .nav-revolving-bag .bag-top-handle {
+#main-navbar[data-navbar-variant="hero"] #btn-cart:hover .nav-revolving-bag .bag-top-handle {
   border-color: var(--color-svs-white);
 }
 

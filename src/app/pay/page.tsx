@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
 import { resolveStoreLocation } from "@/data/locations";
 import { getPaymentStatus } from "@/lib/orders-api";
 import { formatInr } from "@/lib/menu-api";
@@ -92,7 +91,6 @@ function PayInner() {
 
   return (
     <>
-      <Navbar />
       <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
         <div className="max-w-[440px] mx-auto py-10 text-center">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-svs-ink mb-2">

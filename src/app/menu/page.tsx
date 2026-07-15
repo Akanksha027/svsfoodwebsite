@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import MenuLoader from "@/components/MenuLoader";
 import NearestStoreGate from "@/components/NearestStoreGate";
@@ -42,7 +41,6 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
 
   return (
     <>
-      <Navbar />
       <NearestStoreGate
         hasStoreParam={hasStoreParam}
         currentStoreId={store.id}

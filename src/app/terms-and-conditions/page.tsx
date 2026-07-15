@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PolicyPage from "@/components/PolicyPage";
 import { policyBySlug } from "@/data/policies";
@@ -16,7 +15,6 @@ export const metadata: Metadata = {
 export default function TermsAndConditionsPage() {
   return (
     <>
-      <Navbar />
       <PolicyPage policy={policy} />
       <Footer />
     </>

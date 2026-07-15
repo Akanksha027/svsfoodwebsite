@@ -29,4 +29,5 @@ function buildSvg(foodFill) {
 fs.writeFileSync(path.join(logoDir, "on-white.svg"), buildSvg("#1A1A1A"));
 fs.writeFileSync(path.join(logoDir, "on-cream.svg"), buildSvg("#1A1A1A"));
 fs.writeFileSync(path.join(logoDir, "on-ink.svg"), buildSvg("#FFFFFF"));
-console.log("Wrote on-white.svg, on-cream.svg, on-ink.svg");
+fs.writeFileSync(path.join(logoDir, "on-mark.svg"), buildSvg("#F16A34"));
+console.log("Wrote on-white.svg, on-cream.svg, on-ink.svg, on-mark.svg");

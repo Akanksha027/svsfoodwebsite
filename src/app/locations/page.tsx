@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import LocationsSection from "@/components/LocationsSection";
 import Footer from "@/components/Footer";
 import BagossScope from "@/components/BagossScope";
@@ -17,7 +16,6 @@ export const metadata: Metadata = {
 export default function LocationsPage() {
   return (
     <BagossScope>
-      <Navbar />
       <main className="overflow-x-clip">
         <LocationsSection />
       </main>

@@ -3,7 +3,6 @@
 import { useEffect, useState, Suspense } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { resolveStoreLocation } from "@/data/locations";
 import { fetchOrder } from "@/lib/orders-api";
@@ -73,7 +72,6 @@ function OrderInner() {
 
   return (
     <>
-      <Navbar />
       <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
         <div className="max-w-[560px] mx-auto py-10">
           {loading && !order ? (

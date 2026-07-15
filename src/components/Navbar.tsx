@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import StoryViewer from "@/components/StoryViewer";
 
 const iconBtnBase =
   "flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-none bg-transparent cursor-pointer transition-colors duration-200 no-underline shrink-0";
 
-const iconBtnDefault = `${iconBtnBase} text-svs-ink hover:bg-svs-cream hover:text-svs-orange`;
+const iconBtnDefault = `${iconBtnBase} text-svs-ink/70 hover:bg-svs-cream hover:text-svs-orange`;
 const iconBtnHero = `${iconBtnBase} text-white hover:bg-white/15 hover:text-white`;
 
 const iconSvg = "w-[18px] h-[18px] sm:w-5 sm:h-5 lg:w-6 lg:h-6";
@@ -228,42 +228,16 @@ export default function Navbar({
 }: {
   variant?: "default" | "hero";
 }) {
-  const [iconsOpen, setIconsOpen] = useState(false);
   const [storiesOpen, setStoriesOpen] = useState(false);
-  const panelRef = useRef<HTMLDivElement>(null);
   const hero = variant === "hero";
-
-  useEffect(() => {
-    if (!iconsOpen) return;
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIconsOpen(false);
-    };
-    const onPointer = (e: MouseEvent | TouchEvent) => {
-      const target = e.target as Node;
-      if (panelRef.current && !panelRef.current.contains(target)) {
-        setIconsOpen(false);
-      }
-    };
-
-    window.addEventListener("keydown", onKey);
-    document.addEventListener("mousedown", onPointer);
-    document.addEventListener("touchstart", onPointer);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.removeEventListener("mousedown", onPointer);
-      document.removeEventListener("touchstart", onPointer);
-    };
-  }, [iconsOpen]);
-
-  const closeIcons = () => setIconsOpen(false);
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 ${
+      data-navbar-variant={hero ? "hero" : "default"}
+      className={`fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow] duration-300 ${
         hero
           ? "bg-transparent border-b border-transparent text-white"
-          : "bg-svs-white/95 backdrop-blur-sm border-b border-svs-cream text-svs-ink"
+          : "bg-svs-white border-b border-svs-cream text-svs-ink shadow-[0_1px_8px_rgba(26,26,26,0.06)]"
       }`}
       id="main-navbar"
     >
@@ -272,92 +246,20 @@ export default function Navbar({
         className="flex items-center justify-center no-underline shrink-0 z-[1] py-1 pr-2"
         id="navbar-brand"
         aria-label="SVS Food home"
-        onClick={closeIcons}
       >
-        <BrandLogo variant={hero ? "on-ink" : "on-white"} height={48} priority />
+        <BrandLogo
+          variant={hero ? "on-ink" : "on-mark"}
+          height={48}
+          priority
+        />
       </Link>
       {/* Right cluster — stays on one row inside the bar */}
-      <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2]">
-        {/* Desktop / tablet+: all icons */}
+      <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2] gap-0.5 sm:gap-1.5 lg:gap-2">
         <div
-          className="hidden md:flex flex-nowrap items-center gap-1.5 lg:gap-2"
+          className="flex flex-nowrap items-center gap-0.5 sm:gap-1.5 lg:gap-2"
           id="navbar-icons"
         >
           <NavIcons hero={hero} onOpenStories={() => setStoriesOpen(true)} />
-        </div>
-
-        {/* Small screens: 3-dot toggles icon pill */}
-        <div
-          ref={panelRef}
-          className="relative flex items-center md:hidden"
-          id="navbar-icons-mobile"
-        >
-          <button
-            type="button"
-            className={`${hero ? iconBtnHero : `${iconBtnDefault} bg-svs-cream border border-svs-cream`}`}
-            id="btn-nav-actions"
-            aria-label={iconsOpen ? "Close actions" : "Open actions"}
-            aria-expanded={iconsOpen}
-            aria-controls="nav-actions-panel"
-            onClick={() => setIconsOpen((open) => !open)}
-          >
-            <svg
-              className={iconSvg}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              {iconsOpen ? (
-                <>
-                  <path d="M18 6L6 18" />
-                  <path d="M6 6l12 12" />
-                </>
-              ) : (
-                <>
-                  <circle
-                    cx="12"
-                    cy="5"
-                    r="1.5"
-                    fill="currentColor"
-                    stroke="none"
-                  />
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="1.5"
-                    fill="currentColor"
-                    stroke="none"
-                  />
-                  <circle
-                    cx="12"
-                    cy="19"
-                    r="1.5"
-                    fill="currentColor"
-                    stroke="none"
-                  />
-                </>
-              )}
-            </svg>
-          </button>
-
-          <div
-            id="nav-actions-panel"
-            role="menu"
-            className={`absolute top-full mt-2 right-0 z-[1001] flex flex-nowrap items-center gap-0.5 p-1.5 rounded-full bg-svs-white shadow-[0_10px_40px_rgba(241,106,52,0.14)] border border-svs-cream transition-all duration-200 origin-top-right ${iconsOpen
-              ? "opacity-100 scale-100 visible"
-              : "opacity-0 scale-95 invisible pointer-events-none"
-              }`}
-          >
-            <NavIcons
-              hero={false}
-              onNavigate={closeIcons}
-              onOpenStories={() => setStoriesOpen(true)}
-            />
-          </div>
         </div>
       </div>
 

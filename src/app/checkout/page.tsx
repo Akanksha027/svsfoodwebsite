@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
   useCart,
@@ -97,7 +96,6 @@ export default function CheckoutPage() {
   if (itemCount === 0) {
     return (
       <>
-        <Navbar />
         <main className="min-h-[60svh] pt-[100px] px-4 text-center bg-svs-cream">
           <p className="text-svs-ink/50 mb-4">Your cart is empty.</p>
           <Link href="/menu" className="text-svs-orange font-bold">
@@ -229,7 +227,6 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <Navbar />
       <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
         <div className="max-w-[1040px] mx-auto py-8 sm:py-10">
           <div className="flex items-center justify-between gap-4 mb-6 sm:mb-8">

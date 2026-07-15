@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import Image from "next/image";
 import {
   BRAND_LOGO_ASPECT,
@@ -22,7 +21,7 @@ export default function BrandLogo({
   className = "",
 }: BrandLogoProps) {
   const h = Math.max(BRAND_LOGO_MIN_HEIGHT_PX, Math.round(height));
-  const w = Math.round(h * BRAND_LOGO_ASPECT);
+  const w = Math.round(h * BRAND_LOGO_ASPECT[variant]);
   const src = BRAND_LOGO_SRC[variant];
   const isSvg = src.endsWith(".svg");
 
@@ -34,8 +33,8 @@ export default function BrandLogo({
       height={h}
       priority={priority}
       draggable={false}
-      className={`block h-[var(--logo-h)] w-auto max-w-none object-contain object-left ${className}`.trim()}
-      style={{ "--logo-h": `${h}px` } as CSSProperties}
+      className={`block w-auto max-w-none object-contain object-left ${className}`.trim()}
+      style={{ height: `${h}px`, width: "auto" }}
       unoptimized={isSvg}
     />
   );
