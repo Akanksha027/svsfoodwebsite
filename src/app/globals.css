@@ -378,8 +378,14 @@ html {
 }
 
 .nav-revolving-bag .bag-top-handle {
-  border-color: color-mix(in srgb, var(--color-svs-ink) 35%, transparent);
-  border-width: 3px;
+  background: transparent;
+  border-color: color-mix(in srgb, var(--color-svs-ink) 28%, transparent);
+  border-width: 1.5px;
+  box-shadow: none;
+}
+
+#main-navbar.text-white .nav-revolving-bag .bag-top-handle {
+  border-color: var(--color-svs-white);
 }
 
 #btn-cart:hover .nav-revolving-bag .bag-front,
@@ -390,7 +396,12 @@ html {
 }
 
 #btn-cart:hover .nav-revolving-bag .bag-top-handle {
-  border-color: var(--color-svs-orange);
+  border-color: color-mix(in srgb, var(--color-svs-orange) 55%, transparent);
+  background: transparent;
+}
+
+#main-navbar.text-white #btn-cart:hover .nav-revolving-bag .bag-top-handle {
+  border-color: var(--color-svs-white);
 }
 
 

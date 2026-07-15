@@ -1,17 +1,32 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import StoryViewer from "@/components/StoryViewer";
 
-const iconBtn =
-  "flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-none bg-transparent text-svs-ink cursor-pointer transition-colors duration-200 hover:bg-svs-cream hover:text-svs-orange no-underline shrink-0";
+const iconBtnBase =
+  "flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-none bg-transparent cursor-pointer transition-colors duration-200 no-underline shrink-0";
+
+const iconBtnDefault = `${iconBtnBase} text-svs-ink hover:bg-svs-cream hover:text-svs-orange`;
+const iconBtnHero = `${iconBtnBase} text-white hover:bg-white/15 hover:text-white`;
 
 const iconSvg = "w-[18px] h-[18px] sm:w-5 sm:h-5 lg:w-6 lg:h-6";
 
-function StoryTriggerButton({ onClick }: { onClick: () => void }) {
+function StoryTriggerButton({
+  onClick,
+  hero,
+}: {
+  onClick: () => void;
+  hero?: boolean;
+}) {
+  const iconBtn = hero ? iconBtnHero : iconBtnDefault;
+  const ringClass = hero ? "text-white" : "text-svs-orange";
+  const innerClass = hero
+    ? "bg-transparent text-white"
+    : "bg-svs-cream text-svs-ink";
+
   return (
     <button
       type="button"
@@ -20,9 +35,9 @@ function StoryTriggerButton({ onClick }: { onClick: () => void }) {
       aria-label="Open SVS stories"
       onClick={onClick}
     >
-      <span className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10">
+      <span className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11">
         <span
-          className="absolute inset-0 rounded-full story-ring-spin"
+          className={`absolute inset-0 rounded-full story-ring-spin ${ringClass}`}
           style={{ transformStyle: "flat" }}
           aria-hidden
         >
@@ -37,7 +52,9 @@ function StoryTriggerButton({ onClick }: { onClick: () => void }) {
             <circle cx="20" cy="20" r="17" strokeDasharray="22 14" />
           </svg>
         </span>
-        <span className="relative z-[1] flex items-center justify-center w-[calc(100%-6px)] h-[calc(100%-6px)] rounded-full bg-svs-white">
+        <span
+          className={`relative z-[1] flex items-center justify-center w-[calc(100%-7px)] h-[calc(100%-7px)] rounded-full ${innerClass}`}
+        >
           <svg
             className={iconSvg}
             viewBox="0 0 24 24"
@@ -48,8 +65,19 @@ function StoryTriggerButton({ onClick }: { onClick: () => void }) {
             strokeLinejoin="round"
             aria-hidden
           >
-            <rect x="7" y="5" width="11" height="15" rx="2.5" opacity="0.45" />
-            <rect x="5" y="7" width="11" height="15" rx="2.5" fill="currentColor" fillOpacity="0.08" />
+            {!hero ? (
+              <rect
+                x="5"
+                y="7"
+                width="11"
+                height="15"
+                rx="2.5"
+                stroke="currentColor"
+                strokeOpacity="0.28"
+                fill="none"
+              />
+            ) : null}
+            <rect x="7" y="5" width="11" height="15" rx="2.5" fill="none" />
             <path
               d="M10.25 12.75 13.75 14.5 10.25 16.25z"
               fill="currentColor"
@@ -65,11 +93,14 @@ function StoryTriggerButton({ onClick }: { onClick: () => void }) {
 function NavIcons({
   onNavigate,
   onOpenStories,
+  hero = false,
 }: {
   onNavigate?: () => void;
   onOpenStories: () => void;
+  hero?: boolean;
 }) {
   const { itemCount } = useCart();
+  const iconBtn = hero ? iconBtnHero : iconBtnDefault;
 
   return (
     <>
@@ -113,6 +144,7 @@ function NavIcons({
       </Link>
 
       <StoryTriggerButton
+        hero={hero}
         onClick={() => {
           onOpenStories();
           onNavigate?.();
@@ -191,10 +223,15 @@ function NavIcons({
   );
 }
 
-export default function Navbar() {
+export default function Navbar({
+  variant = "default",
+}: {
+  variant?: "default" | "hero";
+}) {
   const [iconsOpen, setIconsOpen] = useState(false);
   const [storiesOpen, setStoriesOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const hero = variant === "hero";
 
   useEffect(() => {
     if (!iconsOpen) return;
@@ -223,25 +260,21 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 bg-svs-white/95 backdrop-blur-sm border-b border-svs-cream"
+      className={`fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 ${
+        hero
+          ? "bg-transparent border-b border-transparent text-white"
+          : "bg-svs-white/95 backdrop-blur-sm border-b border-svs-cream text-svs-ink"
+      }`}
       id="main-navbar"
     >
-      {/* Logo: centered on small screens, left-aligned from md up */}
       <Link
         href="/"
-        className="flex items-center justify-center no-underline shrink-0 z-[1]"
+        className="flex items-center justify-center no-underline shrink-0 z-[1] py-1 pr-2"
         id="navbar-brand"
         aria-label="SVS Food home"
         onClick={closeIcons}
       >
-        <Image
-          src="/logo-with-no-bg.png"
-          alt="SVS Food"
-          width={65}
-          height={64}
-          className="h-12 w-auto sm:h-12 md:h-14 lg:h-14 xl:h-16 object-contain"
-          priority
-        />
+        <BrandLogo variant={hero ? "on-ink" : "on-white"} height={48} priority />
       </Link>
       {/* Right cluster — stays on one row inside the bar */}
       <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2]">
@@ -250,7 +283,7 @@ export default function Navbar() {
           className="hidden md:flex flex-nowrap items-center gap-1.5 lg:gap-2"
           id="navbar-icons"
         >
-          <NavIcons onOpenStories={() => setStoriesOpen(true)} />
+          <NavIcons hero={hero} onOpenStories={() => setStoriesOpen(true)} />
         </div>
 
         {/* Small screens: 3-dot toggles icon pill */}
@@ -261,7 +294,7 @@ export default function Navbar() {
         >
           <button
             type="button"
-            className={`${iconBtn} bg-svs-cream border border-svs-cream`}
+            className={`${hero ? iconBtnHero : `${iconBtnDefault} bg-svs-cream border border-svs-cream`}`}
             id="btn-nav-actions"
             aria-label={iconsOpen ? "Close actions" : "Open actions"}
             aria-expanded={iconsOpen}
@@ -320,6 +353,7 @@ export default function Navbar() {
               }`}
           >
             <NavIcons
+              hero={false}
               onNavigate={closeIcons}
               onOpenStories={() => setStoriesOpen(true)}
             />
