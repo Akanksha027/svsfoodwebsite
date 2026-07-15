@@ -5,7 +5,7 @@ import BagossScope from "@/components/BagossScope";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Our Locations | SVS FOOD — Stores across India",
+  title: "Our Locations | SVS FOOD | Stores across India",
   description:
     "Find your nearest SVS FOOD restaurant in Satna and Jabalpur, Madhya Pradesh. Visit us for dine-in, takeaway, or delivery.",
   alternates: {

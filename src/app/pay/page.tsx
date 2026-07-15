@@ -151,7 +151,7 @@ function PayInner() {
 
               {pending.isMock ? (
                 <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
-                  Mock payment mode — backend will auto-confirm in UAT/mock.
+                  Mock payment mode: backend will auto-confirm in UAT/mock.
                 </p>
               ) : null}
             </div>

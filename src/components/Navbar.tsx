@@ -20,16 +20,42 @@ function StoryTriggerButton({ onClick }: { onClick: () => void }) {
       aria-label="Open SVS stories"
       onClick={onClick}
     >
-      <span className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full p-[2px] bg-gradient-to-tr from-svs-orange via-svs-yellow to-svs-orange shadow-sm">
-        <span className="w-full h-full rounded-full bg-svs-ink overflow-hidden flex items-center justify-center">
-          <Image
-            src="/images/story-trigger.png"
-            alt=""
-            width={28}
-            height={28}
-            className="w-[70%] h-[70%] object-contain"
+      <span className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10">
+        <span
+          className="absolute inset-0 rounded-full story-ring-spin"
+          style={{ transformStyle: "flat" }}
+          aria-hidden
+        >
+          <svg
+            className="w-full h-full"
+            viewBox="0 0 40 40"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.25"
+            strokeLinecap="round"
+          >
+            <circle cx="20" cy="20" r="17" strokeDasharray="22 14" />
+          </svg>
+        </span>
+        <span className="relative z-[1] flex items-center justify-center w-[calc(100%-6px)] h-[calc(100%-6px)] rounded-full bg-svs-white">
+          <svg
+            className={iconSvg}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             aria-hidden
-          />
+          >
+            <rect x="7" y="5" width="11" height="15" rx="2.5" opacity="0.45" />
+            <rect x="5" y="7" width="11" height="15" rx="2.5" fill="currentColor" fillOpacity="0.08" />
+            <path
+              d="M10.25 12.75 13.75 14.5 10.25 16.25z"
+              fill="currentColor"
+              stroke="none"
+            />
+          </svg>
         </span>
       </span>
     </button>
@@ -47,13 +73,6 @@ function NavIcons({
 
   return (
     <>
-      <StoryTriggerButton
-        onClick={() => {
-          onOpenStories();
-          onNavigate?.();
-        }}
-      />
-
       <Link
         href="/cart"
         className={`${iconBtn} relative overflow-hidden w-11 h-11 sm:w-12 sm:h-12 lg:w-14 lg:h-14`}
@@ -92,6 +111,13 @@ function NavIcons({
           </span>
         ) : null}
       </Link>
+
+      <StoryTriggerButton
+        onClick={() => {
+          onOpenStories();
+          onNavigate?.();
+        }}
+      />
 
       <Link
         href="/locations"

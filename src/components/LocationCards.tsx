@@ -47,7 +47,7 @@ function StoreCard({
       <div className="relative w-full overflow-hidden rounded-[12px] sm:rounded-[15px] md:rounded-[18px] aspect-[1826/1028] cursor-pointer group">
         <Image
           src={store.image}
-          alt={`SVS FOOD — ${store.city}${store.label ? ` · ${store.label}` : ""}`}
+          alt={`SVS FOOD, ${store.city}${store.label ? ` · ${store.label}` : ""}`}
           fill
           sizes="(max-width: 640px) 94vw, (max-width: 1024px) 46vw, 47vw"
           className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"

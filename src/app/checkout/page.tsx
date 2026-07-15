@@ -125,7 +125,7 @@ export default function CheckoutPage() {
         return;
       }
       if (area.trim().length < 6) {
-        setError("Enter area / locality (pre-filled from GPS — edit if needed).");
+        setError("Enter area / locality (pre-filled from GPS, edit if needed).");
         return;
       }
       if (fullAddress.length < 20) {
@@ -275,7 +275,7 @@ export default function CheckoutPage() {
                       </p>
                     ) : addressHint ? (
                       <p className="text-xs text-svs-ink/50 mt-1">
-                        Area pre-filled from your location — add flat no. &amp;
+                        Area pre-filled from your location, add flat no. &amp;
                         street below
                       </p>
                     ) : (

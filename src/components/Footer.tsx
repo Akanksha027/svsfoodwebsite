@@ -229,8 +229,7 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
 
         <div className="w-full">
           <p className="text-[13px] sm:text-[14px] text-svs-ink/60 text-center lg:text-left">
-            <span className="font-bold text-svs-ink">OUR STORES</span>
-            {" — "}
+            <span className="font-bold text-svs-ink">OUR STORES:</span>{" "}
             <Link href="/locations" className="hover:text-svs-orange">
               Jabalpur
             </Link>

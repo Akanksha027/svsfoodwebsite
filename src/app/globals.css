@@ -218,6 +218,22 @@ html {
   transform: translateX(-50%) translateZ(-20px);
 }
 
+@keyframes story-ring-spin {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+.story-ring-spin {
+  animation: story-ring-spin 7s linear infinite;
+  transform-style: flat;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
 /* Navbar cart bag — matches ink icon style, visible on white bar */
 .nav-revolving-bag .bag-front,
 .nav-revolving-bag .bag-back {

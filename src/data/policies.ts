@@ -25,7 +25,7 @@ export const policyPages: PolicyPage[] = [
         "bullets": []
       },
       {
-        "heading": "SVS FOOD Orders — Refund Policy",
+        "heading": "SVS FOOD Orders: Refund Policy",
         "paragraphs": [
           "Please Note: This is valid only for SVS FOOD Orders."
         ],
@@ -34,7 +34,7 @@ export const policyPages: PolicyPage[] = [
       {
         "heading": "Your Money is Secure",
         "paragraphs": [
-          "If your amount has been deducted from UPI or Debit/Credit Card or Netbanking or Wallet, please do not worry — your money is safe as per Consumer Safeguarding Guidelines."
+          "If your amount has been deducted from UPI or Debit/Credit Card or Netbanking or Wallet, please do not worry, your money is safe as per Consumer Safeguarding Guidelines."
         ],
         "bullets": []
       },
@@ -132,7 +132,7 @@ export const policyPages: PolicyPage[] = [
         "heading": "Cookies",
         "paragraphs": [
           "To improve the responsiveness of the sites for our users, we may use cookies, or similar electronic tools to collect information to assign each visitor a unique, random number as a User Identification (User ID) to understand the user's individual interests using the Identified Computer. Unless you voluntarily identify yourself (through registration, for example), we will have no way of knowing who you are, even if we assign a cookie to your computer. The only personal information a cookie can contain is information you supply. A cookie cannot read data off your hard drive. Our advertisers may also assign their own cookies to your browser (if you click on their ads), a process that we do not control.",
-          "Our web servers automatically collect limited information about your computer's connection to the Internet, including your IP address, when you visit our site. (Your IP address is a number that lets computers attached to the Internet know where to send you data — such as the web pages you view.) Your IP address does not identify you personally. We use this information to deliver our web pages to you upon request, to tailor our site to the interests of our users, to measure traffic within our site and let advertisers know the geographic locations from where our visitors come."
+          "Our web servers automatically collect limited information about your computer's connection to the Internet, including your IP address, when you visit our site. (Your IP address is a number that lets computers attached to the Internet know where to send you data, such as the web pages you view.) Your IP address does not identify you personally. We use this information to deliver our web pages to you upon request, to tailor our site to the interests of our users, to measure traffic within our site and let advertisers know the geographic locations from where our visitors come."
         ],
         "bullets": []
       },

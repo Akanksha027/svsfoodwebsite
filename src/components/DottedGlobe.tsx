@@ -365,7 +365,7 @@ export default function DottedGlobe() {
     <div className="globe-wrap relative z-10">
       <canvas
         ref={canvasRef}
-        aria-label="Interactive globe — spins left to right, then top to bottom with a glowing wave"
+        aria-label="Interactive globe, spins left to right, then top to bottom with a glowing wave"
       />
     </div>
   );
