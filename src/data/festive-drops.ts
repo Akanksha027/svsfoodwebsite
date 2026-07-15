@@ -56,7 +56,7 @@ export const festiveDropTheme: FestiveDropTheme = {
   particleCount: 18,
 };
 
-export const FESTIVE_RAIL_Y_PX = 200;
+export const FESTIVE_RAIL_Y_PX = 150;
 export const FESTIVE_FOOD_SIZE_PX = 56;
 
 export const FESTIVE_LEFT_EDGE_VW = 4;
@@ -82,7 +82,7 @@ export function getFestiveViewportProfile(width: number): FestiveViewportProfile
     return {
       id: "sm",
       particleCount: 10,
-      railYpx: 128,
+      railYpx: 96,
       foodSizePx: 38,
       leftEdgeVw: 6,
       rightEdgeVw: 94,
@@ -99,7 +99,7 @@ export function getFestiveViewportProfile(width: number): FestiveViewportProfile
     return {
       id: "md",
       particleCount: 14,
-      railYpx: 168,
+      railYpx: 126,
       foodSizePx: 46,
       leftEdgeVw: 5,
       rightEdgeVw: 95,
