@@ -8,6 +8,7 @@ import JourneySection from "@/components/JourneySection";
 import DeliveringMomentsSection from "@/components/DeliveringMomentsSection";
 import Footer from "@/components/Footer";
 import BagossScope from "@/components/BagossScope";
+import FestiveDrops from "@/components/FestiveDrops";
 
 const ingredientClass =
   "absolute z-[3] object-contain drop-shadow-lg pointer-events-none w-[64px] h-[64px] sm:w-[88px] sm:h-[88px] md:w-[140px] md:h-[140px] lg:w-[188px] lg:h-[188px]";
@@ -16,6 +17,7 @@ export default function Home() {
   return (
     <BagossScope>
       <Navbar />
+      <FestiveDrops />
 
       <section
         className="relative w-full h-[100svh] min-h-[560px] max-h-[1100px] flex flex-col items-center overflow-hidden bg-svs-white pt-[72px] md:pt-[88px] lg:pt-[72px]"
