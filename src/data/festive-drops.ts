@@ -18,38 +18,38 @@ export type FestiveDropTheme = {
   particleCount: number;
 };
 
-/** One highlight from each menu category (Satna store menu). */
+/** Category images (background-removed) from Satna store menu. */
 export const festiveDropTheme: FestiveDropTheme = {
   enabled: true,
-  id: "menu-highlights",
-  name: "Menu highlights",
+  id: "menu-categories",
+  name: "Menu categories",
   glyphs: [
     {
       category: "pizza",
-      name: "All In One",
+      name: "Pizza",
       imageUrl:
-        "https://kalrtjvnbtauikrrvgxt.supabase.co/storage/v1/object/public/menu-images/item/store_24475/1235803608_97599/thumb_17809249740_2026_06_08_18_52_51_All_in_one_pizza.jpg",
+        "https://kalrtjvnbtauikrrvgxt.supabase.co/storage/v1/object/public/menu-media/categories/cat_pp_store_24475_542962/main/1780568214906-WhatsApp-Image-2026-06-02-at-1.09.27-PM-Large-Background-Removed.png",
       weight: 1,
     },
     {
       category: "burger",
-      name: "Maharaja",
+      name: "Burgers",
       imageUrl:
-        "https://kalrtjvnbtauikrrvgxt.supabase.co/storage/v1/object/public/menu-images/item/store_24475/1235799476/thumb_17780814710_2026_05_06_21_01_03_Maharaja_Burger.jpg",
+        "https://kalrtjvnbtauikrrvgxt.supabase.co/storage/v1/object/public/menu-media/categories/cat_pp_store_24475_542961/main/1780937279962-SUPREME-BURGER-Background-Removed.png",
       weight: 1,
     },
     {
       category: "drink",
-      name: "Cold Coffee Craze",
+      name: "Beverages",
       imageUrl:
-        "https://kalrtjvnbtauikrrvgxt.supabase.co/storage/v1/object/public/menu-images/item/store_24475/1304630736_1387881/thumb_17781464260_2026_05_07_15_03_41_Cold_Coffee_Craze_2.jpg",
+        "https://kalrtjvnbtauikrrvgxt.supabase.co/storage/v1/object/public/menu-media/categories/cat_pp_store_24475_542968/main/1780663548428-Cold-Coffee-Craze-2-Background-Removed.png",
       weight: 1,
     },
     {
       category: "roll",
-      name: "Chatpata Cheese",
+      name: "Naan & Wraps",
       imageUrl:
-        "https://kalrtjvnbtauikrrvgxt.supabase.co/storage/v1/object/public/menu-images/item/store_24475/1235799478/thumb_17781461770_2026_05_07_14_59_30_Cheese_Chatpata_Naan.jpg",
+        "https://kalrtjvnbtauikrrvgxt.supabase.co/storage/v1/object/public/menu-media/categories/cat_pp_store_24475_2430322/main/1780935408028-Cheese-Chatpata-Naan-Background-Removed.png",
       weight: 1,
     },
   ],
@@ -57,7 +57,7 @@ export const festiveDropTheme: FestiveDropTheme = {
 };
 
 export const FESTIVE_RAIL_Y_PX = 100;
-export const FESTIVE_FOOD_SIZE_PX = 56;
+export const FESTIVE_FOOD_SIZE_PX = 72;
 
 export const FESTIVE_LEFT_EDGE_VW = 4;
 export const FESTIVE_RIGHT_EDGE_VW = 96;
