@@ -35,10 +35,10 @@ export default function MenuPageHeader({ store }: MenuPageHeaderProps) {
 
   return (
     <header
-      className={`hidden lg:flex fixed top-[96px] z-[70] w-[90%] xl:w-[80%] max-w-[1100px] h-20 items-center justify-between gap-4 border border-gray-200 rounded-2xl bg-white px-6 xl:px-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 ease-out -translate-x-1/2 ${
+      className={`hidden lg:flex fixed top-[96px] z-[70] max-w-[1100px] h-20 items-center justify-between gap-4 border border-gray-200 rounded-2xl bg-white px-6 xl:px-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 ease-out -translate-x-1/2 ${
         isOpen
-          ? "left-[calc(50%-200px)] xl:left-[calc(50%-210px)]"
-          : "left-1/2"
+          ? "w-[calc(90vw-360px)] xl:w-[calc(80vw-336px)] left-[calc(50%-200px)] xl:left-[calc(50%-210px)]"
+          : "w-[90%] xl:w-[80%] left-1/2"
       }`}
       id="menu-page-header"
     >

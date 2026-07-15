@@ -93,7 +93,7 @@ export default function CartDrawer() {
       id="menu-cart-drawer"
       aria-label="My cart"
       aria-hidden={!isOpen}
-      className={`hidden lg:flex flex-col fixed right-0 top-[128px] bottom-0 w-[400px] xl:w-[420px] bg-white border-l border-gray-200 z-[80] shadow-[-8px_0_32px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-out ${
+      className={`hidden lg:flex flex-col fixed right-0 top-0 bottom-0 w-[400px] xl:w-[420px] bg-white border-l border-gray-200 z-[90] shadow-[-8px_0_32px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-out ${
         isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
       }`}
     >
