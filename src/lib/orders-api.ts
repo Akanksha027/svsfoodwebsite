@@ -52,6 +52,8 @@ export async function createWebOrder(input: {
   customerMobile: string;
   customerName?: string;
   customerAddress?: string;
+  customerLatitude?: number;
+  customerLongitude?: number;
   customerNotes?: string;
 }) {
   return apiRequest<{
@@ -73,6 +75,8 @@ export async function createWebOrder(input: {
       customer_mobile: input.customerMobile,
       customer_name: input.customerName || undefined,
       customer_address: input.customerAddress || undefined,
+      customer_latitude: input.customerLatitude,
+      customer_longitude: input.customerLongitude,
       customer_notes: input.customerNotes || undefined,
     },
   });

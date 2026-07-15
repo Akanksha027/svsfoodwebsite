@@ -129,3 +129,28 @@ export function composeDeliveryAddress(input: {
   ].filter(Boolean);
   return lines.join(", ");
 }
+
+/** Best available GPS for a delivery order (address hint → saved browser fix). */
+export function resolveDeliveryCoords(
+  hint?: DeliveryAddressHint | null,
+): { lat: number; lng: number } | null {
+  const fromHint =
+    hint &&
+    typeof hint.lat === "number" &&
+    typeof hint.lng === "number" &&
+    (hint.lat !== 0 || hint.lng !== 0)
+      ? { lat: hint.lat, lng: hint.lng }
+      : null;
+  if (fromHint) return fromHint;
+
+  const saved = readSavedUserLocation();
+  if (
+    saved &&
+    typeof saved.lat === "number" &&
+    typeof saved.lng === "number" &&
+    (saved.lat !== 0 || saved.lng !== 0)
+  ) {
+    return { lat: saved.lat, lng: saved.lng };
+  }
+  return null;
+}

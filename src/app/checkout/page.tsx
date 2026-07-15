@@ -14,6 +14,7 @@ import { storeDisplayName } from "@/data/locations";
 import {
   composeDeliveryAddress,
   fetchDeliveryAddressHint,
+  resolveDeliveryCoords,
   type DeliveryAddressHint,
 } from "@/lib/reverse-geocode";
 import {
@@ -134,6 +135,9 @@ export default function CheckoutPage() {
 
     setBusy(true);
     try {
+      const deliveryCoords =
+        orderType === "delivery" ? resolveDeliveryCoords(addressHint) : null;
+
       const order = await createWebOrder({
         storeId: store.backendStoreId,
         orderType,
@@ -154,6 +158,8 @@ export default function CheckoutPage() {
         customerName: name.trim() || undefined,
         customerAddress:
           orderType === "delivery" ? fullAddress : undefined,
+        customerLatitude: deliveryCoords?.lat,
+        customerLongitude: deliveryCoords?.lng,
         customerNotes: notes.trim() || undefined,
       });
 
