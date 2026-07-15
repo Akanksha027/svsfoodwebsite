@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import MenuLoader from "@/components/MenuLoader";
 import NearestStoreGate from "@/components/NearestStoreGate";
 import CartBar from "@/components/CartBar";
+import MenuCartShell from "@/components/MenuCartShell";
 import { resolveStoreLocation, storeDisplayName } from "@/data/locations";
 import { fetchStoreMenu } from "@/lib/menu-api";
 
@@ -40,13 +41,13 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
   }
 
   return (
-    <>
+    <MenuCartShell store={store}>
       <NearestStoreGate
         hasStoreParam={hasStoreParam}
         currentStoreId={store.id}
         query={query}
       />
-      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-24 bg-svs-cream">
+      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[128px] px-4 sm:px-6 lg:px-8 pb-24 lg:pb-8 bg-svs-cream">
         <div className="py-8 sm:py-10">
           <MenuLoader
             key={store.backendStoreId}
@@ -57,8 +58,10 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
           />
         </div>
       </main>
-      <CartBar />
+      <div className="lg:hidden">
+        <CartBar />
+      </div>
       <Footer menuStoreId={store.id} />
-    </>
+    </MenuCartShell>
   );
 }

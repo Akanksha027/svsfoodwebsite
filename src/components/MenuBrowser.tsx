@@ -300,6 +300,7 @@ function MenuItemCard({
   }, [categoryImageUrl]);
 
   const flySource = () => {
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) return undefined;
     const rect = imageRef.current?.getBoundingClientRect();
     return rect
       ? {

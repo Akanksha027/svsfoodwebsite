@@ -16,6 +16,25 @@ export default function CartPage() {
     <>
       <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
         <div className="max-w-[720px] mx-auto py-8 sm:py-10">
+          <div className="mb-4">
+            <Link
+              href="/menu"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-svs-ink/60 hover:text-svs-orange transition-colors no-underline"
+            >
+              <svg
+                className="w-4 h-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+              Back to menu
+            </Link>
+          </div>
           <h1 className="text-3xl font-extrabold text-svs-ink tracking-tight mb-1">
             Your cart
           </h1>
