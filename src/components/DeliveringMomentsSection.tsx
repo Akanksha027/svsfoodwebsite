@@ -100,46 +100,74 @@ export default function DeliveringMomentsSection() {
               India&apos;s favourite smash-burger kitchen
             </h2>
 
-            <div className="flex flex-col gap-8 sm:gap-10">
+            <div className="flex flex-col gap-6 sm:gap-7">
               <div className="flex flex-col items-start gap-1">
-                <h3 className="text-[1.35rem] sm:text-[1.75rem] font-extrabold text-svs-orange mb-1">
-                  Bold Indian flavours
+                <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
+                  Freshly Baked Buns
                 </h3>
-                <div className="bg-svs-ink text-svs-yellow px-4 sm:px-5 py-1.5 skew-x-[-12deg] inline-block shadow-sm">
-                  <span className="block skew-x-[12deg] font-bold text-[1rem] sm:text-[1.15rem] tracking-wide">
-                    Desi spice
+                <div className="bg-svs-ink text-svs-yellow px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
+                  <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
+                    We bake our own
                   </span>
                 </div>
-                <p className="text-[0.9rem] sm:text-[0.95rem] text-svs-ink/75 mt-3 font-medium">
-                  House sauces and spice blends made for local taste
+                <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
+                  Ensuring the softest, freshest bite with every single burger
                 </p>
               </div>
 
               <div className="flex flex-col items-start gap-1">
-                <h3 className="text-[1.35rem] sm:text-[1.75rem] font-extrabold text-svs-orange mb-1">
-                  Fresh, every day
+                <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
+                  Tech-Driven Experience
                 </h3>
-                <div className="bg-svs-ink text-svs-yellow px-4 sm:px-5 py-1.5 skew-x-[-12deg] inline-block shadow-sm">
-                  <span className="block skew-x-[12deg] font-bold text-[1rem] sm:text-[1.15rem] tracking-wide">
-                    Daily prep
+                <div className="bg-svs-ink text-svs-yellow px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
+                  <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
+                    Fully automated
                   </span>
                 </div>
-                <p className="text-[0.9rem] sm:text-[0.95rem] text-svs-ink/75 mt-3 font-medium">
-                  Patties, buns &amp; sides prepped fresh in every kitchen
+                <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
+                  Complete technological adaptation for seamless, rapid service
                 </p>
               </div>
 
               <div className="flex flex-col items-start gap-1">
-                <h3 className="text-[1.35rem] sm:text-[1.75rem] font-extrabold text-svs-orange mb-1">
-                  Cravings, served
+                <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
+                  World-Level Standards
                 </h3>
-                <div className="bg-svs-ink text-svs-yellow px-4 sm:px-5 py-1.5 skew-x-[-12deg] inline-block shadow-sm">
-                  <span className="block skew-x-[12deg] font-bold text-[1rem] sm:text-[1.15rem] tracking-wide">
-                    50+ favourites
+                <div className="bg-svs-ink text-svs-yellow px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
+                  <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
+                    Global expansion
                   </span>
                 </div>
-                <p className="text-[0.9rem] sm:text-[0.95rem] text-svs-ink/75 mt-3 font-medium">
-                  Burgers, wraps, sides &amp; combos for every hunger level
+                <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
+                  Scaling up our kitchens to bring our flavours to the world
+                </p>
+              </div>
+
+              <div className="flex flex-col items-start gap-1">
+                <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
+                  Seamless & Fast
+                </h3>
+                <div className="bg-svs-ink text-svs-yellow px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
+                  <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
+                    Less human interaction
+                  </span>
+                </div>
+                <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
+                  Designed for maximum efficiency and a zero-fuss ordering experience
+                </p>
+              </div>
+
+              <div className="flex flex-col items-start gap-1">
+                <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
+                  100% Pure Veg
+                </h3>
+                <div className="bg-svs-ink text-svs-yellow px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
+                  <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
+                    Pure Sanatan
+                  </span>
+                </div>
+                <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
+                  Authentic, purely vegetarian recipes honoring deep-rooted traditions
                 </p>
               </div>
             </div>
