@@ -6,7 +6,7 @@ import LocationCards from "@/components/LocationCards";
 export default function LocationsSection() {
   return (
     <section
-      className="relative w-full min-h-[100svh] bg-svs-white pt-[72px] sm:pt-[80px] md:pt-[100px] lg:pt-[108px] pb-8 sm:pb-12 md:pb-16 flex flex-col items-center overflow-x-clip"
+      className="relative w-full min-h-[100svh] bg-svs-white pt-[72px] sm:pt-[80px] md:pt-[100px] lg:pt-[80px] pb-8 sm:pb-12 md:pb-16 flex flex-col items-center overflow-x-clip"
       id="locations-hero"
     >
       {/* Rounded stage — height & globe offset scale by breakpoint */}

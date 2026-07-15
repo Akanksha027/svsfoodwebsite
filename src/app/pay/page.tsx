@@ -93,7 +93,7 @@ function PayInner() {
   return (
     <>
       <Navbar />
-      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[100px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
+      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
         <div className="max-w-[440px] mx-auto py-10 text-center">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-svs-ink mb-2">
             Pay with UPI

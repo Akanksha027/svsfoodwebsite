@@ -74,7 +74,7 @@ function OrderInner() {
   return (
     <>
       <Navbar />
-      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[100px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
+      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
         <div className="max-w-[560px] mx-auto py-10">
           {loading && !order ? (
             <p className="text-center text-svs-ink/50">Loading order...</p>

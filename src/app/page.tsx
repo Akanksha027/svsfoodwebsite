@@ -18,7 +18,7 @@ export default function Home() {
       <Navbar />
 
       <section
-        className="relative w-full h-[100svh] min-h-[560px] max-h-[1100px] flex flex-col items-center overflow-hidden bg-svs-white pt-[72px] md:pt-[88px] lg:pt-[100px]"
+        className="relative w-full h-[100svh] min-h-[560px] max-h-[1100px] flex flex-col items-center overflow-hidden bg-svs-white pt-[72px] md:pt-[88px] lg:pt-[72px]"
         id="hero-section"
       >
         {/* ===== LEFT SIDE - visible on all screens ===== */}

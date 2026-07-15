@@ -223,7 +223,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[100px] px-3 sm:px-4 md:px-6 lg:px-8 bg-svs-white/95 backdrop-blur-sm border-b border-svs-cream"
+      className="fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 bg-svs-white/95 backdrop-blur-sm border-b border-svs-cream"
       id="main-navbar"
     >
       {/* Logo: centered on small screens, left-aligned from md up */}
@@ -239,7 +239,7 @@ export default function Navbar() {
           alt="SVS Food"
           width={65}
           height={64}
-          className="h-12 w-auto sm:h-12 md:h-14 lg:h-20 xl:h-24 object-contain"
+          className="h-12 w-auto sm:h-12 md:h-14 lg:h-14 xl:h-16 object-contain"
           priority
         />
       </Link>
