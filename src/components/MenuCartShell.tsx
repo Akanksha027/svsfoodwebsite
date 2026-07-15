@@ -16,7 +16,7 @@ function InnerShell({ children }: { children: ReactNode }) {
   return (
     <div
       className={`transition-all duration-300 ease-out ${
-        isOpen ? "lg:pr-[400px] xl:pr-[420px]" : "pr-0"
+        isOpen ? "lg:pr-[360px] xl:pr-[380px]" : "pr-0"
       }`}
     >
       {children}

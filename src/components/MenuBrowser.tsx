@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { type StoreLocation } from "@/data/locations";
 import { SELECTED_STORE_KEY } from "@/lib/config";
 import { useCart } from "@/context/CartContext";
+import { useMenuCart } from "@/context/MenuCartContext";
 import { formatInr, titleCaseName } from "@/lib/menu-api";
 import { preloadImage, preloadImages } from "@/lib/preload-image";
 import type { MenuCategory, MenuItem, MenuPayload } from "@/lib/menu-types";
@@ -45,6 +46,7 @@ export default function MenuBrowser({
   errorMessage,
 }: MenuBrowserProps) {
   const { setStoreId } = useCart();
+  const { isOpen } = useMenuCart();
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const scrollingToRef = useRef(false);
@@ -143,7 +145,9 @@ export default function MenuBrowser({
   return (
     <div className="max-w-[1100px] mx-auto">
       {visibleCategories.length > 0 && (
-        <div className="sticky top-[72px] md:top-[88px] lg:top-[100px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 bg-svs-cream/95 backdrop-blur-md">
+        <div className={`sticky top-[72px] md:top-[88px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 bg-svs-cream/95 backdrop-blur-md transition-all duration-300 ${
+          isOpen ? "lg:top-[160px]" : "lg:top-[176px]"
+        }`}>
           <div className="flex gap-4 sm:gap-5 overflow-x-auto pb-1">
             {visibleCategories.map((cat) => {
               const active = cat.id === activeCategoryId;
@@ -157,7 +161,9 @@ export default function MenuBrowser({
                     active ? "opacity-100" : "opacity-80"
                   }`}
                 >
-                  <div className="relative w-[76px] h-[76px] sm:w-[88px] sm:h-[88px] shrink-0">
+                  <div className={`relative shrink-0 transition-all duration-300 ${
+                    isOpen ? "w-[60px] h-[60px] sm:w-[68px] sm:h-[68px]" : "w-[76px] h-[76px] sm:w-[88px] sm:h-[88px]"
+                  }`}>
                     <div className="absolute inset-0 pointer-events-none transition-transform duration-200 ease-out will-change-transform origin-center scale-100 group-hover:scale-110">
                       {catImage ? (
                         <Image
@@ -238,7 +244,7 @@ function CategorySection({
     <section
       id={`cat-${category.id}`}
       ref={sectionRef}
-      className="scroll-mt-[160px] md:scroll-mt-[180px] lg:scroll-mt-[200px]"
+      className="scroll-mt-[160px] md:scroll-mt-[180px] lg:scroll-mt-[320px]"
     >
       <div className="flex items-center gap-3 mb-4 sm:mb-5">
         {category.image_url || category.icon_url ? (
