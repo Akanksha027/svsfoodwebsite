@@ -145,9 +145,7 @@ export default function MenuBrowser({
   return (
     <div className="max-w-[1100px] mx-auto">
       {visibleCategories.length > 0 && (
-        <div className={`sticky top-[72px] md:top-[88px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-2 bg-svs-cream/95 backdrop-blur-md transition-all duration-300 ${
-          isOpen ? "lg:top-[140px]" : "lg:top-[152px]"
-        }`}>
+        <div className="sticky top-[56px] sm:top-[64px] md:top-[80px] lg:top-[72px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-2 bg-svs-cream/95 backdrop-blur-md transition-all duration-300">
           <div className="flex justify-center gap-4 sm:gap-5 overflow-x-auto pb-1">
             {visibleCategories.map((cat) => {
               const active = cat.id === activeCategoryId;
