@@ -89,14 +89,27 @@ export default function CartDrawer() {
   }, [isOpen, closeCart]);
 
   return (
-    <aside
-      id="menu-cart-drawer"
-      aria-label="My cart"
-      aria-hidden={!isOpen}
-      className={`hidden lg:flex flex-col fixed right-0 top-[72px] bottom-0 w-[360px] xl:w-[380px] bg-white border-l border-gray-200 z-[90] shadow-[-8px_0_32px_rgba(0,0,0,0.08)] transition-transform duration-300 ease-out ${
-        isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
-      }`}
-    >
+    <>
+      {/* Blinkit-style dim overlay — menu stays in place, opacity drops */}
+      <button
+        type="button"
+        aria-label="Close cart"
+        onClick={closeCart}
+        className={`hidden lg:block fixed inset-0 top-[72px] z-[85] border-0 cursor-pointer transition-opacity duration-300 ease-out ${
+          isOpen
+            ? "opacity-100 pointer-events-auto bg-black/40"
+            : "opacity-0 pointer-events-none bg-black/40"
+        }`}
+      />
+
+      <aside
+        id="menu-cart-drawer"
+        aria-label="My cart"
+        aria-hidden={!isOpen}
+        className={`hidden lg:flex flex-col fixed right-0 top-[72px] bottom-0 w-[360px] xl:w-[380px] bg-white border-l border-gray-200 z-[90] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
+          isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
+        }`}
+      >
       <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-gray-100 shrink-0">
         <button
           type="button"
@@ -319,5 +332,6 @@ export default function CartDrawer() {
         </>
       )}
     </aside>
+    </>
   );
 }
