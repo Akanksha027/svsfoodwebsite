@@ -17,6 +17,7 @@ import {
   resolveDeliveryCoords,
   type DeliveryAddressHint,
 } from "@/lib/reverse-geocode";
+import { requestUserLocation } from "@/lib/user-location";
 import {
   confirmCashPayment,
   createPaymentSession,
@@ -135,8 +136,33 @@ export default function CheckoutPage() {
 
     setBusy(true);
     try {
-      const deliveryCoords =
+      let deliveryCoords =
         orderType === "delivery" ? resolveDeliveryCoords(addressHint) : null;
+
+      if (orderType === "delivery" && !deliveryCoords) {
+        const fresh = await requestUserLocation();
+        if (fresh) {
+          deliveryCoords = { lat: fresh.lat, lng: fresh.lng };
+          setAddressHint((prev) =>
+            prev
+              ? { ...prev, lat: fresh.lat, lng: fresh.lng }
+              : {
+                  formatted: area.trim() || "Your location",
+                  lat: fresh.lat,
+                  lng: fresh.lng,
+                  savedAt: new Date().toISOString(),
+                },
+          );
+        }
+      }
+
+      if (orderType === "delivery" && !deliveryCoords) {
+        setError(
+          "Turn on location access so we can share your delivery pin with the rider.",
+        );
+        setBusy(false);
+        return;
+      }
 
       const order = await createWebOrder({
         storeId: store.backendStoreId,
