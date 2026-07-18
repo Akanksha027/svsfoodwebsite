@@ -41,14 +41,14 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
   }
 
   return (
-    <MenuCartShell store={store}>
+    <MenuCartShell>
       <NearestStoreGate
         hasStoreParam={hasStoreParam}
         currentStoreId={store.id}
         query={query}
       />
-      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[128px] px-4 sm:px-6 lg:px-8 pb-24 lg:pb-10 bg-svs-cream">
-        <div className="py-8 sm:py-10">
+      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-24 lg:pb-12 bg-svs-cream">
+        <div className="pb-8 sm:pb-10 pt-0">
           <MenuLoader
             key={store.backendStoreId}
             store={store}

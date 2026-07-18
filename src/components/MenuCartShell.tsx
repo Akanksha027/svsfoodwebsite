@@ -1,37 +1,14 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { StoreLocation } from "@/data/locations";
 import CartDrawer from "@/components/CartDrawer";
-import MenuPageHeader from "@/components/MenuPageHeader";
-import { MenuCartProvider, useMenuCart } from "@/context/MenuCartContext";
 
-type MenuCartShellProps = {
-  store: StoreLocation;
-  children: ReactNode;
-};
-
-function InnerShell({ children }: { children: ReactNode }) {
-  const { isOpen } = useMenuCart();
+/** Menu page shell: cart drawer overlays menu (no layout shift). */
+export default function MenuCartShell({ children }: { children: ReactNode }) {
   return (
-    <div
-      className={`transition-all duration-300 ease-out ${
-        isOpen ? "lg:pr-[360px] xl:pr-[380px]" : "pr-0"
-      }`}
-    >
+    <>
       {children}
-    </div>
-  );
-}
-
-export default function MenuCartShell({ store, children }: MenuCartShellProps) {
-  return (
-    <MenuCartProvider>
-      <InnerShell>
-        <MenuPageHeader store={store} />
-        {children}
-      </InnerShell>
       <CartDrawer />
-    </MenuCartProvider>
+    </>
   );
 }
