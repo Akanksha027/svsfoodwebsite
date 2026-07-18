@@ -153,6 +153,7 @@ export async function fetchOrder(input: { storeId: string; orderId: string }) {
     petpooja_status?: string | null;
     rider_name?: string | null;
     rider_phone?: string | null;
+    rider_status?: string | null;
     channel?: string | null;
     items: unknown;
   }>(`/orders/${encodeURIComponent(input.orderId)}`, {

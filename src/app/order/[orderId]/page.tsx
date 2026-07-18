@@ -11,11 +11,19 @@ import { formatInr } from "@/lib/menu-api";
 function statusLabel(order: {
   status: string;
   petpooja_status?: string | null;
+  rider_status?: string | null;
   cod?: boolean;
 }) {
   if (order.cod && (order.status === "paid" || order.status === "pending_payment")) {
     return "Order placed · pay on delivery / counter";
   }
+  const rs = order.rider_status;
+  if (rs === "out_for_delivery") return "Out for delivery";
+  if (rs === "picked_up") return "Rider picked up";
+  if (rs === "accepted" || rs === "assigned") return "Rider assigned";
+  if (rs === "delivered") return "Delivered";
+  if (rs === "failed") return "Delivery issue";
+
   const pp = order.petpooja_status;
   if (pp === "food_ready") return "Ready";
   if (pp === "dispatched") return "Out for delivery";
@@ -111,11 +119,16 @@ function OrderInner() {
                 <p className="text-sm text-svs-ink/60">{order.customer_address}</p>
               ) : null}
 
-              {order.rider_name || order.rider_phone ? (
+              {order.rider_name || order.rider_phone || order.rider_status ? (
                 <div className="rounded-xl bg-svs-cream px-4 py-3 text-left">
                   <p className="text-xs font-bold uppercase tracking-wide text-svs-orange mb-1">
                     Rider
                   </p>
+                  {order.rider_status ? (
+                    <p className="text-xs font-semibold text-svs-ink/50 mb-1 capitalize">
+                      {order.rider_status.replace(/_/g, " ")}
+                    </p>
+                  ) : null}
                   {order.rider_name ? (
                     <p className="font-semibold text-svs-ink">
                       {order.rider_name}
