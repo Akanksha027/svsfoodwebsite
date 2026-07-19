@@ -11,6 +11,17 @@ export type SavedUserLocation = {
   savedAt: string;
 };
 
+export type LocationFailReason =
+  | "unsupported"
+  | "denied"
+  | "unavailable"
+  | "timeout"
+  | "error";
+
+export type LocationRequestResult =
+  | { ok: true; location: SavedUserLocation }
+  | { ok: false; reason: LocationFailReason; message: string };
+
 export function readSavedUserLocation(): SavedUserLocation | null {
   if (typeof window === "undefined") return null;
   try {
@@ -31,12 +42,89 @@ export function wasLocationDenied(): boolean {
   return localStorage.getItem(LOCATION_DENIED_KEY) === "1";
 }
 
-/** One-shot browser geolocation; saves fix when granted. */
-export function requestUserLocation(): Promise<SavedUserLocation | null> {
-  if (typeof window === "undefined" || !navigator.geolocation) {
-    return Promise.resolve(null);
+export function clearLocationDenied(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(LOCATION_DENIED_KEY);
+  } catch {
+    /* ignore */
   }
-  if (wasLocationDenied()) return Promise.resolve(null);
+}
+
+function persistLocation(location: SavedUserLocation) {
+  try {
+    localStorage.setItem(USER_LOCATION_KEY, JSON.stringify(location));
+    localStorage.removeItem(LOCATION_DENIED_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+function markPermissionDenied() {
+  try {
+    localStorage.setItem(LOCATION_DENIED_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+function fail(
+  reason: LocationFailReason,
+  message: string,
+): LocationRequestResult {
+  return { ok: false, reason, message };
+}
+
+async function queryPermissionState(): Promise<PermissionState | null> {
+  try {
+    if (!navigator.permissions?.query) return null;
+    const status = await navigator.permissions.query({
+      name: "geolocation" as PermissionName,
+    });
+    return status.state;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Request a fresh GPS fix. Use `force: true` to retry even after a past denial
+ * (clears our sticky flag and calls the browser again so the prompt can appear
+ * when the OS allows it).
+ */
+export async function requestUserLocationDetailed(options?: {
+  force?: boolean;
+  highAccuracy?: boolean;
+  timeoutMs?: number;
+  maximumAgeMs?: number;
+}): Promise<LocationRequestResult> {
+  if (typeof window === "undefined" || !navigator.geolocation) {
+    return fail(
+      "unsupported",
+      "This browser can’t share location. Try Chrome or Safari, or another device.",
+    );
+  }
+
+  if (options?.force) {
+    clearLocationDenied();
+  } else if (wasLocationDenied()) {
+    return fail(
+      "denied",
+      "Location is blocked. Tap “Share location” and allow access when asked — or enable it in your browser settings.",
+    );
+  }
+
+  const perm = await queryPermissionState();
+  if (perm === "denied" && !options?.force) {
+    return fail(
+      "denied",
+      "Location is blocked for this site. Open browser settings → Site settings → Location → Allow, then try again.",
+    );
+  }
+
+  const timeoutMs = options?.timeoutMs ?? 20000;
+  const maximumAgeMs = options?.maximumAgeMs ?? 60_000;
+  const enableHighAccuracy = options?.highAccuracy ?? true;
 
   return new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
@@ -47,25 +135,67 @@ export function requestUserLocation(): Promise<SavedUserLocation | null> {
           accuracy: pos.coords.accuracy,
           savedAt: new Date().toISOString(),
         };
-        try {
-          localStorage.setItem(USER_LOCATION_KEY, JSON.stringify(location));
-          localStorage.removeItem(LOCATION_DENIED_KEY);
-        } catch {
-          /* ignore */
-        }
-        resolve(location);
+        persistLocation(location);
+        resolve({ ok: true, location });
       },
-      () => {
-        try {
-          localStorage.setItem(LOCATION_DENIED_KEY, "1");
-        } catch {
-          /* ignore */
+      (err) => {
+        const code = err?.code;
+        // 1 PERMISSION_DENIED · 2 POSITION_UNAVAILABLE · 3 TIMEOUT
+        if (code === 1) {
+          markPermissionDenied();
+          resolve(
+            fail(
+              "denied",
+              "Allow location when your browser asks — we only use it as your delivery pin for the rider.",
+            ),
+          );
+          return;
         }
-        resolve(null);
+        // Never sticky-block on timeout / unavailable — user can retry.
+        clearLocationDenied();
+        if (code === 3) {
+          resolve(
+            fail(
+              "timeout",
+              "Couldn’t get a GPS fix in time. Move near a window, turn on Location Services, and try again.",
+            ),
+          );
+          return;
+        }
+        if (code === 2) {
+          resolve(
+            fail(
+              "unavailable",
+              "Location is temporarily unavailable. Turn on Location Services / GPS and try again.",
+            ),
+          );
+          return;
+        }
+        resolve(
+          fail(
+            "error",
+            "Couldn’t read your location. Please try again in a moment.",
+          ),
+        );
       },
-      { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 },
+      {
+        enableHighAccuracy,
+        timeout: timeoutMs,
+        maximumAge: maximumAgeMs,
+      },
     );
   });
+}
+
+/** One-shot browser geolocation; saves fix when granted. */
+export async function requestUserLocation(options?: {
+  force?: boolean;
+  highAccuracy?: boolean;
+  timeoutMs?: number;
+  maximumAgeMs?: number;
+}): Promise<SavedUserLocation | null> {
+  const result = await requestUserLocationDetailed(options);
+  return result.ok ? result.location : null;
 }
 
 /** Nearest outlet slug from saved GPS, if any. */

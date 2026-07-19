@@ -17,7 +17,11 @@ import {
   resolveDeliveryCoords,
   type DeliveryAddressHint,
 } from "@/lib/reverse-geocode";
-import { requestUserLocation } from "@/lib/user-location";
+import {
+  clearLocationDenied,
+  readSavedUserLocation,
+  requestUserLocationDetailed,
+} from "@/lib/user-location";
 import {
   confirmCashPayment,
   createPaymentSession,
@@ -51,6 +55,9 @@ export default function CheckoutPage() {
     null,
   );
   const [addressLoading, setAddressLoading] = useState(false);
+  const [pinReady, setPinReady] = useState(false);
+  const [pinBusy, setPinBusy] = useState(false);
+  const [pinMessage, setPinMessage] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,24 +83,87 @@ export default function CheckoutPage() {
     [flat, street, area, landmark, pincode],
   );
 
+  const applyLocation = async (force: boolean) => {
+    setPinBusy(true);
+    setPinMessage(null);
+    const result = await requestUserLocationDetailed({
+      force,
+      highAccuracy: true,
+      timeoutMs: 22000,
+      maximumAgeMs: 60_000,
+    });
+    if (result.ok) {
+      const { location } = result;
+      setPinReady(true);
+      setPinMessage(null);
+      setAddressHint((prev) =>
+        prev
+          ? { ...prev, lat: location.lat, lng: location.lng }
+          : {
+              formatted: area.trim() || "Your location",
+              lat: location.lat,
+              lng: location.lng,
+              savedAt: location.savedAt,
+            },
+      );
+      // Refresh area hint from new coords when area empty / stale.
+      void fetchDeliveryAddressHint().then((hint) => {
+        if (!hint) return;
+        setAddressHint(hint);
+        setArea((prev) => prev || hint.formatted);
+        if (hint.postcode) {
+          setPincode((prev) => prev || hint.postcode || "");
+        }
+      });
+      setPinBusy(false);
+      return true;
+    }
+    setPinReady(false);
+    setPinMessage(result.message);
+    setPinBusy(false);
+    return false;
+  };
+
   useEffect(() => {
     let cancelled = false;
     setAddressLoading(true);
-    void fetchDeliveryAddressHint().then((hint) => {
+
+    const boot = async () => {
+      // Prefer saved pin; otherwise ask browser (force clears sticky timeout flags).
+      const saved = readSavedUserLocation();
+      if (!saved) {
+        await applyLocation(true);
+      } else {
+        setPinReady(true);
+      }
+      if (cancelled) return;
+      const hint = await fetchDeliveryAddressHint();
       if (cancelled) return;
       setAddressHint(hint);
       if (hint) {
+        setPinReady(true);
         setArea((prev) => prev || hint.formatted);
         if (hint.postcode) {
           setPincode((prev) => prev || hint.postcode || "");
         }
       }
       setAddressLoading(false);
-    });
+    };
+
+    void boot();
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
   }, []);
+
+  useEffect(() => {
+    if (orderType !== "delivery") return;
+    if (pinReady || resolveDeliveryCoords(addressHint)) return;
+    // User switched to delivery without a pin — prompt again.
+    void applyLocation(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderType]);
 
   if (itemCount === 0) {
     return (
@@ -140,25 +210,45 @@ export default function CheckoutPage() {
         orderType === "delivery" ? resolveDeliveryCoords(addressHint) : null;
 
       if (orderType === "delivery" && !deliveryCoords) {
-        const fresh = await requestUserLocation();
-        if (fresh) {
-          deliveryCoords = { lat: fresh.lat, lng: fresh.lng };
+        const result = await requestUserLocationDetailed({
+          force: true,
+          highAccuracy: true,
+          timeoutMs: 22000,
+          maximumAgeMs: 0,
+        });
+        if (result.ok) {
+          deliveryCoords = {
+            lat: result.location.lat,
+            lng: result.location.lng,
+          };
+          setPinReady(true);
+          setPinMessage(null);
           setAddressHint((prev) =>
             prev
-              ? { ...prev, lat: fresh.lat, lng: fresh.lng }
+              ? {
+                  ...prev,
+                  lat: result.location.lat,
+                  lng: result.location.lng,
+                }
               : {
                   formatted: area.trim() || "Your location",
-                  lat: fresh.lat,
-                  lng: fresh.lng,
-                  savedAt: new Date().toISOString(),
+                  lat: result.location.lat,
+                  lng: result.location.lng,
+                  savedAt: result.location.savedAt,
                 },
           );
+        } else {
+          setPinReady(false);
+          setPinMessage(result.message);
+          setError(result.message);
+          setBusy(false);
+          return;
         }
       }
 
       if (orderType === "delivery" && !deliveryCoords) {
         setError(
-          "Turn on location access so we can share your delivery pin with the rider.",
+          "We need your location pin for the rider. Tap “Share location” above and allow access.",
         );
         setBusy(false);
         return;
@@ -298,21 +388,60 @@ export default function CheckoutPage() {
                     <h2 className="text-sm font-extrabold uppercase tracking-wider text-svs-orange">
                       Deliver to
                     </h2>
-                    {addressLoading ? (
+                    {addressLoading || pinBusy ? (
                       <p className="text-xs text-svs-ink/50 mt-1">
-                        Finding your area from GPS…
+                        Getting your location pin…
                       </p>
-                    ) : addressHint ? (
-                      <p className="text-xs text-svs-ink/50 mt-1">
-                        Area pre-filled from your location, add flat no. &amp;
-                        street below
+                    ) : pinReady || resolveDeliveryCoords(addressHint) ? (
+                      <p className="text-xs text-svs-green mt-1 font-semibold">
+                        Delivery pin ready for the rider · add flat &amp; street
+                        below
                       </p>
                     ) : (
                       <p className="text-xs text-svs-ink/50 mt-1">
-                        Enter where we should deliver your order
+                        Share your location so the rider gets an accurate pin
                       </p>
                     )}
                   </div>
+
+                  {!pinReady && !resolveDeliveryCoords(addressHint) ? (
+                    <div className="rounded-xl border border-svs-orange/30 bg-svs-cream/80 px-3.5 py-3 space-y-2">
+                      {pinMessage ? (
+                        <p className="text-sm text-svs-orange-dark font-semibold leading-snug">
+                          {pinMessage}
+                        </p>
+                      ) : null}
+                      <button
+                        type="button"
+                        disabled={pinBusy}
+                        onClick={() => {
+                          clearLocationDenied();
+                          void applyLocation(true);
+                        }}
+                        className="inline-flex h-10 items-center justify-center rounded-xl bg-svs-orange px-4 text-sm font-extrabold text-white disabled:opacity-60"
+                      >
+                        {pinBusy ? "Asking browser…" : "Share location"}
+                      </button>
+                      <p className="text-[11px] text-svs-ink/45 leading-relaxed">
+                        If nothing pops up, open your browser’s site settings
+                        and set Location to Allow for this site, then tap again.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center rounded-full bg-svs-green/10 px-2.5 py-1 text-[11px] font-bold text-svs-green">
+                        Pin shared
+                      </span>
+                      <button
+                        type="button"
+                        disabled={pinBusy}
+                        onClick={() => void applyLocation(true)}
+                        className="text-xs font-bold text-svs-orange underline-offset-2 hover:underline disabled:opacity-50"
+                      >
+                        Update pin
+                      </button>
+                    </div>
+                  )}
 
                   <label className="block text-sm">
                     <span className="font-semibold text-svs-ink/80">

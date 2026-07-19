@@ -7,7 +7,7 @@ import {
   readSavedUserLocation,
   rememberNearestStoreFromCoords,
   rememberNearestStoreFromSavedLocation,
-  USER_LOCATION_KEY,
+  wasLocationDenied,
   type SavedUserLocation,
 } from "@/lib/user-location";
 import { prefetchStoreMenu } from "@/lib/menu-api";
@@ -18,28 +18,6 @@ type LocationState =
   | { status: "ready"; location: SavedUserLocation }
   | { status: "denied" }
   | { status: "unavailable" };
-
-function saveLocation(coords: GeolocationCoordinates): SavedUserLocation {
-  const location: SavedUserLocation = {
-    lat: coords.latitude,
-    lng: coords.longitude,
-    accuracy: coords.accuracy,
-    savedAt: new Date().toISOString(),
-  };
-  localStorage.setItem(USER_LOCATION_KEY, JSON.stringify(location));
-  localStorage.removeItem(`${USER_LOCATION_KEY}_denied`);
-  const nearest = rememberNearestStoreFromCoords(location.lat, location.lng);
-  prefetchStoreMenu(nearest.backendStoreId);
-  return location;
-}
-
-function markDenied() {
-  localStorage.setItem(`${USER_LOCATION_KEY}_denied`, "1");
-}
-
-function wasDeniedBefore(): boolean {
-  return localStorage.getItem(`${USER_LOCATION_KEY}_denied`) === "1";
-}
 
 export default function HeroSearchBox() {
   const router = useRouter();
@@ -58,7 +36,7 @@ export default function HeroSearchBox() {
       setLocationState({ status: "ready", location: saved });
       return;
     }
-    if (wasDeniedBefore()) {
+    if (wasLocationDenied()) {
       setLocationState({ status: "denied" });
     }
   }, []);
@@ -81,32 +59,41 @@ export default function HeroSearchBox() {
       return;
     }
 
-    if (wasDeniedBefore() || !navigator.geolocation) {
-      setLocationState(
-        navigator.geolocation ? { status: "denied" } : { status: "unavailable" },
-      );
+    if (!navigator.geolocation) {
+      setLocationState({ status: "unavailable" });
       focusInput();
       return;
     }
 
+    // Always retry — past timeouts / denials used to permanently skip the prompt.
     askingRef.current = true;
     setLocationState({ status: "prompting" });
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const location = saveLocation(pos.coords);
-        setLocationState({ status: "ready", location });
-        askingRef.current = false;
-        focusInput();
-      },
-      () => {
-        markDenied();
+    void (async () => {
+      const { requestUserLocationDetailed } = await import("@/lib/user-location");
+      const result = await requestUserLocationDetailed({
+        force: true,
+        highAccuracy: false,
+        timeoutMs: 15000,
+      });
+      if (result.ok) {
+        const nearest = rememberNearestStoreFromCoords(
+          result.location.lat,
+          result.location.lng,
+        );
+        prefetchStoreMenu(nearest.backendStoreId);
+        setLocationState({ status: "ready", location: result.location });
+      } else if (result.reason === "denied") {
         setLocationState({ status: "denied" });
-        askingRef.current = false;
-        focusInput();
-      },
-      { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 },
-    );
+      } else if (result.reason === "unsupported") {
+        setLocationState({ status: "unavailable" });
+      } else {
+        // timeout / unavailable — leave idle so user can tap again
+        setLocationState({ status: "idle" });
+      }
+      askingRef.current = false;
+      focusInput();
+    })();
   };
 
   const handleActivate = () => {
@@ -141,7 +128,7 @@ export default function HeroSearchBox() {
       : locationState.status === "ready"
         ? "Delivering near you"
         : locationState.status === "denied"
-          ? "Location off · you can still search"
+          ? "Location blocked · tap to try again"
           : "Tap to set your location";
 
   return (
