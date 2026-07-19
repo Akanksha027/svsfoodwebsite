@@ -40,9 +40,15 @@ function progressIndex(order: OrderData, isCod: boolean): number {
 
   const rs = order.rider_status;
   // Only true OFD from SVS Rider — do not advance on accept / assign / pickup.
-  if (rs === "out_for_delivery") return 3;
+  if (rs === "out_for_delivery" || rs === "arrived_at_customer") return 3;
 
-  if (rs === "picked_up" || order.petpooja_status === "food_ready") return 2;
+  if (
+    rs === "picked_up" ||
+    rs === "arrived_at_store" ||
+    order.petpooja_status === "food_ready"
+  ) {
+    return 2;
+  }
 
   if (order.petpooja_status === "accepted") return 1;
 
@@ -68,6 +74,12 @@ function headline(order: OrderData, isCod: boolean): { title: string; sub: strin
     return { title: "Order delivered", sub: "Hope you enjoy your meal!" };
   }
   const rs = order.rider_status;
+  if (rs === "arrived_at_customer") {
+    return {
+      title: "Rider has arrived",
+      sub: "Your rider is at your location.",
+    };
+  }
   if (rs === "out_for_delivery") {
     return {
       title: "Out for delivery",
@@ -78,6 +90,14 @@ function headline(order: OrderData, isCod: boolean): { title: string; sub: strin
     return {
       title: "Rider picked up your order",
       sub: "Leaving for your address shortly.",
+    };
+  }
+  if (rs === "arrived_at_store") {
+    return {
+      title: "Rider at the restaurant",
+      sub: order.rider_name
+        ? `${order.rider_name} is at the store collecting your order.`
+        : "Your rider is at the store collecting your order.",
     };
   }
   if (rs === "accepted" || rs === "assigned") {
