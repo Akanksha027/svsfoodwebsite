@@ -39,14 +39,21 @@ function progressIndex(order: OrderData, isCod: boolean): number {
   if (isDelivered(order)) return 4;
 
   const rs = order.rider_status;
-  if (rs === "out_for_delivery" || order.petpooja_status === "dispatched") {
-    return 3;
-  }
-  if (rs === "picked_up" || rs === "accepted" || rs === "assigned") {
-    return 3;
-  }
-  if (order.petpooja_status === "food_ready") return 2;
+  // Only true OFD from SVS Rider — do not advance on accept / assign / pickup.
+  if (rs === "out_for_delivery") return 3;
+
+  if (rs === "picked_up" || order.petpooja_status === "food_ready") return 2;
+
   if (order.petpooja_status === "accepted") return 1;
+
+  // Rider claimed but still at store / kitchen stage
+  if (rs === "accepted" || rs === "assigned") {
+    return order.petpooja_status === "food_ready" ? 2 : 1;
+  }
+
+  // POS "dispatched" alone is not customer "on the way" until rider taps OFD
+  if (order.petpooja_status === "dispatched") return 2;
+
   if (order.status === "paid" || (isCod && order.status === "pending_payment")) {
     return 0;
   }
@@ -61,7 +68,7 @@ function headline(order: OrderData, isCod: boolean): { title: string; sub: strin
     return { title: "Order delivered", sub: "Hope you enjoy your meal!" };
   }
   const rs = order.rider_status;
-  if (rs === "out_for_delivery" || order.petpooja_status === "dispatched") {
+  if (rs === "out_for_delivery") {
     return {
       title: "Out for delivery",
       sub: "Your rider is on the way to you.",
@@ -70,7 +77,7 @@ function headline(order: OrderData, isCod: boolean): { title: string; sub: strin
   if (rs === "picked_up") {
     return {
       title: "Rider picked up your order",
-      sub: "Heading your way shortly.",
+      sub: "Leaving for your address shortly.",
     };
   }
   if (rs === "accepted" || rs === "assigned") {
@@ -88,6 +95,12 @@ function headline(order: OrderData, isCod: boolean): { title: string; sub: strin
         order.order_type === "delivery"
           ? "Waiting for a rider to pick it up."
           : "You can collect it from the counter.",
+    };
+  }
+  if (order.petpooja_status === "dispatched") {
+    return {
+      title: "Order is ready",
+      sub: "Your rider will start the trip next.",
     };
   }
   if (order.petpooja_status === "accepted") {
