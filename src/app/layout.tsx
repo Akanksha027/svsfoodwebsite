@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { MenuCartProvider } from "@/context/MenuCartContext";
 import SiteNavbar from "@/components/SiteNavbar";
+import PoweredBy from "@/components/PoweredBy";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,6 +31,7 @@ export default function RootLayout({
           <MenuCartProvider>
             <SiteNavbar />
             {children}
+            <PoweredBy />
           </MenuCartProvider>
         </CartProvider>
       </body>

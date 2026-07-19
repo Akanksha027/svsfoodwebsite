@@ -265,18 +265,6 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
           </a>
 
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[11px] sm:text-[12px] text-svs-ink/40 font-semibold tracking-wide text-center">
-            <span>
-              Powered by{" "}
-              <a
-                href="https://uengage.in"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-svs-ink/60 hover:text-svs-orange"
-              >
-                uEngage
-              </a>
-            </span>
-            <span className="hidden sm:inline text-svs-ink/20">|</span>
             <span>© Copyright. All Rights Reserved</span>
           </div>
         </div>
