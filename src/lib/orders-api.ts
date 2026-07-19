@@ -150,11 +150,15 @@ export async function fetchOrder(input: { storeId: string; orderId: string }) {
     customer_mobile?: string | null;
     customer_name?: string | null;
     customer_address?: string | null;
+    customer_latitude?: number | null;
+    customer_longitude?: number | null;
     petpooja_status?: string | null;
     rider_name?: string | null;
     rider_phone?: string | null;
     rider_status?: string | null;
     channel?: string | null;
+    created_at?: string;
+    paid_at?: string | null;
     items: unknown;
   }>(`/orders/${encodeURIComponent(input.orderId)}`, {
     storeId: input.storeId,

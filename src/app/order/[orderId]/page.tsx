@@ -1,37 +1,208 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Footer from "@/components/Footer";
-import { resolveStoreLocation } from "@/data/locations";
+import {
+  resolveStoreLocation,
+  storeDisplayName,
+  type StoreLocation,
+} from "@/data/locations";
 import { fetchOrder } from "@/lib/orders-api";
 import { formatInr } from "@/lib/menu-api";
 
-function statusLabel(order: {
-  status: string;
-  petpooja_status?: string | null;
-  rider_status?: string | null;
-  cod?: boolean;
-}) {
-  if (order.cod && (order.status === "paid" || order.status === "pending_payment")) {
-    return "Order placed · pay on delivery / counter";
+type OrderData = Awaited<ReturnType<typeof fetchOrder>>;
+
+type TrackStep = {
+  id: string;
+  title: string;
+  subtitle: string;
+};
+
+function isCancelled(order: OrderData) {
+  return (
+    order.status === "cancelled" || order.petpooja_status === "cancelled"
+  );
+}
+
+function isDelivered(order: OrderData) {
+  return (
+    order.rider_status === "delivered" ||
+    order.petpooja_status === "delivered" ||
+    order.status === "completed"
+  );
+}
+
+/** 0 = placed … 4 = delivered */
+function progressIndex(order: OrderData, isCod: boolean): number {
+  if (isCancelled(order)) return -1;
+  if (isDelivered(order)) return 4;
+
+  const rs = order.rider_status;
+  if (rs === "out_for_delivery" || order.petpooja_status === "dispatched") {
+    return 3;
+  }
+  if (rs === "picked_up" || rs === "accepted" || rs === "assigned") {
+    return 3;
+  }
+  if (order.petpooja_status === "food_ready") return 2;
+  if (order.petpooja_status === "accepted") return 1;
+  if (order.status === "paid" || (isCod && order.status === "pending_payment")) {
+    return 0;
+  }
+  return 0;
+}
+
+function headline(order: OrderData, isCod: boolean): { title: string; sub: string } {
+  if (isCancelled(order)) {
+    return { title: "Order cancelled", sub: "This order is no longer active." };
+  }
+  if (isDelivered(order)) {
+    return { title: "Order delivered", sub: "Hope you enjoy your meal!" };
   }
   const rs = order.rider_status;
-  if (rs === "out_for_delivery") return "Out for delivery";
-  if (rs === "picked_up") return "Rider picked up";
-  if (rs === "accepted" || rs === "assigned") return "Rider assigned";
-  if (rs === "delivered") return "Delivered";
-  if (rs === "failed") return "Delivery issue";
+  if (rs === "out_for_delivery" || order.petpooja_status === "dispatched") {
+    return {
+      title: "Out for delivery",
+      sub: "Your rider is on the way to you.",
+    };
+  }
+  if (rs === "picked_up") {
+    return {
+      title: "Rider picked up your order",
+      sub: "Heading your way shortly.",
+    };
+  }
+  if (rs === "accepted" || rs === "assigned") {
+    return {
+      title: "Rider assigned",
+      sub: order.rider_name
+        ? `${order.rider_name} will deliver your order.`
+        : "A rider will deliver your order soon.",
+    };
+  }
+  if (order.petpooja_status === "food_ready") {
+    return {
+      title: "Order is ready",
+      sub:
+        order.order_type === "delivery"
+          ? "Waiting for a rider to pick it up."
+          : "You can collect it from the counter.",
+    };
+  }
+  if (order.petpooja_status === "accepted") {
+    return {
+      title: "Preparing your order",
+      sub: "The kitchen has started cooking.",
+    };
+  }
+  if (isCod) {
+    return {
+      title: "Order placed",
+      sub: "Pay cash on delivery. We’ll keep you updated here.",
+    };
+  }
+  return {
+    title: "Order confirmed",
+    sub: "We’ve sent it to the kitchen.",
+  };
+}
 
-  const pp = order.petpooja_status;
-  if (pp === "food_ready") return "Ready";
-  if (pp === "dispatched") return "Out for delivery";
-  if (pp === "delivered" || order.status === "completed") return "Delivered";
-  if (pp === "accepted") return "Preparing";
-  if (pp === "cancelled" || order.status === "cancelled") return "Cancelled";
-  if (order.status === "paid") return "Order confirmed";
-  return order.status.replace(/_/g, " ");
+function stepsFor(order: OrderData): TrackStep[] {
+  if (order.order_type === "delivery") {
+    return [
+      { id: "placed", title: "Order placed", subtitle: "We got your order" },
+      { id: "preparing", title: "Preparing", subtitle: "Kitchen is on it" },
+      { id: "ready", title: "Ready", subtitle: "Packed & waiting" },
+      { id: "onway", title: "On the way", subtitle: "Rider en route" },
+      { id: "done", title: "Delivered", subtitle: "Enjoy!" },
+    ];
+  }
+  return [
+    { id: "placed", title: "Order placed", subtitle: "We got your order" },
+    { id: "preparing", title: "Preparing", subtitle: "Kitchen is on it" },
+    { id: "ready", title: "Ready", subtitle: "Ready for pickup" },
+    { id: "done", title: "Completed", subtitle: "Collected" },
+  ];
+}
+
+function mapEmbedUrl(
+  store: StoreLocation,
+  order: OrderData,
+): string | null {
+  const destLat = order.customer_latitude;
+  const destLng = order.customer_longitude;
+  const hasDest =
+    typeof destLat === "number" &&
+    typeof destLng === "number" &&
+    Number.isFinite(destLat) &&
+    Number.isFinite(destLng) &&
+    !(destLat === 0 && destLng === 0);
+
+  if (hasDest && order.order_type === "delivery") {
+    return `https://maps.google.com/maps?saddr=${store.lat},${store.lng}&daddr=${destLat},${destLng}&hl=en&z=14&output=embed`;
+  }
+  if (hasDest) {
+    return `https://maps.google.com/maps?q=${destLat},${destLng}&z=15&hl=en&output=embed`;
+  }
+  return `https://maps.google.com/maps?q=${store.lat},${store.lng}&z=15&hl=en&output=embed`;
+}
+
+function StepRail({
+  steps,
+  activeIndex,
+  cancelled,
+}: {
+  steps: TrackStep[];
+  activeIndex: number;
+  cancelled: boolean;
+}) {
+  return (
+    <ol className="space-y-0">
+      {steps.map((step, i) => {
+        const done = !cancelled && activeIndex > i;
+        const current = !cancelled && activeIndex === i;
+        const muted = cancelled || activeIndex < i;
+        return (
+          <li key={step.id} className="flex gap-3">
+            <div className="flex flex-col items-center">
+              <span
+                className={[
+                  "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-extrabold border-2 transition-colors",
+                  done
+                    ? "bg-svs-green border-svs-green text-white"
+                    : current
+                      ? "bg-svs-orange border-svs-orange text-white animate-pulse"
+                      : "bg-white border-svs-cream text-svs-ink/30",
+                ].join(" ")}
+              >
+                {done ? "✓" : i + 1}
+              </span>
+              {i < steps.length - 1 ? (
+                <span
+                  className={[
+                    "w-0.5 flex-1 min-h-[22px] my-1 rounded-full",
+                    done ? "bg-svs-green/50" : "bg-svs-cream",
+                  ].join(" ")}
+                />
+              ) : null}
+            </div>
+            <div className={`pb-4 ${muted ? "opacity-40" : ""}`}>
+              <p
+                className={[
+                  "text-sm font-extrabold leading-tight",
+                  current ? "text-svs-orange" : "text-svs-ink",
+                ].join(" ")}
+              >
+                {step.title}
+              </p>
+              <p className="text-xs text-svs-ink/45 mt-0.5">{step.subtitle}</p>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
 }
 
 function OrderInner() {
@@ -40,19 +211,18 @@ function OrderInner() {
   const storeSlug = searchParams.get("store") || "satna";
   const isCod = searchParams.get("cod") === "1";
   const orderId = params.orderId;
+  const store = useMemo(() => resolveStoreLocation(storeSlug), [storeSlug]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [order, setOrder] = useState<Awaited<
-    ReturnType<typeof fetchOrder>
-  > | null>(null);
+  const [order, setOrder] = useState<OrderData | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
       try {
-        const store = resolveStoreLocation(storeSlug);
         const data = await fetchOrder({
           storeId: store.backendStoreId,
           orderId,
@@ -70,98 +240,246 @@ function OrderInner() {
       }
     };
 
-    load();
-    const id = window.setInterval(load, 8000);
+    void load();
+    const id = window.setInterval(load, 5000);
     return () => {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [orderId, storeSlug]);
+  }, [orderId, store.backendStoreId]);
+
+  if (loading && !order) {
+    return (
+      <main className="min-h-[100svh] bg-svs-cream flex items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-3 h-10 w-10 rounded-full border-2 border-svs-orange border-t-transparent animate-spin" />
+          <p className="text-sm font-semibold text-svs-ink/50">
+            Loading your order…
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error || !order) {
+    return (
+      <main className="min-h-[100svh] bg-svs-cream flex items-center justify-center px-4">
+        <div className="text-center max-w-sm">
+          <p className="text-svs-orange-dark font-bold mb-4">
+            {error || "Order not found"}
+          </p>
+          <Link href="/menu" className="text-svs-orange font-extrabold">
+            Back to menu
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
+  const cancelled = isCancelled(order);
+  const active = progressIndex(order, isCod);
+  const { title, sub } = headline(order, isCod);
+  const steps =
+    order.order_type === "delivery"
+      ? stepsFor(order)
+      : stepsFor(order).filter((s) => s.id !== "onway");
+  // For non-delivery, map progress: 0,1,2,4 → 0,1,2,3
+  const railIndex =
+    order.order_type === "delivery"
+      ? active
+      : active >= 4
+        ? 3
+        : active >= 2
+          ? 2
+          : active;
+  const mapUrl = mapEmbedUrl(store, order);
+  const showRider =
+    order.order_type === "delivery" &&
+    !cancelled &&
+    !!(order.rider_name || order.rider_phone || order.rider_status);
 
   return (
-    <>
-      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
-        <div className="max-w-[560px] mx-auto py-10">
-          {loading && !order ? (
-            <p className="text-center text-svs-ink/50">Loading order...</p>
-          ) : error || !order ? (
-            <div className="text-center">
-              <p className="text-svs-orange-dark font-semibold mb-4">
-                {error || "Order not found"}
-              </p>
-              <Link href="/menu" className="text-svs-orange font-bold">
-                Back to menu
-              </Link>
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-svs-cream bg-svs-white p-6 space-y-4 text-center">
-              <p className="text-sm font-bold uppercase tracking-wider text-svs-orange">
-                {statusLabel({ ...order, cod: isCod })}
-              </p>
-              <h1 className="text-3xl font-extrabold text-svs-ink">
-                #{order.order_number}
-              </h1>
-              <p className="text-xs text-svs-ink/40">
-                {String(order.order_number).startsWith("2018")
-                  ? "Website order"
-                  : "Kiosk order"}
-              </p>
-              <p className="text-lg font-bold text-svs-ink">
-                {formatInr(order.grand_total)}
-              </p>
-              <p className="text-sm text-svs-ink/50 capitalize">
-                {order.order_type.replace(/_/g, " ")}
-                {order.customer_mobile
-                  ? ` · ${order.customer_mobile}`
-                  : ""}
-              </p>
-              {order.customer_address ? (
-                <p className="text-sm text-svs-ink/60">{order.customer_address}</p>
-              ) : null}
+    <main className="relative min-h-[100svh] bg-[#eef1f4] overflow-hidden">
+      {/* Map plane */}
+      <div className="absolute inset-x-0 top-0 h-[48svh] sm:h-[52svh]">
+        {mapUrl ? (
+          <iframe
+            title="Delivery map"
+            src={mapUrl}
+            className="h-full w-full border-0 grayscale-[0.15] contrast-[1.05]"
+            loading="eager"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-b from-svs-cream to-[#e8ddd0]" />
+        )}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#eef1f4] to-transparent" />
 
-              {order.rider_name || order.rider_phone || order.rider_status ? (
-                <div className="rounded-xl bg-svs-cream px-4 py-3 text-left">
-                  <p className="text-xs font-bold uppercase tracking-wide text-svs-orange mb-1">
-                    Rider
+        <Link
+          href="/menu"
+          className="absolute top-[max(0.75rem,env(safe-area-inset-top))] left-3 z-10 inline-flex h-10 items-center rounded-full bg-white/95 px-4 text-sm font-extrabold text-svs-ink shadow-md backdrop-blur no-underline"
+        >
+          ← Menu
+        </Link>
+
+        <div className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3 z-10 rounded-full bg-white/95 px-3 py-2 text-[11px] font-bold text-svs-ink/60 shadow-md backdrop-blur">
+          Live · updates every few sec
+        </div>
+      </div>
+
+      {/* Bottom sheet */}
+      <div className="relative z-10 mt-[42svh] sm:mt-[46svh] px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <div className="mx-auto max-w-[480px] rounded-t-[1.75rem] rounded-b-[1.5rem] bg-white shadow-[0_-8px_40px_rgba(15,23,42,0.12)] overflow-hidden">
+          <div className="flex justify-center pt-3 pb-1">
+            <span className="h-1 w-10 rounded-full bg-svs-ink/15" />
+          </div>
+
+          <div className="px-5 pt-2 pb-5 space-y-5">
+            <div>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-svs-orange mb-1">
+                #{order.order_number} · {storeDisplayName(store)}
+              </p>
+              <h1 className="font-bagoss text-[1.65rem] sm:text-[1.85rem] font-extrabold text-svs-ink leading-[1.15] tracking-tight">
+                {title}
+              </h1>
+              <p className="mt-1.5 text-sm text-svs-ink/55 leading-relaxed">
+                {sub}
+              </p>
+            </div>
+
+            {showRider ? (
+              <div className="flex items-center gap-3 rounded-2xl border border-svs-cream bg-svs-cream/60 px-3.5 py-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-svs-orange text-white text-lg font-extrabold">
+                  {(order.rider_name || "R").charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-svs-ink/40">
+                    Your rider
+                  </p>
+                  <p className="truncate font-extrabold text-svs-ink">
+                    {order.rider_name || "Assigned"}
                   </p>
                   {order.rider_status ? (
-                    <p className="text-xs font-semibold text-svs-ink/50 mb-1 capitalize">
+                    <p className="text-xs font-semibold text-svs-ink/45 capitalize">
                       {order.rider_status.replace(/_/g, " ")}
                     </p>
                   ) : null}
-                  {order.rider_name ? (
-                    <p className="font-semibold text-svs-ink">
-                      {order.rider_name}
-                    </p>
+                </div>
+                {order.rider_phone ? (
+                  <a
+                    href={`tel:${order.rider_phone}`}
+                    className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-svs-ink px-4 text-sm font-extrabold text-white no-underline"
+                  >
+                    Call
+                  </a>
+                ) : null}
+              </div>
+            ) : null}
+
+            <div>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.06em] text-svs-ink/35 mb-3">
+                Order status
+              </p>
+              <StepRail
+                steps={steps}
+                activeIndex={cancelled ? -1 : railIndex}
+                cancelled={cancelled}
+              />
+            </div>
+
+            {order.order_type === "delivery" && order.customer_address ? (
+              <div className="rounded-2xl border border-svs-cream px-4 py-3">
+                <p className="text-[11px] font-extrabold uppercase tracking-wide text-svs-ink/35 mb-1">
+                  Delivering to
+                </p>
+                <p className="text-sm font-semibold text-svs-ink leading-snug">
+                  {order.customer_address}
+                </p>
+              </div>
+            ) : null}
+
+            <div className="rounded-2xl border border-svs-cream overflow-hidden">
+              <button
+                type="button"
+                className="flex w-full items-center justify-between px-4 py-3.5 text-left"
+                onClick={() => setDetailsOpen((v) => !v)}
+              >
+                <span className="text-sm font-extrabold text-svs-ink">
+                  Order details · {formatInr(order.grand_total)}
+                </span>
+                <span className="text-svs-ink/40 font-bold text-lg leading-none">
+                  {detailsOpen ? "−" : "+"}
+                </span>
+              </button>
+              {detailsOpen ? (
+                <div className="border-t border-svs-cream px-4 py-3 space-y-2 text-sm text-svs-ink/70">
+                  <Row label="Type" value={order.order_type.replace(/_/g, " ")} />
+                  {isCod ? <Row label="Payment" value="Cash on delivery" /> : null}
+                  {order.customer_mobile ? (
+                    <Row label="Phone" value={order.customer_mobile} />
                   ) : null}
-                  {order.rider_phone ? (
-                    <a
-                      href={`tel:${order.rider_phone}`}
-                      className="text-sm text-svs-orange font-semibold"
-                    >
-                      {order.rider_phone}
-                    </a>
+                  {order.delivery_charges ? (
+                    <Row
+                      label="Delivery"
+                      value={formatInr(order.delivery_charges)}
+                    />
+                  ) : null}
+                  <Row label="Total" value={formatInr(order.grand_total)} bold />
+                  {Array.isArray(order.items) && order.items.length > 0 ? (
+                    <ul className="mt-2 space-y-1.5 border-t border-svs-cream pt-2">
+                      {(order.items as { name?: string; quantity?: number }[]).map(
+                        (line, i) => (
+                          <li
+                            key={`${line.name}-${i}`}
+                            className="flex justify-between gap-3"
+                          >
+                            <span className="min-w-0 truncate">
+                              {line.name || "Item"}
+                            </span>
+                            <span className="shrink-0 font-semibold">
+                              ×{line.quantity || 1}
+                            </span>
+                          </li>
+                        ),
+                      )}
+                    </ul>
                   ) : null}
                 </div>
               ) : null}
-
-              <p className="text-sm text-svs-ink/50">
-                {isCod
-                  ? "Pay the restaurant / rider in cash. Status updates on WhatsApp."
-                  : "We'll update you on WhatsApp when the kitchen is ready."}
-              </p>
-              <Link
-                href="/menu"
-                className="inline-flex h-11 items-center justify-center rounded-full bg-svs-orange text-white font-bold px-6 no-underline"
-              >
-                Order more
-              </Link>
             </div>
-          )}
+
+            <Link
+              href="/menu"
+              className="flex h-12 w-full items-center justify-center rounded-2xl bg-svs-orange text-white font-extrabold no-underline active:scale-[0.99] transition-transform"
+            >
+              Order more
+            </Link>
+          </div>
         </div>
-      </main>
-      <Footer />
-    </>
+      </div>
+    </main>
+  );
+}
+
+function Row({
+  label,
+  value,
+  bold,
+}: {
+  label: string;
+  value: string;
+  bold?: boolean;
+}) {
+  return (
+    <div className="flex justify-between gap-3">
+      <span className="text-svs-ink/45">{label}</span>
+      <span
+        className={`capitalize text-right ${bold ? "font-extrabold text-svs-ink" : "font-semibold"}`}
+      >
+        {value}
+      </span>
+    </div>
   );
 }
 
@@ -169,8 +487,8 @@ export default function OrderPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-[50svh] pt-[120px] text-center text-svs-ink/50">
-          Loading...
+        <main className="min-h-[100svh] bg-svs-cream flex items-center justify-center text-svs-ink/50 text-sm font-semibold">
+          Loading…
         </main>
       }
     >
