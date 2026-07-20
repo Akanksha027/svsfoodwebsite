@@ -10,15 +10,40 @@ import {
   deleteCustomerAddress,
   fetchCustomerOrders,
   setDefaultCustomerAddress,
-  persistCheckoutDeliveryAddress,
+  createCustomerAddress,
   type CustomerOrderSummary,
   type WebsiteCustomerAddress,
 } from "@/lib/website-customer-api";
 import { formatInr } from "@/lib/menu-api";
 import { fetchOrder } from "@/lib/orders-api";
 import { resolveStoreLocation, storeDisplayName } from "@/data/locations";
+import OrderStatusRail from "@/components/OrderStatusRail";
+import OrderContactPhone from "@/components/OrderContactPhone";
+import AccountProfileForm from "@/components/AccountProfileForm";
+import AccountNotificationsForm from "@/components/AccountNotificationsForm";
+import AccountHelpCenter from "@/components/AccountHelpCenter";
+import AddressLabelPicker, {
+  normalizeAddressLabel,
+} from "@/components/AddressLabelPicker";
 
-type AccountSection = "orders" | "addresses";
+type AccountSection =
+  | "profile"
+  | "notifications"
+  | "orders"
+  | "addresses"
+  | "gift_cards"
+  | "rewards"
+  | "help";
+
+const ACCOUNT_TAB_PATH: Record<AccountSection, string> = {
+  orders: "/account",
+  profile: "/account?tab=profile",
+  notifications: "/account?tab=notifications",
+  addresses: "/account?tab=addresses",
+  gift_cards: "/account?tab=gift-cards",
+  rewards: "/account?tab=rewards",
+  help: "/account?tab=help",
+};
 type LiveOrderData = Awaited<ReturnType<typeof fetchOrder>>;
 
 /* ─── Helpers ─────────────────────────────────────────────────────────────── */
@@ -124,6 +149,110 @@ function liveSteps(o: LiveOrderData): TrackStep[] {
 
 /* ─── Icons ───────────────────────────────────────────────────────────────── */
 
+function IconHelp({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.75" />
+      <path
+        d="M9.1 9a3 3 0 015.8 1c0 2-3 2.5-3 4.5M12 17.5h.01"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function IconGift({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M20 12v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8M12 22V7M2 7h20v5H2V7zM12 7H7.5a2.5 2.5 0 110-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 100-5C13 2 12 7 12 7z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconRewards({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 2l2.4 7.2H22l-6 4.8 2.3 7L12 16.8 5.7 21l2.3-7-6-4.8h7.6L12 2z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ComingSoonPanel({
+  title,
+  blurb,
+}: {
+  title: string;
+  blurb: string;
+}) {
+  return (
+    <div className="max-w-xl">
+      <h1 className="text-[20px] sm:text-[22px] font-extrabold text-gray-900 tracking-tight mb-3">
+        {title}
+      </h1>
+      <div className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-6 py-12 sm:py-14 text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff4ee] text-[#f16a34]">
+          <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+              d="M12 6v6l4 2M12 22a10 10 0 100-20 10 10 0 000 20z"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+        <p className="inline-flex items-center rounded-full bg-[#fff4ee] px-3 py-1 text-[11px] font-extrabold tracking-wide text-[#f16a34]">
+          Coming soon
+        </p>
+        <p className="mt-3 text-[15px] font-extrabold text-gray-900">{title}</p>
+        <p className="mt-2 text-[13px] text-gray-500 leading-relaxed max-w-sm mx-auto">
+          {blurb}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function IconBell({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconProfile({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.75" />
+      <path
+        d="M5 19.5c1.8-3.2 4.2-4.5 7-4.5s5.2 1.3 7 4.5"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function IconOrders({ className = "w-5 h-5" }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -184,17 +313,6 @@ function IconChevron({ className = "w-5 h-5" }: { className?: string }) {
   );
 }
 
-function IconMotorbike({ className = "w-5 h-5" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="5" cy="17" r="2.5" stroke="currentColor" strokeWidth="1.75" />
-      <circle cx="19" cy="17" r="2.5" stroke="currentColor" strokeWidth="1.75" />
-      <path d="M14 17H10M5 14.5l3-5h5l3 2.5h3" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M12 9.5V7l2-1.5" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 /* ─── Live Order Tracking Panel ───────────────────────────────────────────── */
 
 function LiveOrderPanel({
@@ -210,6 +328,7 @@ function LiveOrderPanel({
   const [order, setOrder] = useState<LiveOrderData | null>(null);
   const [loadErr, setLoadErr] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const { refreshCustomer } = useWebsiteAuth();
 
   useEffect(() => {
     let cancelled = false;
@@ -293,87 +412,71 @@ function LiveOrderPanel({
       </div>
 
       <div className="px-5 py-4 space-y-4">
-        {/* Rider card */}
-        {showRider && (
-          <div className="flex items-center gap-3 rounded-xl bg-gray-900 px-4 py-3">
-            <div className="h-11 w-11 shrink-0 flex items-center justify-center rounded-full bg-[#f16a34] text-white font-extrabold text-lg">
-              {(order.rider_name || "R").charAt(0).toUpperCase()}
+        {/* Customer phone + address */}
+        {(order.customer_mobile ||
+          (order.order_type === "delivery" && order.customer_address)) ? (
+          <div className="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 space-y-3">
+            <div className="flex gap-2.5">
+              <svg className="w-4 h-4 shrink-0 text-[#f16a34] mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+              <div className="min-w-0 flex-1">
+                <OrderContactPhone
+                  phone={order.customer_mobile}
+                  canChange={
+                    !cancelled &&
+                    order.can_change_customer_mobile !== false &&
+                    !order.customer_mobile_changed
+                  }
+                  storeId={store.backendStoreId}
+                  orderId={order.order_id}
+                  tone="account"
+                  onChanged={(mobile) => {
+                    setOrder((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            customer_mobile: mobile,
+                            customer_mobile_changed: true,
+                            can_change_customer_mobile: false,
+                          }
+                        : prev,
+                    );
+                    void refreshCustomer();
+                  }}
+                />
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white/40">Your rider</p>
-              <p className="font-extrabold text-white truncate">{order.rider_name || "Assigned"}</p>
-              {order.rider_status && (
-                <p className="text-xs text-white/50 capitalize flex items-center gap-1 mt-0.5">
-                  <IconMotorbike className="w-3.5 h-3.5" />
-                  {order.rider_status.replace(/_/g, " ")}
-                </p>
-              )}
-            </div>
-            {order.rider_phone && (
-              <a
-                href={`tel:${order.rider_phone}`}
-                className="shrink-0 h-10 px-4 rounded-full bg-[#f16a34] text-white text-sm font-extrabold no-underline flex items-center justify-center"
-              >
-                Call
-              </a>
-            )}
+            {order.order_type === "delivery" && order.customer_address ? (
+              <div className="flex gap-2.5">
+                <IconPin className="w-4 h-4 shrink-0 text-[#f16a34] mt-0.5" />
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">Delivering to</p>
+                  <p className="text-sm font-semibold text-gray-800 leading-snug">{order.customer_address}</p>
+                </div>
+              </div>
+            ) : null}
           </div>
-        )}
+        ) : null}
 
-        {/* Status rail */}
+        {/* Status boxes */}
         <div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Order status</p>
-          <ol className="space-y-0">
-            {steps.map((step, i) => {
-              const done = !cancelled && railIndex > i;
-              const current = !cancelled && railIndex === i;
-              const muted = cancelled || railIndex < i;
-              return (
-                <li key={step.id} className="flex gap-3">
-                  <div className="flex flex-col items-center">
-                    <span
-                      className={[
-                        "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-extrabold border-2 transition-all duration-500",
-                        done
-                          ? "bg-emerald-500 border-emerald-500 text-white"
-                          : current
-                            ? "bg-[#f16a34] border-[#f16a34] text-white animate-pulse"
-                            : "bg-white border-gray-200 text-gray-300",
-                      ].join(" ")}
-                    >
-                      {done ? "✓" : i + 1}
-                    </span>
-                    {i < steps.length - 1 && (
-                      <span
-                        className={[
-                          "w-0.5 flex-1 min-h-[22px] my-1 rounded-full transition-colors duration-500",
-                          done ? "bg-emerald-400/60" : "bg-gray-100",
-                        ].join(" ")}
-                      />
-                    )}
-                  </div>
-                  <div className={`pb-3.5 ${muted ? "opacity-35" : ""}`}>
-                    <p className={["text-sm font-extrabold leading-tight", current ? "text-[#f16a34]" : "text-gray-900"].join(" ")}>
-                      {step.title}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-0.5">{step.subtitle}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
+          <OrderStatusRail
+            steps={steps}
+            activeIndex={cancelled ? -1 : railIndex}
+            cancelled={cancelled}
+            rider={
+              showRider
+                ? {
+                    name: order.rider_name,
+                    phone: order.rider_phone,
+                    status: order.rider_status,
+                  }
+                : null
+            }
+          />
         </div>
-
-        {/* Delivery address */}
-        {order.order_type === "delivery" && order.customer_address && (
-          <div className="flex gap-2.5 rounded-xl bg-gray-50 border border-gray-100 px-4 py-3">
-            <IconPin className="w-4 h-4 shrink-0 text-[#f16a34] mt-0.5" />
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-0.5">Delivering to</p>
-              <p className="text-sm font-semibold text-gray-800 leading-snug">{order.customer_address}</p>
-            </div>
-          </div>
-        )}
 
         {/* COD note */}
         {isCod && !liveIsDelivered(order) && (
@@ -410,14 +513,16 @@ function OrderCard({ order, highlighted }: { order: CustomerOrderSummary; highli
   return (
     <Link
       href={`/order/${encodeURIComponent(order.id)}?store=${encodeURIComponent(order.store_id)}`}
-      className={`block rounded-xl border bg-white px-4 py-3.5 no-underline shadow-sm hover:border-gray-300 hover:shadow transition-all ${
-        highlighted ? "border-[#f16a34]/50 ring-2 ring-[#f16a34]/20" : "border-gray-200/90"
+      className={`group block rounded-2xl bg-white px-4 py-3.5 no-underline border transition-all ${
+        highlighted
+          ? "border-[#f16a34]/40 shadow-[0_0_0_3px_rgba(241,106,52,0.12)]"
+          : "border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_14px_rgba(0,0,0,0.06)]"
       }`}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3.5">
         <div
-          className={`shrink-0 flex h-10 w-10 items-center justify-center rounded-full ${
-            past ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-[#f16a34]"
+          className={`shrink-0 flex h-11 w-11 items-center justify-center rounded-xl ${
+            past ? "bg-emerald-50 text-emerald-600" : "bg-[#fff4ee] text-[#f16a34]"
           }`}
         >
           {past ? (
@@ -432,19 +537,19 @@ function OrderCard({ order, highlighted }: { order: CustomerOrderSummary; highli
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[15px] font-bold text-gray-900 leading-snug">
+          <p className="text-[14px] sm:text-[15px] font-extrabold text-gray-900 leading-snug">
             {orderStatusHeadline(order.status)}
           </p>
-          <p className="text-[13px] text-gray-500 mt-0.5 tabular-nums">
+          <p className="text-[12px] sm:text-[13px] text-gray-500 mt-0.5 tabular-nums">
             {order.total_amount != null ? formatInr(order.total_amount) : "-"}
-            <span className="mx-1.5 text-gray-300">•</span>
+            <span className="mx-1.5 text-gray-300">·</span>
             {formatOrderWhen(order.created_at)}
             {order.cod_unpaid ? (
               <span className="ml-2 text-[10px] font-bold text-[#c2410c]">COD · unpaid</span>
             ) : null}
           </p>
         </div>
-        <IconChevron className="w-5 h-5 shrink-0 text-gray-400" />
+        <IconChevron className="w-4 h-4 shrink-0 text-gray-300 group-hover:text-gray-500 transition-colors" />
       </div>
     </Link>
   );
@@ -461,26 +566,28 @@ function AddressCard({
   busy: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-gray-200/90 bg-white px-4 py-3.5 shadow-sm">
-      <div className="flex gap-3">
-        <div className="shrink-0 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-600">
+    <div className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-4 py-4">
+      <div className="flex gap-3.5">
+        <div className="shrink-0 flex h-11 w-11 items-center justify-center rounded-xl bg-[#fff4ee] text-[#f16a34]">
           <IconPin className="w-5 h-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[15px] font-bold text-gray-900">
-            {addr.label}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center rounded-lg bg-gray-100/90 px-2 py-0.5 text-[11px] font-extrabold text-gray-700">
+              {addr.label || "Home"}
+            </span>
             {addr.is_default ? (
-              <span className="ml-2 text-[11px] font-bold text-[#f16a34]">Default</span>
+              <span className="text-[11px] font-extrabold text-[#0c831f]">Default</span>
             ) : null}
-          </p>
-          <p className="text-[13px] text-gray-600 mt-1 leading-relaxed">{addr.formatted_address}</p>
-          <div className="flex flex-wrap gap-2 mt-3">
+          </div>
+          <p className="text-[13px] text-gray-600 mt-1.5 leading-relaxed">{addr.formatted_address}</p>
+          <div className="flex flex-wrap gap-2 mt-3.5">
             {!addr.is_default ? (
               <button
                 type="button"
                 disabled={busy}
                 onClick={onDefault}
-                className="text-[12px] font-bold text-[#f16a34] bg-orange-50 px-3 py-1.5 rounded-lg cursor-pointer border-0 disabled:opacity-50"
+                className="text-[12px] font-extrabold text-[#f16a34] bg-[#fff4ee] px-3 py-1.5 rounded-lg cursor-pointer border-0 disabled:opacity-50"
               >
                 Set default
               </button>
@@ -489,7 +596,7 @@ function AddressCard({
               type="button"
               disabled={busy}
               onClick={onDelete}
-              className="text-[12px] font-bold text-red-600 bg-red-50 px-3 py-1.5 rounded-lg cursor-pointer border-0 disabled:opacity-50"
+              className="text-[12px] font-extrabold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-lg cursor-pointer border-0 disabled:opacity-50 hover:text-red-600 hover:bg-red-50"
             >
               Remove
             </button>
@@ -511,6 +618,7 @@ function NewAddressForm({ customer, onCancel, onSaved }: { customer: any, onCanc
   const [area, setArea] = useState("");
   const [landmark, setLandmark] = useState("");
   const [pincode, setPincode] = useState("");
+  const [label, setLabel] = useState("Home");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -522,10 +630,16 @@ function NewAddressForm({ customer, onCancel, onSaved }: { customer: any, onCanc
     setBusy(true);
     setError(null);
     try {
-      await persistCheckoutDeliveryAddress({
-        customer,
-        flat, street, area, landmark, pincode,
-        latitude: null, longitude: null,
+      await createCustomerAddress({
+        label: normalizeAddressLabel(label),
+        flat: flat.trim(),
+        street: street.trim(),
+        area: area.trim(),
+        landmark: landmark.trim(),
+        pincode: pincode.trim(),
+        latitude: null,
+        longitude: null,
+        is_default: customer.addresses.length === 0,
       });
       onSaved();
     } catch (e) {
@@ -536,9 +650,11 @@ function NewAddressForm({ customer, onCancel, onSaved }: { customer: any, onCanc
   };
 
   return (
-    <div className="rounded-xl bg-white border border-gray-200 p-5 space-y-4 mb-4">
-      <h3 className="text-[13px] font-extrabold uppercase tracking-wider text-gray-900">Add New Address</h3>
+    <div className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5 space-y-4 mb-1">
+      <h3 className="text-[13px] font-extrabold text-gray-900">Add new address</h3>
       {error && <p className="text-xs font-semibold text-[#c2410c] bg-orange-50 border border-orange-200 rounded-lg px-3 py-2">{error}</p>}
+
+      <AddressLabelPicker label={label} onChange={setLabel} />
       
       <label className="block text-xs">
         <span className="font-semibold text-gray-700">Flat / House *</span>
@@ -574,12 +690,24 @@ function NewAddressForm({ customer, onCancel, onSaved }: { customer: any, onCanc
 /* ─── Main Page ───────────────────────────────────────────────────────────── */
 
 const navBtn =
-  "w-full flex items-center gap-3 px-4 py-3 text-left text-[15px] font-medium border-0 cursor-pointer transition-colors";
+  "w-full flex items-center gap-3 px-3 py-2.5 text-left text-[14px] font-semibold border-0 cursor-pointer transition-colors rounded-xl";
+
+function PageTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-3 mb-4 max-w-2xl">
+      <h1 className="text-[20px] sm:text-[22px] font-extrabold text-gray-900 tracking-tight">
+        {children}
+      </h1>
+      {action}
+    </div>
+  );
+}
 
 function AccountInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { customer, loading, logout, refreshCustomer, openLogin } = useWebsiteAuth();
+  const { customer, loading, logout, refreshCustomer, openLogin, setCustomer } =
+    useWebsiteAuth();
   const [section, setSection] = useState<AccountSection>("orders");
   const [ordersTab, setOrdersTab] = useState<"active" | "past">("past");
   const [orders, setOrders] = useState<{
@@ -594,13 +722,19 @@ function AccountInner() {
   const [liveOrderId, setLiveOrderId] = useState<string | null>(null);
   const [liveStoreSlug, setLiveStoreSlug] = useState<string | null>(null);
 
-  // On mount: read URL params to set up the correct state
+  // Sync section from URL (navbar “Update address”, deep links, etc.)
   useEffect(() => {
     const tab = searchParams.get("tab");
     const orderId = searchParams.get("order");
     const storeSlug = searchParams.get("store");
 
-    setSection(tab === "addresses" ? "addresses" : "orders");
+    if (tab === "addresses") setSection("addresses");
+    else if (tab === "profile") setSection("profile");
+    else if (tab === "notifications") setSection("notifications");
+    else if (tab === "gift-cards" || tab === "gift_cards") setSection("gift_cards");
+    else if (tab === "rewards") setSection("rewards");
+    else if (tab === "help") setSection("help");
+    else setSection("orders");
 
     if (orderId && storeSlug) {
       // Came from COD checkout → show active tab + live panel
@@ -608,14 +742,12 @@ function AccountInner() {
       setLiveOrderId(orderId);
       setLiveStoreSlug(storeSlug);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams]);
 
   const goSection = useCallback(
     (s: AccountSection) => {
       setSection(s);
-      const path = s === "addresses" ? "/account?tab=addresses" : "/account";
-      router.replace(path, { scroll: false });
+      router.replace(ACCOUNT_TAB_PATH[s], { scroll: false });
     },
     [router],
   );
@@ -661,12 +793,15 @@ function AccountInner() {
   };
 
   const shell =
-    "min-h-[calc(100dvh-3.5rem)] sm:min-h-[calc(100dvh-4rem)] lg:min-h-[calc(100dvh-72px)] pt-14 sm:pt-16 lg:pt-[72px] bg-[#f4f5f7]";
+    "min-h-[calc(100dvh-3.5rem)] sm:min-h-[calc(100dvh-4rem)] lg:min-h-[calc(100dvh-72px)] pt-14 sm:pt-16 lg:pt-[72px] bg-[#f4f6fb]";
 
   if (loading) {
     return (
       <div className={shell}>
-        <p className="p-6 text-sm text-gray-500">Loading account…</p>
+        <div className="mx-auto max-w-6xl px-4 py-10">
+          <div className="h-24 rounded-2xl bg-white/70 animate-pulse" />
+          <div className="mt-4 h-48 rounded-2xl bg-white/70 animate-pulse" />
+        </div>
       </div>
     );
   }
@@ -674,15 +809,18 @@ function AccountInner() {
   if (!customer) {
     return (
       <div className={`${shell} flex items-center justify-center px-4`}>
-        <div className="text-center max-w-sm">
+        <div className="text-center max-w-sm rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-6 py-10">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff4ee] text-[#f16a34]">
+            <IconProfile className="w-7 h-7" />
+          </div>
           <h1 className="text-xl font-extrabold text-gray-900 mb-2">My account</h1>
-          <p className="text-sm text-gray-600 mb-6">
-            Log in with your mobile to see orders and saved addresses.
+          <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+            Log in with your mobile to manage orders, addresses, and more.
           </p>
           <button
             type="button"
             onClick={openLogin}
-            className="h-11 px-6 rounded-xl bg-gray-900 text-white text-sm font-extrabold cursor-pointer border-0"
+            className="h-11 w-full rounded-xl bg-[#f16a34] text-white text-sm font-extrabold cursor-pointer border-0"
           >
             Continue with mobile
           </button>
@@ -693,87 +831,180 @@ function AccountInner() {
 
   const list = ordersTab === "active" ? orders?.active ?? [] : orders?.past ?? [];
 
-  const navItem = (s: AccountSection, label: string, icon: ReactNode) => (
-    <button
-      type="button"
-      onClick={() => goSection(s)}
-      className={`${navBtn} ${
-        section === s
-          ? "bg-gray-100 text-gray-900 font-semibold"
-          : "bg-transparent text-gray-700 hover:bg-gray-50"
-      }`}
+  const navItem = (s: AccountSection, label: string, icon: ReactNode) => {
+    const active = section === s;
+    return (
+      <button
+        type="button"
+        onClick={() => goSection(s)}
+        className={`${navBtn} ${
+          active
+            ? "bg-[#fff4ee] text-[#f16a34]"
+            : "bg-transparent text-gray-700 hover:bg-gray-50"
+        }`}
+      >
+        <span
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+            active ? "bg-white text-[#f16a34] shadow-sm" : "bg-gray-100 text-gray-500"
+          }`}
+        >
+          {icon}
+        </span>
+        <span className="flex-1 min-w-0 truncate">{label}</span>
+        <IconChevron
+          className={`w-4 h-4 shrink-0 ${active ? "text-[#f16a34]/70" : "text-gray-300"}`}
+        />
+      </button>
+    );
+  };
+
+  const navLink = (href: string, label: string, icon: ReactNode) => (
+    <Link
+      href={href}
+      className={`${navBtn} text-gray-700 hover:bg-gray-50 no-underline`}
     >
-      <span className="text-gray-500">{icon}</span>
-      {label}
-    </button>
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500">
+        {icon}
+      </span>
+      <span className="flex-1 min-w-0 truncate">{label}</span>
+      <IconChevron className="w-4 h-4 shrink-0 text-gray-300" />
+    </Link>
   );
 
   return (
     <div className={shell}>
-      <div className="mx-auto max-w-6xl flex flex-col lg:flex-row lg:items-stretch">
-        {/* Sidebar */}
-        <aside className="lg:w-[272px] shrink-0 lg:sticky lg:top-[72px] lg:max-h-[calc(100dvh-72px)] lg:overflow-y-auto bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col">
-          <div className="px-4 py-4 lg:py-5 border-b border-gray-100">
-            <p className="text-[15px] font-bold text-gray-900 tabular-nums">+91 {customer.phone}</p>
-            {customer.name ? (
-              <p className="text-[13px] text-gray-500 mt-0.5 truncate">{customer.name}</p>
-            ) : null}
+      <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6 py-4 sm:py-5 lg:py-6 flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-5">
+        <aside className="lg:w-[300px] shrink-0 lg:sticky lg:top-[88px] space-y-3">
+          <div className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
+            <div className="px-4 py-4 flex items-center gap-3.5 bg-gradient-to-br from-[#fff8f4] to-white border-b border-black/[0.03]">
+              <div className="relative h-14 w-14 shrink-0 rounded-2xl overflow-hidden bg-[#fff4ee] ring-2 ring-white shadow-sm">
+                {customer.photo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={customer.photo_url}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="absolute inset-0 flex items-center justify-center text-lg font-extrabold text-[#f16a34]">
+                    {(customer.name || customer.phone || "U").charAt(0).toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[16px] font-extrabold text-gray-900 truncate leading-tight">
+                  {customer.name || "Your account"}
+                </p>
+                <p className="text-[13px] text-gray-500 tabular-nums mt-1">
+                  +91 {customer.phone}
+                </p>
+                {customer.email ? (
+                  <p className="text-[12px] text-gray-400 truncate mt-0.5">{customer.email}</p>
+                ) : null}
+              </div>
+            </div>
+
+            <nav className="p-2 space-y-0.5">
+              <p className="px-3 pt-2 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-gray-400">
+                Account
+              </p>
+              {navItem("profile", "Profile", <IconProfile className="w-[18px] h-[18px]" />)}
+              {navItem("orders", "Orders", <IconOrders className="w-[18px] h-[18px]" />)}
+              {navItem("addresses", "Addresses", <IconPin className="w-[18px] h-[18px]" />)}
+              {navItem("notifications", "Notifications", <IconBell className="w-[18px] h-[18px]" />)}
+
+              <p className="px-3 pt-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-gray-400">
+                Benefits
+              </p>
+              {navItem("gift_cards", "Gift cards", <IconGift className="w-[18px] h-[18px]" />)}
+              {navItem("rewards", "Rewards", <IconRewards className="w-[18px] h-[18px]" />)}
+
+              <p className="px-3 pt-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-gray-400">
+                Support
+              </p>
+              {navItem("help", "Help Center", <IconHelp className="w-[18px] h-[18px]" />)}
+              {navLink("/privacy-policy", "Privacy", <IconLock className="w-[18px] h-[18px]" />)}
+
+              <div className="pt-1 mt-1 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => void handleLogout()}
+                  className={`${navBtn} text-gray-600 hover:bg-red-50 hover:text-red-600`}
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-500">
+                    <IconLogout className="w-[18px] h-[18px]" />
+                  </span>
+                  <span className="flex-1 text-left">Log out</span>
+                </button>
+              </div>
+            </nav>
           </div>
 
-          <nav className="py-2 flex-1">
-            {navItem("addresses", "My Addresses", <IconPin />)}
-            {navItem("orders", "My Orders", <IconOrders />)}
-            <Link
-              href="/privacy-policy"
-              className={`${navBtn} text-gray-700 hover:bg-gray-50 no-underline`}
-            >
-              <span className="text-gray-500"><IconLock /></span>
-              Account privacy
-            </Link>
-            <button
-              type="button"
-              onClick={() => void handleLogout()}
-              className={`${navBtn} text-gray-700 hover:bg-gray-50 mt-1`}
-            >
-              <span className="text-gray-500"><IconLogout /></span>
-              Logout
-            </button>
-          </nav>
-
-          <div className="hidden lg:block border-t border-gray-100 p-4">
+          <div className="hidden lg:block rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-3">
             <AppDownloadPromo compact />
           </div>
         </aside>
 
-        {/* Main */}
-        <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-10">
-          {section === "orders" ? (
+        <main className="flex-1 min-w-0 pb-20 lg:pb-6">
+          {section === "profile" ? (
             <>
-              <h1 className="text-[22px] font-extrabold text-gray-900 mb-4 lg:mb-5">My Orders</h1>
+              <PageTitle>Profile</PageTitle>
+              <AccountProfileForm
+                key={customer.id}
+                customer={customer}
+                onSaved={(c) => setCustomer(c)}
+              />
+            </>
+          ) : section === "notifications" ? (
+            <>
+              <PageTitle>Notifications</PageTitle>
+              <AccountNotificationsForm
+                key={`${customer.id}-notif`}
+                customer={customer}
+                onSaved={(c) => setCustomer(c)}
+              />
+            </>
+          ) : section === "gift_cards" ? (
+            <ComingSoonPanel
+              title="Gift cards"
+              blurb="Buy and redeem SVS Food gift cards soon — perfect for sharing a meal with someone special."
+            />
+          ) : section === "rewards" ? (
+            <ComingSoonPanel
+              title="Rewards"
+              blurb="Earn points on every order and unlock member perks. Loyalty rewards are on the way."
+            />
+          ) : section === "help" ? (
+            <>
+              <PageTitle>Help Center</PageTitle>
+              <AccountHelpCenter />
+            </>
+          ) : section === "orders" ? (
+            <>
+              <PageTitle>Orders</PageTitle>
 
-              {/* Live tracking panel — shown right at the top when redirected from COD checkout */}
               {liveOrderId && liveStoreSlug && (
-                <LiveOrderPanel
-                  orderId={liveOrderId}
-                  storeSlug={liveStoreSlug}
-                  onDismiss={() => {
-                    setLiveOrderId(null);
-                    setLiveStoreSlug(null);
-                    // Clean URL params
-                    router.replace("/account", { scroll: false });
-                  }}
-                />
+                <div className="mb-4 max-w-2xl">
+                  <LiveOrderPanel
+                    orderId={liveOrderId}
+                    storeSlug={liveStoreSlug}
+                    onDismiss={() => {
+                      setLiveOrderId(null);
+                      setLiveStoreSlug(null);
+                      router.replace("/account", { scroll: false });
+                    }}
+                  />
+                </div>
               )}
 
-              {/* Active / Past tabs */}
-              <div className="flex gap-2 mb-4">
+              <div className="inline-flex p-1 rounded-xl bg-white border border-black/[0.04] shadow-[0_1px_2px_rgba(0,0,0,0.03)] mb-4">
                 <button
                   type="button"
                   onClick={() => setOrdersTab("active")}
-                  className={`px-4 py-2 rounded-full text-[13px] font-bold cursor-pointer border transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-[13px] font-extrabold cursor-pointer border-0 transition-colors ${
                     ordersTab === "active"
-                      ? "bg-white border-gray-900 text-gray-900 shadow-sm"
-                      : "bg-transparent border-gray-200 text-gray-600 hover:border-gray-300"
+                      ? "bg-[#0c831f] text-white shadow-sm"
+                      : "bg-transparent text-gray-600 hover:text-gray-900"
                   }`}
                 >
                   Active
@@ -781,29 +1012,37 @@ function AccountInner() {
                 <button
                   type="button"
                   onClick={() => setOrdersTab("past")}
-                  className={`px-4 py-2 rounded-full text-[13px] font-bold cursor-pointer border transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-[13px] font-extrabold cursor-pointer border-0 transition-colors ${
                     ordersTab === "past"
-                      ? "bg-white border-gray-900 text-gray-900 shadow-sm"
-                      : "bg-transparent border-gray-200 text-gray-600 hover:border-gray-300"
+                      ? "bg-[#0c831f] text-white shadow-sm"
+                      : "bg-transparent text-gray-600 hover:text-gray-900"
                   }`}
                 >
                   Past
                 </button>
               </div>
 
-              <div className="space-y-3 max-w-2xl">
+              <div className="space-y-2.5 max-w-2xl">
                 {ordersLoading ? (
-                  <p className="text-sm text-gray-500 py-8">Loading orders…</p>
+                  <div className="rounded-2xl bg-white border border-black/[0.04] px-5 py-10 text-center text-sm text-gray-500">
+                    Loading orders…
+                  </div>
                 ) : list.length === 0 ? (
-                  <div className="rounded-xl bg-white border border-gray-200 px-6 py-12 text-center">
-                    <p className="text-sm text-gray-500">
-                      No {ordersTab} orders yet.
+                  <div className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-6 py-12 text-center">
+                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100 text-gray-400">
+                      <IconOrders className="w-6 h-6" />
+                    </div>
+                    <p className="text-[14px] font-bold text-gray-800">
+                      No {ordersTab} orders yet
+                    </p>
+                    <p className="text-[13px] text-gray-500 mt-1">
+                      When you order, it will show up here.
                     </p>
                     <Link
                       href="/menu"
-                      className="inline-block mt-4 text-sm font-bold text-[#f16a34] no-underline"
+                      className="inline-flex mt-5 h-10 items-center px-5 rounded-xl bg-[#f16a34] text-white text-sm font-extrabold no-underline"
                     >
-                      Order from menu →
+                      Browse menu
                     </Link>
                   </div>
                 ) : (
@@ -819,19 +1058,22 @@ function AccountInner() {
             </>
           ) : (
             <>
-              <div className="flex items-center justify-between max-w-2xl mb-4 lg:mb-5">
-                <h1 className="text-[22px] font-extrabold text-gray-900">My Addresses</h1>
-                {!addingAddress && (
-                  <button
-                    type="button"
-                    onClick={() => setAddingAddress(true)}
-                    className="px-4 py-2 rounded-full text-[13px] font-bold bg-[#fff4ee] text-[#f16a34] cursor-pointer hover:bg-orange-100 transition-colors border-0"
-                  >
-                    + Add new
-                  </button>
-                )}
-              </div>
-              <div className="space-y-3 max-w-2xl">
+              <PageTitle
+                action={
+                  !addingAddress ? (
+                    <button
+                      type="button"
+                      onClick={() => setAddingAddress(true)}
+                      className="h-9 px-3.5 rounded-xl text-[13px] font-extrabold bg-[#fff4ee] text-[#f16a34] cursor-pointer hover:bg-orange-100 transition-colors border-0"
+                    >
+                      + Add new
+                    </button>
+                  ) : null
+                }
+              >
+                Addresses
+              </PageTitle>
+              <div className="space-y-2.5 max-w-2xl">
                 {addingAddress && (
                   <NewAddressForm
                     customer={customer}
@@ -842,12 +1084,23 @@ function AccountInner() {
                     }}
                   />
                 )}
-                
+
                 {customer.addresses.length === 0 && !addingAddress ? (
-                  <div className="rounded-xl bg-white border border-gray-200 px-6 py-12 text-center">
-                    <p className="text-sm text-gray-500 leading-relaxed">
-                      No saved addresses yet. Add one when you checkout delivery while logged in.
+                  <div className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] px-6 py-12 text-center">
+                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff4ee] text-[#f16a34]">
+                      <IconPin className="w-6 h-6" />
+                    </div>
+                    <p className="text-[14px] font-bold text-gray-800">No saved addresses</p>
+                    <p className="text-[13px] text-gray-500 mt-1 leading-relaxed max-w-xs mx-auto">
+                      Add one for faster delivery checkout next time.
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => setAddingAddress(true)}
+                      className="inline-flex mt-5 h-10 items-center px-5 rounded-xl bg-[#f16a34] text-white text-sm font-extrabold border-0 cursor-pointer"
+                    >
+                      Add address
+                    </button>
                   </div>
                 ) : (
                   customer.addresses.map((addr) => (
@@ -864,7 +1117,7 @@ function AccountInner() {
             </>
           )}
 
-          <div className="lg:hidden mt-8 max-w-2xl">
+          <div className="lg:hidden mt-6 max-w-2xl rounded-2xl bg-white border border-black/[0.04] p-3">
             <AppDownloadPromo />
           </div>
         </main>

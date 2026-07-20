@@ -35,9 +35,11 @@ export default function SavedAddressPicker({
               }`}
             >
               <span className="block text-[12px] font-extrabold text-gray-900">
-                {addr.label}
+                <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-gray-700 mr-1.5">
+                  {addr.label || "Home"}
+                </span>
                 {addr.is_default ? (
-                  <span className="ml-1.5 text-[10px] font-bold text-[#f16a34]">
+                  <span className="text-[10px] font-bold text-[#f16a34]">
                     Default
                   </span>
                 ) : null}

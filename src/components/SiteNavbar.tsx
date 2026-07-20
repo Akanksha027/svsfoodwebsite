@@ -7,16 +7,19 @@ import { useMenuCart } from "@/context/MenuCartContext";
 
 /**
  * Transparent hero navbar only while #hero-section sits behind the bar.
- * All other pages and scrolled home sections use the solid white bar.
+ * Elsewhere the bar uses cream so it matches the page and covers scrolled content.
  * Menu and account pages use Blinkit-style delivery + cart in the same navbar.
+ * Account also shows a Menu shortcut left of cart.
  */
 export default function SiteNavbar() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isAccount =
+    pathname === "/account" || pathname.startsWith("/account/");
   const isMenu =
     pathname === "/menu" ||
     pathname.startsWith("/menu/") ||
-    pathname === "/account";
+    isAccount;
   const { closeCart, isOpen } = useMenuCart();
   const [overHero, setOverHero] = useState(isHome);
 
@@ -52,5 +55,12 @@ export default function SiteNavbar() {
 
   const variant = isHome && overHero ? "hero" : "default";
 
-  return <Navbar variant={variant} menuMode={isMenu} homePage={isHome} />;
+  return (
+    <Navbar
+      variant={variant}
+      menuMode={isMenu}
+      accountMode={isAccount}
+      homePage={isHome}
+    />
+  );
 }

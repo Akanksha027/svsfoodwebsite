@@ -66,6 +66,7 @@ export function useWebCheckout(options: Options = {}) {
   const [area, setArea] = useState("");
   const [landmark, setLandmark] = useState("");
   const [pincode, setPincode] = useState("");
+  const [addressLabel, setAddressLabel] = useState("Home");
   const [addressHint, setAddressHint] = useState<DeliveryAddressHint | null>(
     null,
   );
@@ -311,7 +312,8 @@ export function useWebCheckout(options: Options = {}) {
         isMock: session.is_mock === true,
       };
 
-      clearCart();
+      // Don't clear cart here — caller switches to pay UI first to avoid
+      // an empty-cart flash, then clears.
       return { kind: "online", pending };
     } catch (err) {
       const message =
@@ -347,6 +349,7 @@ export function useWebCheckout(options: Options = {}) {
     setArea(addr.area);
     setLandmark(addr.landmark || "");
     setPincode(addr.pincode || "");
+    setAddressLabel(addr.label || "Home");
     if (addr.latitude != null && addr.longitude != null) {
       setPinReady(true);
       setPinMessage(null);
@@ -402,6 +405,8 @@ export function useWebCheckout(options: Options = {}) {
     setLandmark,
     pincode,
     setPincode,
+    addressLabel,
+    setAddressLabel,
     addressHint,
     addressLoading,
     pinReady,

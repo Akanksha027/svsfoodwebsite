@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { SITE_URL } from "@/lib/config";
 import {
-  appDownloadPageUrl,
+  APP_DOWNLOAD_URL,
   storeQrImageUrl,
 } from "@/lib/app-store-links";
 
@@ -17,7 +15,7 @@ export default function AppDownloadPromo({
   className = "",
   compact = false,
 }: Props) {
-  const downloadUrl = appDownloadPageUrl(SITE_URL);
+  const downloadUrl = APP_DOWNLOAD_URL;
   const qrSize = compact ? 64 : 72;
   const qrSrc = storeQrImageUrl(downloadUrl, qrSize * 2);
 
@@ -25,8 +23,10 @@ export default function AppDownloadPromo({
     <div
       className={`flex items-center gap-2.5 ${compact ? "" : "rounded-xl border border-gray-100 bg-gray-50 p-3"} ${className}`.trim()}
     >
-      <Link
-        href="/app"
+      <a
+        href={downloadUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         className="shrink-0 rounded-md border border-gray-200 bg-white p-1 shadow-sm no-underline hover:border-[#f16a34]/40 transition-colors"
         aria-label="Download SVS Food app"
       >
@@ -38,7 +38,7 @@ export default function AppDownloadPromo({
           height={qrSize}
           className="block rounded-sm"
         />
-      </Link>
+      </a>
       <div className="min-w-0">
         <p
           className={`font-extrabold text-gray-900 leading-tight ${

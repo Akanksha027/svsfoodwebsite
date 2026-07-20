@@ -4,11 +4,14 @@ export const SVS_PLAY_STORE_URL =
 export const SVS_APP_STORE_URL =
   "https://apps.apple.com/in/app/svs-food/id1577576347";
 
-/** On-site redirect: QR points here; server picks Play vs App Store from User-Agent. */
+/** Canonical app landing — QR / “Get the app” points here. */
+export const APP_DOWNLOAD_URL = "https://app.svsfood.com";
+
+/** Legacy on-site path (redirects / picks store from User-Agent). */
 export const APP_DOWNLOAD_PATH = "/app";
 
-export function appDownloadPageUrl(siteOrigin: string) {
-  return `${siteOrigin.replace(/\/+$/, "")}${APP_DOWNLOAD_PATH}`;
+export function appDownloadPageUrl(_siteOrigin?: string) {
+  return APP_DOWNLOAD_URL;
 }
 
 export function storeUrlForUserAgent(userAgent: string): string | null {

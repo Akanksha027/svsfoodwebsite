@@ -6,6 +6,7 @@ import { formatInr } from "@/lib/menu-api";
 import type { useWebCheckout } from "@/hooks/useWebCheckout";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import SavedAddressPicker from "@/components/SavedAddressPicker";
+import AddressLabelPicker from "@/components/AddressLabelPicker";
 import PhoneWhatsAppAuth from "@/components/PhoneWhatsAppAuth";
 import { useInlinePhoneOtp } from "@/hooks/useInlinePhoneOtp";
 import type { WebsiteCustomerAddress } from "@/lib/website-customer-api";
@@ -124,6 +125,8 @@ export default function CartCheckoutForm({
     setLandmark,
     pincode,
     setPincode,
+    addressLabel,
+    setAddressLabel,
     addressLoading,
     pinReady,
     pinBusy,
@@ -160,6 +163,7 @@ export default function CartCheckoutForm({
       setArea("");
       setLandmark("");
       setPincode("");
+      setAddressLabel("Home");
     }
   };
 
@@ -337,6 +341,16 @@ export default function CartCheckoutForm({
                   />
                 </label>
               </div>
+
+              {customer ? (
+                <AddressLabelPicker
+                  label={addressLabel}
+                  onChange={(v) => {
+                    markNewIfEdited();
+                    setAddressLabel(v);
+                  }}
+                />
+              ) : null}
             </section>
           ) : (
             <p className="text-xs text-gray-500 rounded-lg bg-gray-50 px-3 py-2.5 leading-relaxed">

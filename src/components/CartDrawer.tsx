@@ -25,6 +25,72 @@ const HANDLING_FEE = 2;
 
 type DrawerStep = "cart" | "checkout1" | "checkout2" | "pay" | "done";
 
+function OrderTypeIcon({
+  type,
+  className,
+}: {
+  type: "dine_in" | "takeaway" | "delivery";
+  className?: string;
+}) {
+  const cn = className ?? "h-9 w-9";
+  if (type === "dine_in") {
+    // Utensils — fork + knife
+    return (
+      <svg
+        className={cn}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+        <path d="M7 2v20" />
+        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+      </svg>
+    );
+  }
+  if (type === "takeaway") {
+    // Takeout bag with handle
+    return (
+      <svg
+        className={cn}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <path d="M6 8h12l-.75 12.2a2 2 0 0 1-2 1.8H8.75a2 2 0 0 1-2-1.8L6 8Z" />
+        <path d="M9.5 8V6.5a2.5 2.5 0 0 1 5 0V8" />
+        <path d="M4.5 8h15" />
+      </svg>
+    );
+  }
+  // Scooter / delivery bike
+  return (
+    <svg
+      className={cn}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="18.5" cy="17.5" r="3.5" />
+      <circle cx="5.5" cy="17.5" r="3.5" />
+      <circle cx="15" cy="5" r="1" />
+      <path d="M12 17.5V14l-3-3 4-3 2 3h2" />
+    </svg>
+  );
+}
+
 function InfoIcon() {
   return (
     <svg
@@ -79,7 +145,7 @@ function QtyStepper({
 }
 
 export default function CartDrawer() {
-  const { lines, itemCount, subtotal, store, setQuantity } = useCart();
+  const { lines, itemCount, subtotal, store, setQuantity, clearCart } = useCart();
   const { isOpen, closeCart } = useMenuCart();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -107,6 +173,7 @@ export default function CartDrawer() {
         area: checkout.area,
         landmark: checkout.landmark,
         pincode: checkout.pincode,
+        label: checkout.addressLabel,
         latitude: coords?.lat ?? null,
         longitude: coords?.lng ?? null,
       });
@@ -147,18 +214,36 @@ export default function CartDrawer() {
 
   useBodyScrollLock(isOpen);
 
+  const leavePayScreen = useCallback(() => {
+    const pending = pendingPay;
+    setPendingPay(null);
+    if (pending) {
+      setStep("cart");
+      closeCart();
+      router.push(
+        `/order/${encodeURIComponent(pending.orderId)}?store=${encodeURIComponent(pending.storeSlug)}`,
+      );
+      return;
+    }
+    // Still creating payment session — return to checkout details.
+    setStep("checkout2");
+  }, [pendingPay, closeCart, router]);
+
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (step === "checkout2") setStep("checkout1");
-        else if (step === "checkout1") setStep("cart");
-        else closeCart();
+      if (e.key !== "Escape") return;
+      if (step === "pay") {
+        leavePayScreen();
+        return;
       }
+      if (step === "checkout2") setStep("checkout1");
+      else if (step === "checkout1") setStep("cart");
+      else closeCart();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [isOpen, closeCart, step]);
+  }, [isOpen, closeCart, step, leavePayScreen]);
 
   const headerTitle =
     step === "cart"
@@ -174,36 +259,53 @@ export default function CartDrawer() {
   const goBack = () => {
     if (step === "checkout2") setStep("checkout1");
     else if (step === "checkout1") setStep("cart");
-    else if (step === "pay") {
-      /* stay on pay */
-    } else closeCart();
+    else if (step === "pay") leavePayScreen();
+    else closeCart();
   };
 
   const handlePlaceOrder = useCallback(async () => {
+    const payingOnline = checkout.effectivePay === "online";
+    if (payingOnline) {
+      // Switch to pay shell immediately so we never flash empty cart.
+      setPendingPay(null);
+      setStep("pay");
+    }
     try {
       const result = await checkout.placeOrder();
       await saveDeliveryAddressIfNeeded();
       if (result.kind === "cod") {
-        // Close cart and take user directly to their live order tracking page
         closeCart();
         setStep("cart");
-        router.push(`/order/${encodeURIComponent(result.orderId)}?store=${encodeURIComponent(result.storeSlug)}`);
+        router.push(
+          `/order/${encodeURIComponent(result.orderId)}?store=${encodeURIComponent(result.storeSlug)}`,
+        );
         return;
       }
       setPendingPay(result.pending);
       setStep("pay");
+      clearCart();
     } catch {
-      /* error on checkout hook */
+      if (payingOnline) {
+        setStep("checkout2");
+        setPendingPay(null);
+      }
     }
-  }, [checkout, saveDeliveryAddressIfNeeded, closeCart, router]);
+  }, [
+    checkout,
+    saveDeliveryAddressIfNeeded,
+    closeCart,
+    router,
+    clearCart,
+  ]);
 
   const handlePaid = useCallback(
     (orderId: string, storeSlug: string) => {
-      // Payment confirmed — close cart and go straight to live tracking
       setPendingPay(null);
       closeCart();
       setStep("cart");
-      router.push(`/order/${encodeURIComponent(orderId)}?store=${encodeURIComponent(storeSlug)}`);
+      router.push(
+        `/order/${encodeURIComponent(orderId)}?store=${encodeURIComponent(storeSlug)}`,
+      );
     },
     [closeCart, router],
   );
@@ -223,7 +325,8 @@ export default function CartDrawer() {
         type="button"
         aria-label="Close cart"
         onClick={() => {
-          if (step === "checkout2") setStep("checkout1");
+          if (step === "pay") leavePayScreen();
+          else if (step === "checkout2") setStep("checkout1");
           else if (step === "checkout1") setStep("cart");
           else closeCart();
         }}
@@ -254,6 +357,7 @@ export default function CartDrawer() {
           >
             {(step === "checkout1" ||
               step === "checkout2" ||
+              step === "pay" ||
               (step === "cart" && itemCount > 0)) && (
               <svg
                 className="h-5 w-5 shrink-0"
@@ -268,12 +372,12 @@ export default function CartDrawer() {
             )}
             <span className="truncate">{headerTitle}</span>
           </button>
-          {step === "cart" ? (
+          {step === "cart" || step === "pay" ? (
             <button
               type="button"
-              onClick={closeCart}
+              onClick={step === "pay" ? leavePayScreen : closeCart}
               className="text-gray-400 hover:text-gray-600 border-0 bg-transparent cursor-pointer p-1"
-              aria-label="Close"
+              aria-label={step === "pay" ? "Cancel payment" : "Close"}
             >
               ✕
             </button>
@@ -287,12 +391,31 @@ export default function CartDrawer() {
             storeSlug={doneOrder.storeSlug}
             onClose={finishAndClose}
           />
-        ) : step === "pay" && pendingPay ? (
-          <CartDrawerPayStep
-            pending={pendingPay}
-            onPaid={handlePaid}
-            onFailed={() => checkout.resetErrors()}
-          />
+        ) : step === "pay" ? (
+          pendingPay ? (
+            <CartDrawerPayStep
+              pending={pendingPay}
+              onPaid={handlePaid}
+              onCancel={leavePayScreen}
+            />
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+              <div className="h-10 w-10 rounded-full border-2 border-[#f16a34] border-t-transparent animate-spin mb-4" />
+              <p className="text-base font-bold text-gray-900">
+                Preparing payment…
+              </p>
+              <p className="mt-1 text-sm text-gray-500">
+                Generating your UPI QR code
+              </p>
+              <button
+                type="button"
+                onClick={leavePayScreen}
+                className="mt-6 h-10 px-4 rounded-xl border border-gray-200 bg-white text-sm font-semibold text-gray-600 cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          )
         ) : step === "checkout1" && itemCount > 0 ? (
           <CartCheckoutForm
             checkout={checkout}
@@ -447,12 +570,12 @@ export default function CartDrawer() {
             {/* Order type picker */}
             <div className="mx-4 mb-3">
               <p className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2">How would you like it?</p>
-              <div className="grid grid-cols-3 gap-1.5">
+              <div className="grid grid-cols-3 gap-2">
                 {([
-                  { type: "dine_in", label: "Dine-in", icon: "🍽" },
-                  { type: "takeaway", label: "Takeaway", icon: "🥡" },
-                  { type: "delivery", label: "Delivery", icon: "🛵" },
-                ] as const).map(({ type, label, icon }) => {
+                  { type: "dine_in" as const, label: "Dine-in" },
+                  { type: "takeaway" as const, label: "Takeaway" },
+                  { type: "delivery" as const, label: "Delivery" },
+                ]).map(({ type, label }) => {
                   const active = checkout.orderType === type;
                   return (
                     <button
@@ -463,13 +586,13 @@ export default function CartDrawer() {
                         if (type === "dine_in") checkout.setPayMethod("online");
                       }}
                       className={[
-                        "flex flex-col items-center justify-center gap-0.5 rounded-xl py-2.5 text-[11px] font-extrabold border cursor-pointer transition-all",
+                        "aspect-square flex flex-col items-center justify-center gap-2 rounded-none text-[11px] font-extrabold border cursor-pointer transition-all",
                         active
                           ? "bg-orange-50 border-[#f16a34] text-[#f16a34] ring-1 ring-[#f16a34]/20"
                           : "bg-white border-gray-200 text-gray-500 hover:border-[#f16a34]/30",
                       ].join(" ")}
                     >
-                      <span className="text-base leading-none">{icon}</span>
+                      <OrderTypeIcon type={type} className="h-9 w-9 sm:h-10 sm:w-10" />
                       {label}
                     </button>
                   );

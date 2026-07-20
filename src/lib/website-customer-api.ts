@@ -14,10 +14,43 @@ export type WebsiteCustomerAddress = {
   is_default: boolean;
 };
 
+export type WebsiteCustomerNotificationPreferences = {
+  channels: {
+    whatsapp: boolean;
+    email: boolean;
+    sms: boolean;
+  };
+  orders: {
+    placed: boolean;
+    confirmed_paid: boolean;
+    preparing: boolean;
+    ready: boolean;
+    out_for_delivery: boolean;
+    delivered: boolean;
+    cancelled: boolean;
+    payment_receipt: boolean;
+  };
+  marketing: {
+    offers_promos: boolean;
+    new_menu_items: boolean;
+    feedback_requests: boolean;
+  };
+  account: {
+    login_otp: boolean;
+    security_alerts: boolean;
+  };
+};
+
 export type WebsiteCustomer = {
   id: string;
   phone: string;
+  alternate_phone?: string | null;
   name: string;
+  email?: string | null;
+  photo_url?: string | null;
+  gender?: string | null;
+  date_of_birth?: string | null;
+  notification_preferences?: WebsiteCustomerNotificationPreferences;
   addresses: WebsiteCustomerAddress[];
 };
 
@@ -138,6 +171,46 @@ export async function fetchCustomerMe(token?: string | null) {
   }>("/website-customer/me", { token });
 }
 
+export async function updateCustomerProfile(body: {
+  name?: string;
+  email?: string;
+  gender?: string;
+  date_of_birth?: string;
+}) {
+  return customerRequest<{ customer: WebsiteCustomer }>(
+    "/website-customer/me",
+    { method: "PATCH", body },
+  );
+}
+
+export async function uploadCustomerPhoto(input: {
+  imageBase64: string;
+  contentType?: string;
+}) {
+  return customerRequest<{ customer: WebsiteCustomer }>(
+    "/website-customer/me/photo",
+    {
+      method: "POST",
+      body: {
+        image_base64: input.imageBase64,
+        content_type: input.contentType || "image/jpeg",
+      },
+    },
+  );
+}
+
+export async function updateNotificationPreferences(
+  patch: Partial<WebsiteCustomerNotificationPreferences>,
+) {
+  return customerRequest<{
+    customer: WebsiteCustomer;
+    notification_preferences: WebsiteCustomerNotificationPreferences;
+  }>("/website-customer/me/notifications", {
+    method: "PATCH",
+    body: patch,
+  });
+}
+
 export async function logoutCustomer() {
   const token = readToken();
   if (token) {
@@ -242,6 +315,7 @@ export async function persistCheckoutDeliveryAddress(input: {
   area: string;
   landmark: string;
   pincode: string;
+  label?: string;
   latitude?: number | null;
   longitude?: number | null;
 }) {
@@ -255,8 +329,9 @@ export async function persistCheckoutDeliveryAddress(input: {
   if (input.customer.addresses.some((a) => addressMatchesCheckout(a, fields))) {
     return;
   }
+  const label = String(input.label || "Home").trim().slice(0, 40) || "Home";
   await createCustomerAddress({
-    label: "Home",
+    label,
     flat: fields.flat.trim(),
     street: fields.street.trim(),
     area: fields.area.trim(),

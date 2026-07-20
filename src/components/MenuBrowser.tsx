@@ -153,7 +153,7 @@ export default function MenuBrowser({
   return (
     <div className="max-w-[1100px] mx-auto">
       {visibleCategories.length > 0 && (
-        <div className="sticky top-[56px] sm:top-[64px] md:top-[80px] lg:top-[72px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-2 bg-svs-cream/95 backdrop-blur-md transition-all duration-300">
+        <div className="sticky top-[56px] sm:top-[64px] md:top-[80px] lg:top-[72px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-2 bg-svs-cream">
           <div className="flex gap-4 sm:gap-5 overflow-x-auto pb-1">
             {visibleCategories.map((cat) => {
               const active = cat.id === activeCategoryId;
@@ -513,7 +513,7 @@ function MenuItemCard({
               onClick={onAdd}
               className="shrink-0 h-8 min-w-[64px] px-3 rounded-lg border-2 border-svs-orange bg-svs-cream text-svs-orange text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
             >
-              {customisable ? "Options" : "Add"}
+              Add
             </button>
           )}
         </div>

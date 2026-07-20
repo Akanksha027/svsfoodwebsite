@@ -172,6 +172,8 @@ export async function fetchOrder(input: { storeId: string; orderId: string }) {
     gst_amount: number;
     delivery_charges?: number;
     customer_mobile?: string | null;
+    customer_mobile_changed?: boolean;
+    can_change_customer_mobile?: boolean;
     customer_name?: string | null;
     customer_address?: string | null;
     customer_latitude?: number | null;
@@ -189,5 +191,24 @@ export async function fetchOrder(input: { storeId: string; orderId: string }) {
     items: unknown;
   }>(`/orders/${encodeURIComponent(input.orderId)}`, {
     storeId: input.storeId,
+  });
+}
+
+/** One-time contact number change; also saved as customer's alternate_phone. */
+export async function changeOrderCustomerMobile(input: {
+  storeId: string;
+  orderId: string;
+  mobile: string;
+}) {
+  return apiRequest<{
+    order_id: string;
+    customer_mobile: string;
+    customer_mobile_changed: boolean;
+    can_change_customer_mobile: boolean;
+    alternate_phone_saved: boolean;
+  }>(`/orders/${encodeURIComponent(input.orderId)}/customer-mobile`, {
+    method: "POST",
+    storeId: input.storeId,
+    body: { mobile: input.mobile },
   });
 }

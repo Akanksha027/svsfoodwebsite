@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { computeTotals, useCart } from "@/context/CartContext";
 import { useMenuCart } from "@/context/MenuCartContext";
-import { storeDisplayName } from "@/data/locations";
 import { formatInr } from "@/lib/menu-api";
 import StoryViewer from "@/components/StoryViewer";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
@@ -102,27 +102,105 @@ function StoryTriggerButton({
   );
 }
 
-/** Center bar on menu page (lg+): delivery info + cart CTA between logo and icons. */
+/** Center bar on menu/account: delivery ETA + user's saved address. */
 function MenuCenterBar() {
-  const { store } = useCart();
+  const router = useRouter();
+  const { customer, openLogin } = useWebsiteAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
-  const locationLine = truncateText(
-    `${storeDisplayName(store)} · ${store.address}`,
-  );
+  const saved =
+    customer?.addresses.find((a) => a.is_default) || customer?.addresses[0] || null;
+
+  const addressLine = saved
+    ? truncateText(
+        `${saved.label || "Home"} · ${saved.formatted_address}`,
+        64,
+      )
+    : customer
+      ? "Add your delivery address"
+      : "Sign in to set delivery address";
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!wrapRef.current?.contains(e.target as Node)) setMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [menuOpen]);
+
+  const goUpdateAddress = () => {
+    setMenuOpen(false);
+    if (!customer) {
+      openLogin();
+      return;
+    }
+    router.push("/account?tab=addresses");
+  };
 
   return (
     <div
-      className="hidden lg:flex flex-1 min-w-0 mx-3 xl:mx-5 items-center justify-between gap-4 h-14 max-w-[900px] xl:max-w-[980px] px-2 xl:px-3"
+      ref={wrapRef}
+      className="hidden md:flex flex-1 min-w-0 mx-2 lg:mx-3 xl:mx-5 items-center justify-between gap-4 h-14 max-w-[900px] xl:max-w-[980px] px-1 lg:px-2 xl:px-3 relative"
       id="menu-nav-center-bar"
     >
-      <div className="min-w-0 flex flex-col justify-center">
-        <span className="text-[15px] font-bold leading-tight text-gray-900">
+      <button
+        type="button"
+        onClick={() => setMenuOpen((v) => !v)}
+        className="min-w-0 flex flex-col justify-center text-left border-0 bg-transparent cursor-pointer p-0 rounded-lg hover:opacity-90"
+        aria-expanded={menuOpen}
+        aria-haspopup="menu"
+      >
+        <span className="text-[14px] lg:text-[15px] font-bold leading-tight text-gray-900">
           Delivering in few minutes
         </span>
-        <span className="mt-0.5 text-[13px] text-gray-500 truncate">
-          {locationLine}
+        <span className="mt-0.5 text-[12px] lg:text-[13px] text-gray-500 truncate max-w-full inline-flex items-center gap-1">
+          <span className="truncate">{addressLine}</span>
+          <svg
+            className={`w-3.5 h-3.5 shrink-0 text-gray-400 transition-transform ${menuOpen ? "rotate-180" : ""}`}
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden
+          >
+            <path
+              d="M6 9l6 6 6-6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </span>
-      </div>
+      </button>
+
+      {menuOpen ? (
+        <div
+          role="menu"
+          className="absolute top-full left-0 mt-1.5 z-[1100] min-w-[220px] max-w-[min(100%,320px)] rounded-xl bg-white border border-gray-100 shadow-[0_8px_28px_rgba(0,0,0,0.12)] overflow-hidden py-1"
+        >
+          {saved ? (
+            <p className="px-3.5 pt-2.5 pb-1.5 text-[11px] text-gray-500 leading-snug line-clamp-3">
+              {saved.formatted_address}
+            </p>
+          ) : null}
+          <button
+            type="button"
+            role="menuitem"
+            onClick={goUpdateAddress}
+            className="w-full text-left px-3.5 py-2.5 text-[13px] font-bold text-[#f16a34] hover:bg-orange-50 border-0 bg-transparent cursor-pointer"
+          >
+            {saved ? "Update address" : customer ? "Add address" : "Sign in to add address"}
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -187,8 +265,10 @@ function NavIcons({
   onAccount: () => void;
 }) {
   const { itemCount } = useCart();
+  const { customer } = useWebsiteAuth();
   const iconBtn = hero ? iconBtnHero : iconBtnDefault;
   const showCartAndLocation = !menuMode && !homePage;
+  const photoUrl = customer?.photo_url?.trim() || null;
 
   return (
     <>
@@ -268,25 +348,34 @@ function NavIcons({
       ) : null}
 
       <button
-        className={iconBtn}
+        className={`${iconBtn} ${photoUrl ? "p-0 overflow-hidden" : ""}`}
         id="btn-account"
         aria-label="Account"
         type="button"
         onClick={onAccount}
       >
-        <svg
-          className={iconSvg}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden
-        >
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
+        {photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={photoUrl}
+            alt=""
+            className="h-7 w-7 sm:h-8 sm:w-8 lg:h-9 lg:w-9 rounded-full object-cover ring-2 ring-white shadow-sm"
+          />
+        ) : (
+          <svg
+            className={iconSvg}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        )}
       </button>
 
       {!menuMode ? (
@@ -320,14 +409,46 @@ function NavIcons({
   );
 }
 
+function AccountMenuLink() {
+  return (
+    <Link
+      href="/menu"
+      className={iconBtnDefault}
+      id="account-nav-menu"
+      aria-label="Menu"
+    >
+      <svg
+        className={iconSvg}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <path d="M4 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
+        <path d="M17 3h1a2 2 0 0 1 2 2v2H17V3z" />
+        <path d="M17 9h3v10a2 2 0 0 1-2 2h-1" />
+        <path d="M8 7h4" />
+        <path d="M8 11h5" />
+        <path d="M8 15h3" />
+      </svg>
+    </Link>
+  );
+}
+
 export default function Navbar({
   variant = "default",
   menuMode = false,
+  accountMode = false,
   homePage = false,
 }: {
   variant?: "default" | "hero";
-  /** Blinkit-style delivery + cart — menu page only */
+  /** Blinkit-style delivery + cart — menu / account */
   menuMode?: boolean;
+  /** Account page — show Menu icon right of cart */
+  accountMode?: boolean;
   /** Home `/` — hide cart + location icons in the bar */
   homePage?: boolean;
 }) {
@@ -344,11 +465,20 @@ export default function Navbar({
     <nav
       data-navbar-variant={hero ? "hero" : "default"}
       data-menu-mode={menuMode ? "true" : "false"}
-      className={`fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow] duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 transition-[border-color,color,box-shadow] duration-300 ${
         hero
           ? "bg-transparent border-b border-transparent text-white"
-          : "bg-svs-white border-b border-svs-cream text-svs-ink shadow-[0_1px_8px_rgba(26,26,26,0.06)]"
+          : "border-b border-transparent text-svs-ink"
       }`}
+      style={
+        hero
+          ? undefined
+          : {
+              backgroundColor: "#fff4ee",
+              // Keep scrolled menu cards from painting over the bar
+              isolation: "isolate",
+            }
+      }
       id="main-navbar"
     >
       <Link
@@ -368,6 +498,7 @@ export default function Navbar({
 
       <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2] gap-0.5 sm:gap-1.5 lg:gap-2">
         {menuMode ? <OrangeCartButton /> : null}
+        {accountMode ? <AccountMenuLink /> : null}
         <div
           className="flex flex-nowrap items-center gap-0.5 sm:gap-1.5 lg:gap-2"
           id="navbar-icons"

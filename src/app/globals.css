@@ -378,10 +378,11 @@ html {
   will-change: transform;
 }
 
-/* Navbar cart bag — matches ink icon style, visible on white bar */
+/* Navbar — solid cream so scrolled menu content cannot show through */
 #main-navbar[data-navbar-variant="default"] {
-  background-color: var(--color-svs-white);
+  background-color: #fff4ee !important;
   color: var(--color-svs-ink);
+  isolation: isolate;
 }
 
 #main-navbar[data-navbar-variant="default"] #navbar-icons a,

@@ -72,7 +72,7 @@ export default function AddItemSheet({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape" || e.key === "Enter") onClose();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -203,8 +203,12 @@ export default function AddItemSheet({
       <button
         type="button"
         aria-label="Close"
-        className="absolute inset-0 bg-black/50 border-0 cursor-pointer touch-none"
+        className="absolute inset-0 bg-black/50 border-0 cursor-pointer"
         onClick={onClose}
+        onPointerDown={(e) => {
+          // Close on outside press even if a child steals the click.
+          if (e.target === e.currentTarget) onClose();
+        }}
       />
 
       <div
@@ -212,6 +216,8 @@ export default function AddItemSheet({
         aria-modal="true"
         aria-label={`Customise ${item.name}`}
         className="relative z-[1051] flex flex-col w-full sm:w-[min(100%,26rem)] md:w-[min(100%,28rem)] max-h-[min(92dvh,720px)] sm:max-h-[min(88dvh,680px)] rounded-t-2xl sm:rounded-2xl bg-svs-white shadow-xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
       >
         {/* Scrollable body — footer stays pinned */}
         <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
@@ -367,14 +373,14 @@ export default function AddItemSheet({
           </div>
         </div>
 
-        {/* Sticky actions — always visible above the fold */}
+        {/* Sticky qty — Enter / outside tap closes with current selection */}
         <div
           className="shrink-0 border-t border-svs-cream bg-svs-white px-3.5 sm:px-4 pt-3"
           style={{
             paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))",
           }}
         >
-          <div className="flex items-center justify-between gap-2.5 sm:gap-3">
+          <div className="flex items-center justify-center">
             <div className="inline-flex h-11 sm:h-12 items-center overflow-hidden rounded-xl bg-svs-orange text-white shadow-sm">
               <button
                 type="button"
@@ -402,13 +408,6 @@ export default function AddItemSheet({
                 +
               </button>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="h-11 sm:h-12 flex-1 rounded-xl bg-svs-ink text-white text-sm font-extrabold uppercase tracking-wide border-0 cursor-pointer hover:bg-svs-ink/90"
-            >
-              Done
-            </button>
           </div>
         </div>
       </div>
