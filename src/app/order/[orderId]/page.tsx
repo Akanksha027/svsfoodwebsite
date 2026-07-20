@@ -385,7 +385,7 @@ function OrderInner() {
               </p>
             </div>
 
-            {order.cod_unpaid ? (
+            {isCod && !isDelivered(order) && !cancelled ? (
               <CodOnlinePayPanel
                 orderId={order.order_id}
                 amount={order.grand_total}

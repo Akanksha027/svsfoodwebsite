@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import CartCheckoutForm from "@/components/CartCheckoutForm";
 import CartDrawerDoneStep from "@/components/CartDrawerDoneStep";
 import CartDrawerPayStep from "@/components/CartDrawerPayStep";
@@ -76,6 +77,7 @@ function QtyStepper({
 export default function CartDrawer() {
   const { lines, itemCount, subtotal, store, setQuantity } = useCart();
   const { isOpen, closeCart } = useMenuCart();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState<DrawerStep>("cart");
   const [pendingPay, setPendingPay] = useState<PendingPayment | null>(null);
@@ -186,12 +188,10 @@ export default function CartDrawer() {
       const result = await checkout.placeOrder();
       await saveDeliveryAddressIfNeeded();
       if (result.kind === "cod") {
-        setDoneOrder({
-          orderId: result.orderId,
-          orderNumber: result.orderNumber,
-          storeSlug: result.storeSlug,
-        });
-        setStep("done");
+        // Close cart and take user directly to their live order tracking page
+        closeCart();
+        setStep("cart");
+        router.push(`/order/${encodeURIComponent(result.orderId)}?store=${encodeURIComponent(result.storeSlug)}`);
         return;
       }
       setPendingPay(result.pending);
@@ -199,16 +199,17 @@ export default function CartDrawer() {
     } catch {
       /* error on checkout hook */
     }
-  }, [checkout, saveDeliveryAddressIfNeeded]);
+  }, [checkout, saveDeliveryAddressIfNeeded, closeCart, router]);
 
   const handlePaid = useCallback(
     (orderId: string, storeSlug: string) => {
-      const num = pendingPay?.orderNumber ?? "—";
-      setDoneOrder({ orderId, orderNumber: num, storeSlug });
+      // Payment confirmed — close cart and go straight to live tracking
       setPendingPay(null);
-      setStep("done");
+      closeCart();
+      setStep("cart");
+      router.push(`/order/${encodeURIComponent(orderId)}?store=${encodeURIComponent(storeSlug)}`);
     },
-    [pendingPay],
+    [closeCart, router],
   );
 
   const finishAndClose = () => {
