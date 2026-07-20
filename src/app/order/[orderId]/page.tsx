@@ -10,6 +10,7 @@ import {
 } from "@/data/locations";
 import { fetchOrder } from "@/lib/orders-api";
 import { formatInr } from "@/lib/menu-api";
+import CodOnlinePayPanel from "@/components/CodOnlinePayPanel";
 
 type OrderData = Awaited<ReturnType<typeof fetchOrder>>;
 
@@ -60,7 +61,7 @@ function progressIndex(order: OrderData, isCod: boolean): number {
   // POS "dispatched" alone is not customer "on the way" until rider taps OFD
   if (order.petpooja_status === "dispatched") return 2;
 
-  if (order.status === "paid" || (isCod && order.status === "pending_payment")) {
+  if (order.status === "paid" || order.status === "cod_pending" || (isCod && order.status === "pending_payment")) {
     return 0;
   }
   return 0;
@@ -242,7 +243,6 @@ function OrderInner() {
   const params = useParams<{ orderId: string }>();
   const searchParams = useSearchParams();
   const storeSlug = searchParams.get("store") || "satna";
-  const isCod = searchParams.get("cod") === "1";
   const orderId = params.orderId;
   const store = useMemo(() => resolveStoreLocation(storeSlug), [storeSlug]);
 
@@ -310,6 +310,10 @@ function OrderInner() {
   }
 
   const cancelled = isCancelled(order);
+  const isCod =
+    order.cod_unpaid ||
+    order.is_cod ||
+    searchParams.get("cod") === "1";
   const active = progressIndex(order, isCod);
   const { title, sub } = headline(order, isCod);
   const steps =
@@ -380,6 +384,20 @@ function OrderInner() {
                 {sub}
               </p>
             </div>
+
+            {order.cod_unpaid ? (
+              <CodOnlinePayPanel
+                orderId={order.order_id}
+                amount={order.grand_total}
+                orderLabel={`#${order.order_number}`}
+                onPaid={() => {
+                  void fetchOrder({
+                    storeId: store.backendStoreId,
+                    orderId: order.order_id,
+                  }).then(setOrder);
+                }}
+              />
+            ) : null}
 
             {showRider ? (
               <div className="flex items-center gap-3 rounded-2xl border border-svs-cream bg-svs-cream/60 px-3.5 py-3">

@@ -122,6 +122,21 @@ export async function getPaymentStatus(input: {
   });
 }
 
+export async function confirmCodPlace(input: {
+  storeId: string;
+  orderId: string;
+}) {
+  return apiRequest<{
+    order_id: string;
+    status: string;
+    payment_method: string;
+  }>("/payments/cod-place", {
+    method: "POST",
+    storeId: input.storeId,
+    body: { order_id: input.orderId },
+  });
+}
+
 export async function confirmCashPayment(input: {
   storeId: string;
   orderId: string;
@@ -159,6 +174,9 @@ export async function fetchOrder(input: { storeId: string; orderId: string }) {
     channel?: string | null;
     created_at?: string;
     paid_at?: string | null;
+    is_cod?: boolean;
+    cod_unpaid?: boolean;
+    can_pay_online?: boolean;
     items: unknown;
   }>(`/orders/${encodeURIComponent(input.orderId)}`, {
     storeId: input.storeId,

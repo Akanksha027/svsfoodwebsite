@@ -18,9 +18,9 @@ import {
   requestUserLocationDetailed,
 } from "@/lib/user-location";
 import {
-  confirmCashPayment,
   createPaymentSession,
   createWebOrder,
+  confirmCodPlace,
   type WebOrderType,
 } from "@/lib/orders-api";
 import { isValidIndianMobile, normalizeIndianMobile } from "@/lib/indian-phone";
@@ -271,7 +271,7 @@ export function useWebCheckout(options: Options = {}) {
       });
 
       if (effectivePay === "cod") {
-        await confirmCashPayment({
+        await confirmCodPlace({
           storeId: store.backendStoreId,
           orderId: order.order_id,
         });

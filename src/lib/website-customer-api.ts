@@ -26,6 +26,9 @@ export type CustomerOrderSummary = {
   store_id: string;
   status: string;
   payment_status: string | null;
+  is_cod?: boolean;
+  cod_unpaid?: boolean;
+  can_pay_online?: boolean;
   total_amount: number | null;
   created_at: string;
   order_type: string;
@@ -201,6 +204,33 @@ export function addressMatchesCheckout(
     norm(addr.area) === norm(fields.area) &&
     norm(addr.landmark || "") === norm(fields.landmark) &&
     norm(addr.pincode || "") === norm(fields.pincode)
+  );
+}
+
+export async function createCustomerCodPaySession(orderId: string) {
+  return customerRequest<{
+    transaction_id: string;
+    qr_payload: string;
+    amount: string;
+    payment_attempt_id: string;
+    order_id: string;
+    expires_at?: string;
+    is_mock?: boolean;
+  }>(`/website-customer/orders/${encodeURIComponent(orderId)}/cod-pay/session`, {
+    method: "POST",
+    body: {},
+  });
+}
+
+export async function getCustomerCodPayStatus(
+  orderId: string,
+  transactionId: string,
+) {
+  return customerRequest<{
+    internal_status: string;
+    code: string;
+  }>(
+    `/website-customer/orders/${encodeURIComponent(orderId)}/cod-pay/status/${encodeURIComponent(transactionId)}`,
   );
 }
 

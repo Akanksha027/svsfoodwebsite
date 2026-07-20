@@ -173,6 +173,11 @@ function OrderCard({ order }: { order: CustomerOrderSummary }) {
             {order.total_amount != null ? formatInr(order.total_amount) : "—"}
             <span className="mx-1.5 text-gray-300">•</span>
             {formatOrderWhen(order.created_at)}
+            {order.cod_unpaid ? (
+              <span className="ml-2 text-[10px] font-bold text-[#c2410c]">
+                COD · unpaid
+              </span>
+            ) : null}
           </p>
         </div>
         <IconChevron className="w-5 h-5 shrink-0 text-gray-400" />
