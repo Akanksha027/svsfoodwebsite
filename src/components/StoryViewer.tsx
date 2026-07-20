@@ -9,6 +9,7 @@ import {
   storySlides,
   type StorySlide,
 } from "@/data/stories";
+import { useBodyScrollLock } from "@/lib/body-scroll-lock";
 
 type StoryViewerProps = {
   open: boolean;
@@ -55,20 +56,13 @@ export default function StoryViewer({
 
   useEffect(() => setMounted(true), []);
 
+  useBodyScrollLock(open);
+
   useEffect(() => {
     if (!open) return;
     setIndex(0);
     setProgress(0);
     setPaused(false);
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
   }, [open]);
 
   useEffect(() => {

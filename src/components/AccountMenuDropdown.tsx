@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import AppDownloadPromo from "@/components/AppDownloadPromo";
+import { useBodyScrollLock } from "@/lib/body-scroll-lock";
 
 const NAV_H =
   "top-14 sm:top-16 lg:top-[72px]";
@@ -24,6 +25,8 @@ export default function AccountMenuDropdown() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
+
+  useBodyScrollLock(accountMenuOpen);
 
   useEffect(() => {
     if (!accountMenuOpen) return;
@@ -55,7 +58,7 @@ export default function AccountMenuDropdown() {
     >
       <button
         type="button"
-        className={`pointer-events-auto absolute inset-x-0 bottom-0 ${NAV_H} bg-black/20 cursor-default`}
+        className={`pointer-events-auto absolute inset-x-0 bottom-0 ${NAV_H} bg-black/20 cursor-default touch-none border-0`}
         aria-label="Close menu"
         onClick={closeAccountMenu}
       />

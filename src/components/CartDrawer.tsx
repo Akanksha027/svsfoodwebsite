@@ -15,6 +15,7 @@ import {
   type PendingPayment,
 } from "@/hooks/useWebCheckout";
 import { formatInr } from "@/lib/menu-api";
+import { useBodyScrollLock } from "@/lib/body-scroll-lock";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import { persistCheckoutDeliveryAddress } from "@/lib/website-customer-api";
 import { resolveDeliveryCoords } from "@/lib/reverse-geocode";
@@ -144,10 +145,10 @@ export default function CartDrawer() {
 
   const grandWithHandling = totals.grandTotal + HANDLING_FEE;
 
+  useBodyScrollLock(isOpen);
+
   useEffect(() => {
     if (!isOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if (step === "checkout2") setStep("checkout1");
@@ -156,10 +157,7 @@ export default function CartDrawer() {
       }
     };
     window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener("keydown", onKey);
-    };
+    return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, closeCart, step]);
 
   const headerTitle =
@@ -229,7 +227,7 @@ export default function CartDrawer() {
           else if (step === "checkout1") setStep("cart");
           else closeCart();
         }}
-        className={`fixed inset-0 z-[1100] border-0 cursor-pointer transition-opacity duration-300 ease-out ${
+        className={`fixed inset-0 z-[1100] border-0 cursor-pointer touch-none transition-opacity duration-300 ease-out ${
           isOpen
             ? "opacity-100 pointer-events-auto bg-black/40"
             : "opacity-0 pointer-events-none bg-black/40"
@@ -240,9 +238,13 @@ export default function CartDrawer() {
         id="menu-cart-drawer"
         aria-label="My cart"
         aria-hidden={!isOpen}
-        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[400px] xl:w-[420px] bg-white border-l border-gray-200 z-[1110] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
+        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,400px)] xl:w-[420px] bg-white border-l border-gray-200 z-[1110] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
+        style={{
+          paddingTop: "env(safe-area-inset-top, 0px)",
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        }}
       >
         <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-gray-100 shrink-0">
           <button

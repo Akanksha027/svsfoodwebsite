@@ -7,6 +7,7 @@ import BrandLogo from "@/components/BrandLogo";
 import OtpSixBoxes from "@/components/OtpSixBoxes";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import { useInlinePhoneOtp } from "@/hooks/useInlinePhoneOtp";
+import { useBodyScrollLock } from "@/lib/body-scroll-lock";
 import { formatIndianMobileInput } from "@/lib/indian-phone";
 
 export default function AccountLoginPopup() {
@@ -48,14 +49,7 @@ export default function AccountLoginPopup() {
     }
   }, [loginOpen, clearOtpStep]);
 
-  useEffect(() => {
-    if (!loginOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [loginOpen]);
+  useBodyScrollLock(loginOpen);
 
   useEffect(() => {
     if (!codeSentForCurrent) verifyLock.current = false;
@@ -96,19 +90,20 @@ export default function AccountLoginPopup() {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[1300] flex items-center justify-center p-4 sm:p-6"
+      className="fixed inset-0 z-[1300] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6"
       role="dialog"
       aria-modal
       aria-labelledby="login-popup-title"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       <button
         type="button"
-        className="absolute inset-0 bg-svs-ink/45 backdrop-blur-md cursor-default"
+        className="absolute inset-0 bg-svs-ink/45 backdrop-blur-md cursor-default touch-none border-0"
         aria-label="Close"
         onClick={closeLogin}
       />
 
-      <div className="relative w-full max-w-[380px] rounded-3xl bg-white shadow-2xl overflow-hidden animate-[otp-step-in_0.25s_ease-out]">
+      <div className="relative w-full sm:max-w-[380px] max-h-[min(92dvh,640px)] overflow-y-auto overscroll-contain rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl animate-[otp-step-in_0.25s_ease-out]">
         <div className="px-6 pt-5 pb-2">
           <button
             type="button"
