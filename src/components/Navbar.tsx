@@ -127,6 +127,7 @@ function MenuCenterBar() {
   );
 }
 
+
 function OrangeCartButton() {
   const { itemCount, subtotal } = useCart();
   const { openCart, toggleCart, isOpen } = useMenuCart();
