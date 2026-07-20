@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -11,6 +12,7 @@ import {
   useState,
 } from "react";
 import { useCart } from "@/context/CartContext";
+import { useMenuCart } from "@/context/MenuCartContext";
 import { formatInr } from "@/lib/menu-api";
 import { preloadImage } from "@/lib/preload-image";
 
@@ -204,6 +206,9 @@ function FlyingItem({
 }
 
 export default function CartBar() {
+  const pathname = usePathname();
+  const onMenu = pathname === "/menu" || pathname.startsWith("/menu/");
+  const { openCart } = useMenuCart();
   const { lines, itemCount, subtotal, lastAddFly, acknowledgeAddFly } =
     useCart();
 
@@ -370,6 +375,12 @@ export default function CartBar() {
           <Link
             ref={pillRef}
             href="/cart"
+            onClick={(e) => {
+              if (onMenu) {
+                e.preventDefault();
+                openCart();
+              }
+            }}
             className="pointer-events-auto mx-auto max-w-[560px] relative flex items-center h-[72px] rounded-2xl bg-svs-orange text-white shadow-[0_12px_32px_rgba(241,106,52,0.38)] no-underline overflow-visible"
           >
             <div

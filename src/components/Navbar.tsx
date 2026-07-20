@@ -8,6 +8,7 @@ import { useMenuCart } from "@/context/MenuCartContext";
 import { storeDisplayName } from "@/data/locations";
 import { formatInr } from "@/lib/menu-api";
 import StoryViewer from "@/components/StoryViewer";
+import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 
 const SVS_ORANGE = "#f16a34";
 const HANDLING_FEE = 2;
@@ -114,27 +115,14 @@ function MenuCenterBar() {
       className="hidden lg:flex flex-1 min-w-0 mx-3 xl:mx-5 items-center justify-between gap-4 h-14 max-w-[900px] xl:max-w-[980px] px-2 xl:px-3"
       id="menu-nav-center-bar"
     >
-      <Link
-        href="/locations"
-        className="min-w-0 flex flex-col justify-center no-underline group"
-      >
+      <div className="min-w-0 flex flex-col justify-center">
         <span className="text-[15px] font-bold leading-tight text-gray-900">
           Delivering in few minutes
         </span>
-        <span className="mt-0.5 flex items-center gap-1 text-[13px] text-gray-500 group-hover:text-gray-700">
-          <span className="truncate">{locationLine}</span>
-          <svg
-            className="h-3.5 w-3.5 shrink-0"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            aria-hidden
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
+        <span className="mt-0.5 text-[13px] text-gray-500 truncate">
+          {locationLine}
         </span>
-      </Link>
+      </div>
     </div>
   );
 }
@@ -187,18 +175,23 @@ function NavIcons({
   onOpenStories,
   hero = false,
   menuMode = false,
+  homePage = false,
+  onAccount,
 }: {
   onNavigate?: () => void;
   onOpenStories: () => void;
   hero?: boolean;
   menuMode?: boolean;
+  homePage?: boolean;
+  onAccount: () => void;
 }) {
   const { itemCount } = useCart();
   const iconBtn = hero ? iconBtnHero : iconBtnDefault;
+  const showCartAndLocation = !menuMode && !homePage;
 
   return (
     <>
-      {!menuMode ? (
+      {showCartAndLocation ? (
         <Link
           href="/cart"
           className={`${iconBtn} relative overflow-hidden w-11 h-11 sm:w-12 sm:h-12 lg:w-14 lg:h-14`}
@@ -249,7 +242,7 @@ function NavIcons({
         />
       ) : null}
 
-      {!menuMode ? (
+      {showCartAndLocation ? (
         <Link
           href="/locations"
           className={iconBtn}
@@ -278,6 +271,7 @@ function NavIcons({
         id="btn-account"
         aria-label="Account"
         type="button"
+        onClick={onAccount}
       >
         <svg
           className={iconSvg}
@@ -328,13 +322,22 @@ function NavIcons({
 export default function Navbar({
   variant = "default",
   menuMode = false,
+  homePage = false,
 }: {
   variant?: "default" | "hero";
   /** Blinkit-style delivery + cart — menu page only */
   menuMode?: boolean;
+  /** Home `/` — hide cart + location icons in the bar */
+  homePage?: boolean;
 }) {
   const [storiesOpen, setStoriesOpen] = useState(false);
   const hero = variant === "hero";
+  const { customer, openLogin, openAccountMenu } = useWebsiteAuth();
+
+  const handleAccount = () => {
+    if (customer) openAccountMenu();
+    else openLogin();
+  };
 
   return (
     <nav
@@ -371,7 +374,9 @@ export default function Navbar({
           <NavIcons
             hero={hero}
             menuMode={menuMode}
+            homePage={homePage}
             onOpenStories={() => setStoriesOpen(true)}
+            onAccount={handleAccount}
           />
         </div>
       </div>

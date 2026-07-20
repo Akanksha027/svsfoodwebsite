@@ -3,7 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { MenuCartProvider } from "@/context/MenuCartContext";
+import { WebsiteAuthProvider } from "@/context/WebsiteAuthContext";
 import SiteNavbar from "@/components/SiteNavbar";
+import AccountLoginPopup from "@/components/AccountLoginPopup";
+import AccountMenuDropdown from "@/components/AccountMenuDropdown";
 import PoweredBy from "@/components/PoweredBy";
 
 const inter = Inter({
@@ -28,11 +31,15 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} antialiased`}>
       <body>
         <CartProvider>
-          <MenuCartProvider>
-            <SiteNavbar />
-            {children}
-            <PoweredBy />
-          </MenuCartProvider>
+          <WebsiteAuthProvider>
+            <MenuCartProvider>
+              <SiteNavbar />
+              {children}
+              <AccountLoginPopup />
+              <AccountMenuDropdown />
+              <PoweredBy />
+            </MenuCartProvider>
+          </WebsiteAuthProvider>
         </CartProvider>
       </body>
     </html>
