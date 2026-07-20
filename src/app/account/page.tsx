@@ -10,6 +10,7 @@ import {
   deleteCustomerAddress,
   fetchCustomerOrders,
   setDefaultCustomerAddress,
+  persistCheckoutDeliveryAddress,
   type CustomerOrderSummary,
   type WebsiteCustomerAddress,
 } from "@/lib/website-customer-api";
@@ -499,6 +500,77 @@ function AddressCard({
   );
 }
 
+/* ─── Address Form ────────────────────────────────────────────────────────── */
+
+const inputClass = "mt-1 w-full h-10 rounded-lg border border-gray-200 bg-gray-50 px-3 text-[14px] text-gray-900 outline-none focus:border-[#f16a34] focus:ring-2 focus:ring-[#f16a34]/15";
+const textareaClass = "mt-1 w-full min-h-[72px] rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-[14px] text-gray-900 outline-none focus:border-[#f16a34] focus:ring-2 focus:ring-[#f16a34]/15 resize-y";
+
+function NewAddressForm({ customer, onCancel, onSaved }: { customer: any, onCancel: () => void, onSaved: () => void }) {
+  const [flat, setFlat] = useState("");
+  const [street, setStreet] = useState("");
+  const [area, setArea] = useState("");
+  const [landmark, setLandmark] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSave = async () => {
+    if (!flat || !street || !area) {
+      setError("Please fill all required fields (*).");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await persistCheckoutDeliveryAddress({
+        customer,
+        flat, street, area, landmark, pincode,
+        latitude: null, longitude: null,
+      });
+      onSaved();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to save address.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="rounded-xl bg-white border border-gray-200 p-5 space-y-4 mb-4">
+      <h3 className="text-[13px] font-extrabold uppercase tracking-wider text-gray-900">Add New Address</h3>
+      {error && <p className="text-xs font-semibold text-[#c2410c] bg-orange-50 border border-orange-200 rounded-lg px-3 py-2">{error}</p>}
+      
+      <label className="block text-xs">
+        <span className="font-semibold text-gray-700">Flat / House *</span>
+        <input value={flat} onChange={e => setFlat(e.target.value)} className={inputClass} placeholder="402, Tower B" />
+      </label>
+      <label className="block text-xs">
+        <span className="font-semibold text-gray-700">Street / Building *</span>
+        <input value={street} onChange={e => setStreet(e.target.value)} className={inputClass} placeholder="Society name, road" />
+      </label>
+      <label className="block text-xs">
+        <span className="font-semibold text-gray-700">Area / Locality *</span>
+        <textarea value={area} onChange={e => setArea(e.target.value)} className={textareaClass} rows={2} />
+      </label>
+      <div className="grid grid-cols-2 gap-3">
+        <label className="block text-xs">
+          <span className="font-semibold text-gray-700">Landmark</span>
+          <input value={landmark} onChange={e => setLandmark(e.target.value)} className={inputClass} />
+        </label>
+        <label className="block text-xs">
+          <span className="font-semibold text-gray-700">PIN</span>
+          <input value={pincode} onChange={e => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" className={inputClass} />
+        </label>
+      </div>
+
+      <div className="flex items-center justify-end gap-3 pt-2">
+        <button type="button" onClick={onCancel} className="px-4 h-10 rounded-lg bg-gray-100 text-gray-700 text-xs font-extrabold cursor-pointer hover:bg-gray-200 border-0">Cancel</button>
+        <button type="button" disabled={busy} onClick={() => void handleSave()} className="px-6 h-10 rounded-lg bg-[#f16a34] text-white text-xs font-extrabold cursor-pointer disabled:opacity-60 shadow-md border-0">{busy ? "Saving…" : "Save Address"}</button>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main Page ───────────────────────────────────────────────────────────── */
 
 const navBtn =
@@ -516,6 +588,7 @@ function AccountInner() {
   } | null>(null);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [addrBusy, setAddrBusy] = useState(false);
+  const [addingAddress, setAddingAddress] = useState(false);
 
   // Live panel state (set when redirected from COD checkout)
   const [liveOrderId, setLiveOrderId] = useState<string | null>(null);
@@ -746,9 +819,31 @@ function AccountInner() {
             </>
           ) : (
             <>
-              <h1 className="text-[22px] font-extrabold text-gray-900 mb-4 lg:mb-5">My Addresses</h1>
+              <div className="flex items-center justify-between max-w-2xl mb-4 lg:mb-5">
+                <h1 className="text-[22px] font-extrabold text-gray-900">My Addresses</h1>
+                {!addingAddress && (
+                  <button
+                    type="button"
+                    onClick={() => setAddingAddress(true)}
+                    className="px-4 py-2 rounded-full text-[13px] font-bold bg-[#fff4ee] text-[#f16a34] cursor-pointer hover:bg-orange-100 transition-colors border-0"
+                  >
+                    + Add new
+                  </button>
+                )}
+              </div>
               <div className="space-y-3 max-w-2xl">
-                {customer.addresses.length === 0 ? (
+                {addingAddress && (
+                  <NewAddressForm
+                    customer={customer}
+                    onCancel={() => setAddingAddress(false)}
+                    onSaved={async () => {
+                      setAddingAddress(false);
+                      await refreshCustomer();
+                    }}
+                  />
+                )}
+                
+                {customer.addresses.length === 0 && !addingAddress ? (
                   <div className="rounded-xl bg-white border border-gray-200 px-6 py-12 text-center">
                     <p className="text-sm text-gray-500 leading-relaxed">
                       No saved addresses yet. Add one when you checkout delivery while logged in.

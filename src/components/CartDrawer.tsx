@@ -87,12 +87,7 @@ export default function CartDrawer() {
     storeSlug: string;
   } | null>(null);
 
-  const checkoutActive =
-    isOpen &&
-    (step === "checkout1" ||
-      step === "checkout2" ||
-      step === "pay" ||
-      step === "done");
+  const checkoutActive = isOpen && itemCount > 0;
   const checkout = useWebCheckout({ active: checkoutActive });
   const { customer, refreshCustomer } = useWebsiteAuth();
   const deliveryAddressModeRef = useRef<string | "new">("new");
@@ -168,7 +163,7 @@ export default function CartDrawer() {
     step === "cart"
       ? "My Cart"
       : step === "checkout1"
-        ? "Order type"
+        ? "Delivery address"
         : step === "checkout2"
           ? "Payment & details"
           : step === "pay"
@@ -438,12 +433,50 @@ export default function CartDrawer() {
               </div>
             </div>
 
+            {/* Order type picker */}
+            <div className="mx-4 mb-3">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2">How would you like it?</p>
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { type: "dine_in", label: "Dine-in", icon: "🍽" },
+                  { type: "takeaway", label: "Takeaway", icon: "🥡" },
+                  { type: "delivery", label: "Delivery", icon: "🛵" },
+                ] as const).map(({ type, label, icon }) => {
+                  const active = checkout.orderType === type;
+                  return (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => {
+                        checkout.setOrderType(type);
+                        if (type === "dine_in") checkout.setPayMethod("online");
+                      }}
+                      className={[
+                        "flex flex-col items-center justify-center gap-0.5 rounded-xl py-2.5 text-[11px] font-extrabold border cursor-pointer transition-all",
+                        active
+                          ? "bg-orange-50 border-[#f16a34] text-[#f16a34] ring-1 ring-[#f16a34]/20"
+                          : "bg-white border-gray-200 text-gray-500 hover:border-[#f16a34]/30",
+                      ].join(" ")}
+                    >
+                      <span className="text-base leading-none">{icon}</span>
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="shrink-0 border-t border-gray-200 bg-white px-4 py-3">
               <button
                 type="button"
                 onClick={() => {
                   checkout.resetErrors();
-                  setStep("checkout1");
+                  // If delivery selected, go to checkout1 for address; otherwise skip straight to checkout2
+                  if (checkout.orderType === "delivery") {
+                    setStep("checkout1");
+                  } else {
+                    setStep("checkout2");
+                  }
                 }}
                 className="flex items-center justify-between w-full h-[52px] rounded-lg px-4 text-white border-0 cursor-pointer shadow-md"
                 style={{ backgroundColor: SVS_ORANGE }}
@@ -465,9 +498,6 @@ export default function CartDrawer() {
                   </svg>
                 </span>
               </button>
-              <p className="text-[11px] text-gray-500 text-center mt-2">
-                Choose dine-in, takeaway, or delivery on the next screen
-              </p>
             </div>
           </>
         )}

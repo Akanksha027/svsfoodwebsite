@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { PolicyPage as PolicyPageData } from "@/data/policies";
 
@@ -17,6 +20,7 @@ function isEmptySection(
 }
 
 export default function PolicyPage({ policy }: PolicyPageProps) {
+  const router = useRouter();
   const sections = policy.sections.filter(
     (section) => !isEmptySection(section, policy.title),
   );
@@ -24,12 +28,13 @@ export default function PolicyPage({ policy }: PolicyPageProps) {
   return (
     <main className="min-h-screen bg-svs-white pt-24 sm:pt-28 md:pt-32 pb-16 flex flex-col items-center">
       <div className="w-[90%] mx-auto">
-        <Link
-          href="/"
-          className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-svs-ink/60 hover:text-svs-orange no-underline transition-colors"
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-svs-ink/60 hover:text-svs-orange border-0 bg-transparent cursor-pointer p-0 transition-colors"
         >
-          ← Back to home
-        </Link>
+          ← Go back
+        </button>
 
         <article className="rounded-2xl sm:rounded-3xl border border-svs-cream bg-svs-white px-5 sm:px-8 md:px-10 py-8 sm:py-10 md:py-12 shadow-sm">
           <header className="mb-8 sm:mb-10 border-b border-svs-cream pb-6 sm:pb-8">

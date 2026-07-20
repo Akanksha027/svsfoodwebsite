@@ -65,32 +65,30 @@ function TypeOption({
 
 function CheckoutProgress({ page }: { page: 1 | 2 }) {
   return (
-    <div className="px-4 pt-3 pb-1 flex items-center gap-2">
-      <StepDot done={page > 1} active={page === 1} label="1" />
-      <div className={`h-0.5 flex-1 rounded ${page > 1 ? "bg-[#f16a34]" : "bg-gray-200"}`} />
-      <StepDot done={false} active={page === 2} label="2" />
-    </div>
-  );
-}
+    <div className="px-5 pt-4 pb-2 flex justify-center">
+      <div className="flex items-center">
+        {/* Step 1 */}
+        <div className="flex items-center gap-2.5">
+          <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold border-2 transition-all ${page > 1 ? "bg-[#f16a34] border-[#f16a34] text-white" : page === 1 ? "bg-white border-[#f16a34] text-[#f16a34] shadow-[0_2px_8px_rgba(241,106,52,0.25)]" : "bg-white border-gray-200 text-gray-300"}`}>
+            {page > 1 ? (
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+            ) : "1"}
+          </div>
+          <span className={`text-[11px] font-extrabold uppercase tracking-widest ${page >= 1 ? "text-gray-900" : "text-gray-400"}`}>Address</span>
+        </div>
 
-function StepDot({
-  active,
-  done,
-  label,
-}: {
-  active: boolean;
-  done: boolean;
-  label: string;
-}) {
-  const on = active || done;
-  return (
-    <span
-      className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-extrabold ${
-        on ? "bg-[#f16a34] text-white" : "bg-gray-200 text-gray-500"
-      }`}
-    >
-      {label}
-    </span>
+        {/* Line */}
+        <div className={`w-10 h-[2px] mx-3 rounded-full transition-colors ${page > 1 ? "bg-[#f16a34]" : "bg-gray-200"}`} />
+
+        {/* Step 2 */}
+        <div className="flex items-center gap-2.5">
+          <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold border-2 transition-all ${page >= 2 ? "bg-white border-[#f16a34] text-[#f16a34] shadow-[0_2px_8px_rgba(241,106,52,0.25)]" : "bg-white border-gray-200 text-gray-300"}`}>
+            2
+          </div>
+          <span className={`text-[11px] font-extrabold uppercase tracking-widest ${page >= 2 ? "text-gray-900" : "text-gray-400"}`}>Payment</span>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -154,7 +152,15 @@ export default function CartCheckoutForm({
   const pickSavedAddress = (id: string | "new", addr?: WebsiteCustomerAddress) => {
     setSavedAddressId(id);
     onAddressSelectionChange?.(id);
-    if (id !== "new" && addr) applySavedAddress(addr);
+    if (id !== "new" && addr) {
+      applySavedAddress(addr);
+    } else if (id === "new") {
+      setFlat("");
+      setStreet("");
+      setArea("");
+      setLandmark("");
+      setPincode("");
+    }
   };
 
   useEffect(() => {
@@ -227,31 +233,6 @@ export default function CartCheckoutForm({
       <div className="flex flex-col min-h-0 flex-1">
         <CheckoutProgress page={1} />
         <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 space-y-4">
-          <section>
-            <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-gray-400 mb-2">
-              How would you like it?
-            </h3>
-            <div className="grid grid-cols-1 gap-2">
-              <TypeOption
-                active={orderType === "dine_in"}
-                label="Dine-in"
-                sub="Eat at the restaurant"
-                onClick={() => pickType("dine_in")}
-              />
-              <TypeOption
-                active={orderType === "takeaway"}
-                label="Takeaway"
-                sub="Pick up at counter"
-                onClick={() => pickType("takeaway")}
-              />
-              <TypeOption
-                active={orderType === "delivery"}
-                label="Delivery"
-                sub="We deliver to you"
-                onClick={() => pickType("delivery")}
-              />
-            </div>
-          </section>
 
           {orderType === "delivery" ? (
             <section className="rounded-xl border border-[#f16a34]/25 bg-orange-50/40 p-3 space-y-3">
@@ -260,17 +241,11 @@ export default function CartCheckoutForm({
                   Deliver to
                 </h3>
                 {addressLoading || pinBusy ? (
-                  <p className="text-[11px] text-gray-500 mt-1">
-                    Getting location…
-                  </p>
+                  <p className="text-[11px] text-gray-500 mt-1">Getting location&hellip;</p>
                 ) : pinReady ? (
-                  <p className="text-[11px] text-emerald-700 font-semibold mt-1">
-                    Pin ready · add flat &amp; street
-                  </p>
+                  <p className="text-[11px] text-emerald-700 font-semibold mt-1">Pin ready &middot; add flat &amp; street</p>
                 ) : (
-                  <p className="text-[11px] text-gray-500 mt-1">
-                    Share location for the rider pin
-                  </p>
+                  <p className="text-[11px] text-gray-500 mt-1">Share location for the rider pin</p>
                 )}
               </div>
 
@@ -291,9 +266,7 @@ export default function CartCheckoutForm({
               {!pinReady ? (
                 <div className="space-y-2">
                   {pinMessage ? (
-                    <p className="text-xs text-[#c2410c] font-semibold">
-                      {pinMessage}
-                    </p>
+                    <p className="text-xs text-[#c2410c] font-semibold">{pinMessage}</p>
                   ) : null}
                   <button
                     type="button"
@@ -322,38 +295,25 @@ export default function CartCheckoutForm({
                 <span className="font-semibold text-gray-700">Flat / House *</span>
                 <input
                   value={flat}
-                  onChange={(e) => {
-                    markNewIfEdited();
-                    setFlat(e.target.value);
-                  }}
+                  onChange={(e) => { markNewIfEdited(); setFlat(e.target.value); }}
                   className={inputClass}
                   placeholder="402, Tower B"
                 />
               </label>
               <label className="block text-xs">
-                <span className="font-semibold text-gray-700">
-                  Street / Building *
-                </span>
+                <span className="font-semibold text-gray-700">Street / Building *</span>
                 <input
                   value={street}
-                  onChange={(e) => {
-                    markNewIfEdited();
-                    setStreet(e.target.value);
-                  }}
+                  onChange={(e) => { markNewIfEdited(); setStreet(e.target.value); }}
                   className={inputClass}
                   placeholder="Society name, road"
                 />
               </label>
               <label className="block text-xs">
-                <span className="font-semibold text-gray-700">
-                  Area / Locality *
-                </span>
+                <span className="font-semibold text-gray-700">Area / Locality *</span>
                 <textarea
                   value={area}
-                  onChange={(e) => {
-                    markNewIfEdited();
-                    setArea(e.target.value);
-                  }}
+                  onChange={(e) => { markNewIfEdited(); setArea(e.target.value); }}
                   rows={2}
                   className={textareaClass}
                 />
@@ -363,10 +323,7 @@ export default function CartCheckoutForm({
                   <span className="font-semibold text-gray-700">Landmark</span>
                   <input
                     value={landmark}
-                    onChange={(e) => {
-                      markNewIfEdited();
-                      setLandmark(e.target.value);
-                    }}
+                    onChange={(e) => { markNewIfEdited(); setLandmark(e.target.value); }}
                     className={inputClass}
                   />
                 </label>
@@ -374,10 +331,7 @@ export default function CartCheckoutForm({
                   <span className="font-semibold text-gray-700">PIN</span>
                   <input
                     value={pincode}
-                    onChange={(e) => {
-                      markNewIfEdited();
-                      setPincode(e.target.value.replace(/\D/g, "").slice(0, 6));
-                    }}
+                    onChange={(e) => { markNewIfEdited(); setPincode(e.target.value.replace(/\D/g, "").slice(0, 6)); }}
                     inputMode="numeric"
                     className={inputClass}
                   />
@@ -387,8 +341,8 @@ export default function CartCheckoutForm({
           ) : (
             <p className="text-xs text-gray-500 rounded-lg bg-gray-50 px-3 py-2.5 leading-relaxed">
               {orderType === "dine_in"
-                ? "You’ll eat at the outlet — no delivery address needed."
-                : "Pick up your order at the store counter when it’s ready."}
+                ? "You'll eat at the outlet - no delivery address needed."
+                : "Pick up your order at the store counter when it's ready."}
             </p>
           )}
 
@@ -421,7 +375,7 @@ export default function CartCheckoutForm({
           onClick={onBack}
           className="mx-4 mt-1 mb-0 text-left text-xs font-bold text-[#f16a34] border-0 bg-transparent cursor-pointer p-0"
         >
-          ← Order type &amp; address
+          &larr; Delivery address
         </button>
       ) : null}
       <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4 space-y-4">
