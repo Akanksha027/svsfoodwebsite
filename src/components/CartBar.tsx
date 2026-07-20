@@ -13,7 +13,7 @@ import {
 } from "react";
 import { useCart } from "@/context/CartContext";
 import { useMenuCart } from "@/context/MenuCartContext";
-import { formatInr } from "@/lib/menu-api";
+import { AnimatedPrice } from "@/components/RollingCounter";
 import { preloadImage } from "@/lib/preload-image";
 
 const CHIP_SIZE = 40;
@@ -440,9 +440,7 @@ export default function CartBar() {
               className="absolute right-0 top-0 bottom-0 flex items-center justify-end z-[2] pointer-events-none"
               style={{ paddingRight: PILL_INSET, minWidth: 88 }}
             >
-              <span className="text-lg sm:text-xl font-extrabold tabular-nums">
-                {formatInr(subtotal)}
-              </span>
+              <AnimatedPrice value={subtotal} fontSize={20} color="#ffffff" />
             </div>
           </Link>
         </div>

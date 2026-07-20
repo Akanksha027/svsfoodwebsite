@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import { useCart, computeTotals } from "@/context/CartContext";
+import { RollingCounter } from "@/components/RollingCounter";
+import { useCart, computeTotals, lineUnitTotal } from "@/context/CartContext";
 import { formatInr } from "@/lib/menu-api";
 import { storeDisplayName } from "@/data/locations";
 
@@ -75,8 +76,13 @@ export default function CartPage() {
                       <p className="font-bold text-svs-ink truncate">
                         {line.name}
                       </p>
+                      {line.addons?.length ? (
+                        <p className="text-xs text-svs-ink/50 line-clamp-2">
+                          {line.addons.map((a) => a.name).join(", ")}
+                        </p>
+                      ) : null}
                       <p className="text-sm font-semibold text-svs-ink/80">
-                        {formatInr(line.unitPrice)}
+                        {formatInr(lineUnitTotal(line))}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
                         <button
@@ -88,8 +94,12 @@ export default function CartPage() {
                         >
                           −
                         </button>
-                        <span className="w-6 text-center font-bold">
-                          {line.quantity}
+                        <span className="w-6 flex items-center justify-center">
+                          <RollingCounter
+                            value={line.quantity}
+                            fontSize={14}
+                            color="#1a1a1a"
+                          />
                         </span>
                         <button
                           type="button"
@@ -110,7 +120,7 @@ export default function CartPage() {
                       </div>
                     </div>
                     <p className="font-extrabold text-svs-ink shrink-0">
-                      {formatInr(line.unitPrice * line.quantity)}
+                      {formatInr(lineUnitTotal(line) * line.quantity)}
                     </p>
                   </li>
                 ))}

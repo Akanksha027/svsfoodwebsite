@@ -37,7 +37,16 @@ export type CreateOrderItem = {
   petpooja_item_id?: string | null;
   name: string;
   quantity: number;
-  addons?: unknown[];
+  addons?: Array<{
+    id: string;
+    group_id?: string;
+    group_name?: string;
+    name: string;
+    price: number;
+    quantity: number;
+  }>;
+  variation_name?: string | null;
+  variation_group_name?: string | null;
 };
 
 export async function createWebOrder(input: {

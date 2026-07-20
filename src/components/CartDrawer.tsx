@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation";
 import CartCheckoutForm from "@/components/CartCheckoutForm";
 import CartDrawerDoneStep from "@/components/CartDrawerDoneStep";
 import CartDrawerPayStep from "@/components/CartDrawerPayStep";
-import { computeTotals, useCart } from "@/context/CartContext";
+import { RollingCounter } from "@/components/RollingCounter";
+import { computeTotals, lineUnitTotal, useCart } from "@/context/CartContext";
 import { useMenuCart } from "@/context/MenuCartContext";
 import {
   useWebCheckout,
@@ -61,7 +62,9 @@ function QtyStepper({
       >
         −
       </button>
-      <span className="min-w-[26px] text-center tabular-nums">{quantity}</span>
+      <span className="min-w-[26px] flex items-center justify-center">
+        <RollingCounter value={quantity} fontSize={14} color="#ffffff" />
+      </span>
       <button
         type="button"
         onClick={onInc}
@@ -375,10 +378,16 @@ export default function CartDrawer() {
                       <p className="text-[13px] font-semibold text-gray-900 leading-snug line-clamp-2">
                         {line.name}
                       </p>
-                      <p className="text-xs text-gray-500 mt-0.5">1 unit</p>
+                      {line.addons?.length ? (
+                        <p className="text-[11px] text-gray-500 mt-0.5 line-clamp-2">
+                          {line.addons.map((a) => a.name).join(", ")}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-gray-500 mt-0.5">1 unit</p>
+                      )}
                       <div className="mt-auto flex items-end justify-between gap-2 pt-2">
                         <p className="text-sm font-bold text-gray-900 tabular-nums">
-                          {formatInr(line.unitPrice)}
+                          {formatInr(lineUnitTotal(line))}
                         </p>
                         <QtyStepper
                           quantity={line.quantity}
