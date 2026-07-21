@@ -22,7 +22,6 @@ const iconBtnDefault = `${iconBtnBase} text-svs-ink/70 hover:bg-svs-cream hover:
 const iconBtnHero = `${iconBtnBase} text-white hover:bg-white/15 hover:text-white`;
 
 const iconSvg = "w-5 h-5 sm:w-[22px] sm:h-[22px] lg:w-7 lg:h-7";
-const storyRingSize = "w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12";
 
 function GiftCardNavIcon({ className }: { className?: string }) {
   return (
@@ -59,70 +58,28 @@ function StoryTriggerButton({
   hero?: boolean;
 }) {
   const iconBtn = hero ? iconBtnHero : iconBtnDefault;
-  const ringClass = hero ? "text-white" : "text-svs-orange";
-  const innerClass = hero
-    ? "bg-transparent text-white"
-    : "bg-svs-cream text-svs-ink";
 
   return (
     <button
       type="button"
-      className={`${iconBtn} p-0`}
+      className={iconBtn}
       id="btn-stories"
-      aria-label="Open SVS stories"
+      aria-label="Watch SVS stories"
       onClick={onClick}
     >
-      <span className={`relative flex items-center justify-center ${storyRingSize}`}>
-        <span
-          className={`absolute inset-0 rounded-full story-ring-spin ${ringClass}`}
-          style={{ transformStyle: "flat" }}
-          aria-hidden
-        >
-          <svg
-            className="w-full h-full"
-            viewBox="0 0 40 40"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.25"
-            strokeLinecap="round"
-          >
-            <circle cx="20" cy="20" r="17" strokeDasharray="22 14" />
-          </svg>
-        </span>
-        <span
-          className={`relative z-[1] flex items-center justify-center w-[calc(100%-7px)] h-[calc(100%-7px)] rounded-full ${innerClass}`}
-        >
-          <svg
-            className={iconSvg}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.75"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            {!hero ? (
-              <rect
-                x="5"
-                y="7"
-                width="11"
-                height="15"
-                rx="2.5"
-                stroke="currentColor"
-                strokeOpacity="0.28"
-                fill="none"
-              />
-            ) : null}
-            <rect x="7" y="5" width="11" height="15" rx="2.5" fill="none" />
-            <path
-              d="M10.25 12.75 13.75 14.5 10.25 16.25z"
-              fill="currentColor"
-              stroke="none"
-            />
-          </svg>
-        </span>
-      </span>
+      <svg
+        className={iconSvg}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <rect x="3.5" y="6" width="17" height="12" rx="2.5" />
+        <path d="M10.5 9.75v4.5l4.25-2.25L10.5 9.75z" fill="currentColor" stroke="none" />
+      </svg>
     </button>
   );
 }
