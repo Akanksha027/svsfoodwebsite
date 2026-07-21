@@ -3,40 +3,50 @@
 import { useEffect } from "react";
 
 /**
- * Ref-counted body scroll lock so nested popups (login + cart, etc.)
- * don't unlock early when one of them closes.
- *
- * Uses `position: fixed` + scroll restore so iOS Safari can't rubber-band
- * the page behind the overlay.
+ * Ref-counted body scroll lock so nested popups don't unlock early.
+ * Keeps the vertical scrollbar visible (no layout jump / navbar shift).
  */
 let lockCount = 0;
 let lockedScrollY = 0;
 
+function preventScroll(e: Event) {
+  // Allow scrolling inside modal/dialog panels
+  const target = e.target as HTMLElement | null;
+  if (target?.closest?.("[data-scroll-lock-allow], [role='dialog']")) {
+    return;
+  }
+  e.preventDefault();
+}
+
 function applyLock() {
   lockedScrollY = window.scrollY || window.pageYOffset || 0;
   const html = document.documentElement;
-  html.style.overflow = "hidden";
+
+  html.classList.add("svs-scroll-locked");
+  // Keep scrollbar gutter visible; block page scroll via overflow + listeners
+  html.style.overflowY = "scroll";
   html.style.overscrollBehavior = "none";
   document.body.style.overflow = "hidden";
   document.body.style.overscrollBehavior = "none";
-  document.body.style.position = "fixed";
-  document.body.style.top = `-${lockedScrollY}px`;
-  document.body.style.left = "0";
-  document.body.style.right = "0";
-  document.body.style.width = "100%";
+  document.body.style.touchAction = "none";
+
+  window.addEventListener("wheel", preventScroll, { passive: false });
+  window.addEventListener("touchmove", preventScroll, { passive: false });
 }
 
 function clearLock() {
   const html = document.documentElement;
-  html.style.overflow = "";
+  html.classList.remove("svs-scroll-locked");
+  html.style.overflowY = "";
   html.style.overscrollBehavior = "";
   document.body.style.overflow = "";
   document.body.style.overscrollBehavior = "";
-  document.body.style.position = "";
-  document.body.style.top = "";
-  document.body.style.left = "";
-  document.body.style.right = "";
-  document.body.style.width = "";
+  document.body.style.touchAction = "";
+
+  window.removeEventListener("wheel", preventScroll);
+  window.removeEventListener("touchmove", preventScroll);
+
+  // Restore exact scroll if anything drifted
   window.scrollTo(0, lockedScrollY);
 }
 

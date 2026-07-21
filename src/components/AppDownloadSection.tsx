@@ -216,9 +216,7 @@ export default function AppDownloadSection() {
                 <StoreBadge href={APP_DOWNLOAD_URL} sub="Available on the" label="App Store">
                   <AppleIcon />
                 </StoreBadge>
-                <StoreBadge href={APP_DOWNLOAD_URL} sub="EXPLORE IT ON" label="AppGallery">
-                  <AppGalleryIcon />
-                </StoreBadge>
+
               </div>
             </div>
           </div>
