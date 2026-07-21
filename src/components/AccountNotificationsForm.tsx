@@ -282,7 +282,7 @@ export default function AccountNotificationsForm({
             title: "Login OTP",
             description: "WhatsApp code when you sign in to your account.",
             locked: true,
-            lockedHint: "Required — can’t be turned off",
+            lockedHint: "Required - can’t be turned off",
           },
           {
             key: "security_alerts",

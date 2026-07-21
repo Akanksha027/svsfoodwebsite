@@ -43,7 +43,7 @@ export default function HeroVideoSection() {
         <div className="flex w-full flex-col items-center gap-8 sm:gap-10">
           <div className="flex flex-col items-center gap-3 sm:gap-4">
             <p className="text-svs-white/90 text-[1rem] sm:text-[1.15rem] md:text-[1.25rem] font-medium tracking-wide max-w-[500px] leading-snug">
-              From Our Oven to Your Plate — Fresh, Vegetarian, Unforgettable.
+              From Our Oven to Your Plate - Fresh, Vegetarian, Unforgettable.
             </p>
             <h1
               className="max-w-[20ch] text-center text-[clamp(2rem,6vw,4.5rem)] font-bold uppercase leading-[1.05] tracking-[0.02em] text-[#f3e8c8]"

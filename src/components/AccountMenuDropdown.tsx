@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import AppDownloadPromo from "@/components/AppDownloadPromo";
 import { useBodyScrollLock } from "@/lib/body-scroll-lock";
-
-const NAV_H = "top-14 sm:top-16 lg:top-[72px]";
+import {
+  accountMenuPanelClass,
+  accountOverlayBackdropClass,
+  accountOverlayShellClass,
+} from "@/lib/nav-layout";
 
 const linkClass =
   "flex w-full items-center gap-3 px-3.5 py-2.5 text-left text-[13.5px] font-semibold text-gray-700 hover:bg-[#fff4ee] hover:text-[#f16a34] cursor-pointer no-underline border-0 bg-transparent transition-colors rounded-xl";
@@ -31,6 +34,8 @@ function Row({
 }
 
 export default function AccountMenuDropdown() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const router = useRouter();
   const { customer, accountMenuOpen, closeAccountMenu, logout } =
     useWebsiteAuth();
@@ -63,19 +68,19 @@ export default function AccountMenuDropdown() {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[1250] pointer-events-none"
+      className={accountOverlayShellClass(isHome)}
       role="dialog"
       aria-label="My account menu"
     >
       <button
         type="button"
-        className={`pointer-events-auto absolute inset-x-0 bottom-0 ${NAV_H} bg-black/25 cursor-default touch-none border-0`}
+        className={accountOverlayBackdropClass(isHome, "menu")}
         aria-label="Close menu"
         onClick={closeAccountMenu}
       />
 
       <div
-        className={`pointer-events-auto absolute ${NAV_H} mt-2 right-3 sm:right-4 md:right-6 lg:right-8 w-[min(calc(100vw-1.5rem),300px)] rounded-2xl bg-white border border-black/[0.04] shadow-[0_12px_40px_rgba(0,0,0,0.14)] overflow-hidden otp-step-in`}
+        className={accountMenuPanelClass(isHome)}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-4 pt-4 pb-3 bg-gradient-to-br from-[#fff8f4] to-white border-b border-black/[0.04]">

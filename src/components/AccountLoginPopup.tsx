@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
 import BrandLogo from "@/components/BrandLogo";
 import OtpSixBoxes from "@/components/OtpSixBoxes";
@@ -9,8 +10,15 @@ import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import { useInlinePhoneOtp } from "@/hooks/useInlinePhoneOtp";
 import { useBodyScrollLock } from "@/lib/body-scroll-lock";
 import { formatIndianMobileInput } from "@/lib/indian-phone";
+import {
+  accountLoginPanelWrapClass,
+  accountOverlayBackdropClass,
+  accountOverlayShellClass,
+} from "@/lib/nav-layout";
 
 export default function AccountLoginPopup() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const { loginOpen, closeLogin, customer } = useWebsiteAuth();
   const [phone, setPhone] = useState("");
   const [mounted, setMounted] = useState(false);
@@ -90,20 +98,23 @@ export default function AccountLoginPopup() {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[1300] flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6"
+      className={accountOverlayShellClass(isHome)}
       role="dialog"
       aria-modal
       aria-labelledby="login-popup-title"
-      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       <button
         type="button"
-        className="absolute inset-0 bg-svs-ink/45 backdrop-blur-md cursor-default touch-none border-0"
+        className={accountOverlayBackdropClass(isHome, "login")}
         aria-label="Close"
         onClick={closeLogin}
       />
 
-      <div className="relative w-full sm:max-w-[380px] max-h-[min(92dvh,640px)] overflow-y-auto overscroll-contain rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl animate-[otp-step-in_0.25s_ease-out]">
+      <div
+        className={accountLoginPanelWrapClass(isHome)}
+        style={{ paddingBottom: "max(0px, env(safe-area-inset-bottom, 0px))" }}
+      >
+      <div className="pointer-events-auto relative w-full sm:max-w-[380px] max-h-[min(92dvh,640px)] overflow-y-auto overscroll-contain rounded-t-3xl sm:rounded-3xl bg-white shadow-2xl animate-[otp-step-in_0.25s_ease-out]">
         <div className="px-6 pt-5 pb-2">
           <button
             type="button"
@@ -203,7 +214,11 @@ export default function AccountLoginPopup() {
                 Enter verification code
               </h2>
               <p className="text-center text-[13px] text-gray-600 mt-2 mb-5">
-                Sent on WhatsApp to{" "}
+                {sendBusy ? (
+                  <>Sending code on WhatsApp to{" "}</>
+                ) : (
+                  <>Sent on WhatsApp to{" "}</>
+                )}
                 <span className="font-bold tabular-nums text-gray-900">
                   +91 {mobile}
                 </span>
@@ -219,9 +234,14 @@ export default function AccountLoginPopup() {
                 disabled={verifyBusy}
                 error={Boolean(otpError)}
                 autoFocus={onOtpStep && !verifyBusy}
-                focusDelayMs={320}
+                focusDelayMs={120}
               />
 
+              {sendBusy ? (
+                <p className="text-[12px] text-center text-gray-500 mt-3">
+                  Sending code…
+                </p>
+              ) : null}
               {verifyBusy ? (
                 <p className="text-[12px] text-center text-gray-500 mt-3">
                   Verifying…
@@ -267,6 +287,7 @@ export default function AccountLoginPopup() {
             </Link>
           </p>
         </div>
+      </div>
       </div>
     </div>,
     document.body,

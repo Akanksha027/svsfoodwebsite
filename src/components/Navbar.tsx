@@ -465,7 +465,7 @@ export default function Navbar({
     <nav
       data-navbar-variant={hero ? "hero" : "default"}
       data-menu-mode={menuMode ? "true" : "false"}
-      className={`fixed top-0 left-0 right-0 z-[1000] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 transition-[border-color,color,box-shadow] duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[1400] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 transition-[border-color,color,box-shadow] duration-300 ${
         hero
           ? "bg-transparent border-b border-transparent text-white"
           : "border-b border-transparent text-svs-ink"

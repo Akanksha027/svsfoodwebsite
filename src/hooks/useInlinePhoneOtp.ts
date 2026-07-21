@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { sendLoginOtp } from "@/lib/website-customer-api";
 import { INDIAN_MOBILE_RE, normalizeIndianMobile } from "@/lib/indian-phone";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
@@ -32,6 +32,7 @@ export function useInlinePhoneOtp({
   const [verifyBusy, setVerifyBusy] = useState(false);
   const [otpError, setOtpError] = useState<string | null>(null);
   const [resendIn, setResendIn] = useState(0);
+  const activeSendMobileRef = useRef<string | null>(null);
 
   const mobile = normalizePhone(phone);
   const phoneValid = PHONE_RE.test(mobile);
@@ -55,23 +56,27 @@ export function useInlinePhoneOtp({
 
   useEffect(() => {
     if (!otpRequired) {
+      activeSendMobileRef.current = null;
       setOtp("");
       setOtpSentFor(null);
       setOtpError(null);
       return;
     }
     if (!phoneValid) {
+      activeSendMobileRef.current = null;
       setOtpSentFor(null);
       setOtp("");
       if (verifiedPhone && verifiedPhone !== mobile) setVerifiedPhone(null);
       return;
     }
     if (verifiedPhone && verifiedPhone !== mobile) {
+      activeSendMobileRef.current = null;
       setVerifiedPhone(null);
       setOtp("");
       setOtpSentFor(null);
     }
     if (otpSentFor && otpSentFor !== mobile) {
+      activeSendMobileRef.current = null;
       setOtpSentFor(null);
       setOtp("");
     }
@@ -94,19 +99,26 @@ export function useInlinePhoneOtp({
     if (isVerified) return true;
     if (resendIn > 0 && codeSentForCurrent) return false;
 
+    const targetMobile = mobile;
     setOtpError(null);
+    setOtp("");
+    // Show OTP step immediately — don’t wait on WhatsApp/network.
+    activeSendMobileRef.current = targetMobile;
+    setOtpSentFor(targetMobile);
     setSendBusy(true);
     try {
-      const res = await sendLoginOtp(mobile);
-      setOtpSentFor(mobile);
-      setResendIn(res.resend_after_seconds ?? 30);
-      setOtp("");
+      const res = await sendLoginOtp(targetMobile);
+      if (activeSendMobileRef.current === targetMobile) {
+        setResendIn(res.resend_after_seconds ?? 30);
+      }
       return true;
     } catch (e) {
       const err = e as Error & { retryAfterSeconds?: number };
-      if (err.retryAfterSeconds != null) {
+      if (
+        activeSendMobileRef.current === targetMobile &&
+        err.retryAfterSeconds != null
+      ) {
         setResendIn(err.retryAfterSeconds);
-        setOtpSentFor(mobile);
       }
       setOtpError(err.message || "Could not send code");
       return false;
@@ -207,6 +219,7 @@ export function useInlinePhoneOtp({
   ]);
 
   const clearOtpStep = useCallback(() => {
+    activeSendMobileRef.current = null;
     setOtp("");
     setOtpSentFor(null);
     setOtpError(null);

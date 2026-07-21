@@ -141,7 +141,11 @@ export default function PhoneWhatsAppAuth({
           ) : (
             <div className="space-y-3 otp-step-in">
               <p className="text-[12px] text-center text-gray-600">
-                Enter 6-digit code for{" "}
+                {sendBusy ? (
+                  <>Sending code on WhatsApp for{" "}</>
+                ) : (
+                  <>Enter 6-digit code for{" "}</>
+                )}
                 <span className="font-bold tabular-nums text-gray-900">
                   +91 {mobile}
                 </span>
@@ -157,6 +161,11 @@ export default function PhoneWhatsAppAuth({
                 error={Boolean(otpError)}
                 autoFocus={codeSentForCurrent && !verifyBusy}
               />
+              {sendBusy ? (
+                <p className="text-[11px] text-center text-gray-500">
+                  Sending code…
+                </p>
+              ) : null}
               {verifyBusy ? (
                 <p className="text-[11px] text-center text-gray-500">
                   Verifying…
