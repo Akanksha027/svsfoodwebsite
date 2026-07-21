@@ -4,10 +4,12 @@ import { useEffect } from "react";
 
 /**
  * Ref-counted body scroll lock so nested popups don't unlock early.
- * Keeps the vertical scrollbar visible (no layout jump / navbar shift).
+ * Hides the page scrollbar while open and pads the layout so fixed UI
+ * (navbar, etc.) does not shift sideways.
  */
 let lockCount = 0;
 let lockedScrollY = 0;
+let scrollbarComp = 0;
 
 function preventScroll(e: Event) {
   // Allow scrolling inside modal/dialog panels
@@ -18,14 +20,25 @@ function preventScroll(e: Event) {
   e.preventDefault();
 }
 
+function scrollbarWidth() {
+  return Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+}
+
 function applyLock() {
   lockedScrollY = window.scrollY || window.pageYOffset || 0;
+  scrollbarComp = scrollbarWidth();
   const html = document.documentElement;
 
   html.classList.add("svs-scroll-locked");
-  // Keep scrollbar gutter visible; block page scroll via overflow + listeners
-  html.style.overflowY = "scroll";
+  html.style.overflow = "hidden";
+  html.style.overflowY = "hidden";
   html.style.overscrollBehavior = "none";
+  html.style.scrollbarGutter = "auto";
+  if (scrollbarComp > 0) {
+    html.style.paddingRight = `${scrollbarComp}px`;
+    html.style.setProperty("--svs-scrollbar-comp", `${scrollbarComp}px`);
+  }
+
   document.body.style.overflow = "hidden";
   document.body.style.overscrollBehavior = "none";
   document.body.style.touchAction = "none";
@@ -37,8 +50,13 @@ function applyLock() {
 function clearLock() {
   const html = document.documentElement;
   html.classList.remove("svs-scroll-locked");
+  html.style.overflow = "";
   html.style.overflowY = "";
   html.style.overscrollBehavior = "";
+  html.style.scrollbarGutter = "";
+  html.style.paddingRight = "";
+  html.style.removeProperty("--svs-scrollbar-comp");
+
   document.body.style.overflow = "";
   document.body.style.overscrollBehavior = "";
   document.body.style.touchAction = "";
@@ -48,6 +66,7 @@ function clearLock() {
 
   // Restore exact scroll if anything drifted
   window.scrollTo(0, lockedScrollY);
+  scrollbarComp = 0;
 }
 
 export function lockBodyScroll() {

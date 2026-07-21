@@ -506,6 +506,9 @@ export default function CartDrawer() {
 
       <aside
         id="menu-cart-drawer"
+        role="dialog"
+        aria-modal="true"
+        data-scroll-lock-allow
         aria-label="My cart"
         aria-hidden={!isOpen}
         className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,450px)] xl:w-[480px] bg-white sm:rounded-l-[2rem] border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
@@ -773,10 +776,10 @@ export default function CartDrawer() {
                         if (type === "dine_in") checkout.setPayMethod("online");
                       }}
                       className={[
-                        "aspect-square flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-none text-[10px] sm:text-[11px] font-extrabold border cursor-pointer transition-all px-0.5",
+                        "aspect-square flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-none text-[10px] sm:text-[11px] font-extrabold border-[3px] cursor-pointer transition-all px-0.5",
                         active
-                          ? "bg-orange-50 border-[#f16a34] text-[#f16a34] ring-1 ring-[#f16a34]/20"
-                          : "bg-white border-gray-200 text-gray-500 hover:border-[#f16a34]/30",
+                          ? "bg-orange-50 border-[#f16a34] text-[#f16a34]"
+                          : "bg-white border-gray-200 text-gray-500 hover:border-[#f16a34]/40",
                       ].join(" ")}
                     >
                       <OrderTypeIcon type={type} className="h-10 w-10 sm:h-11 sm:w-11" />

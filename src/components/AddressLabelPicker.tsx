@@ -14,25 +14,30 @@ export default function AddressLabelPicker({
   const normalized = label.trim() || "Home";
   const isPreset = (PRESET_TAGS as readonly string[]).includes(normalized);
   const activePreset = isPreset ? normalized : "Other";
-  const customValue = isPreset && normalized !== "Other" ? "" : normalized === "Other" ? "" : normalized;
+  const customValue =
+    isPreset && normalized !== "Other"
+      ? ""
+      : normalized === "Other"
+        ? ""
+        : normalized;
 
   return (
     <div>
-      <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-2">
-        Save as
-      </p>
-      <div className="flex flex-wrap gap-2">
+      <p className="text-[11px] font-semibold text-gray-700 mb-1.5">Save as</p>
+      <div className="flex flex-wrap gap-1.5">
         {PRESET_TAGS.map((tag) => {
           const active = activePreset === tag;
           return (
             <button
               key={tag}
               type="button"
-              onClick={() => onChange(tag === "Other" ? (customValue || "Other") : tag)}
-              className={`h-9 px-3.5 rounded-full text-[13px] font-bold border cursor-pointer transition-colors ${
+              onClick={() =>
+                onChange(tag === "Other" ? customValue || "Other" : tag)
+              }
+              className={`h-7 px-3 rounded-full text-[11px] font-semibold border cursor-pointer transition-colors bg-white ${
                 active
-                  ? "bg-[#fff4ee] border-[#f16a34] text-[#f16a34]"
-                  : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
+                  ? "border-[#f16a34] text-[#f16a34]"
+                  : "border-gray-200 text-gray-700 hover:border-gray-300"
               }`}
             >
               {tag}
@@ -48,9 +53,9 @@ export default function AddressLabelPicker({
             const v = e.target.value.slice(0, 40);
             onChange(v.trim() ? v : "Other");
           }}
-          placeholder="Name this address (e.g. Mom’s place)"
+          placeholder="Name this address"
           maxLength={40}
-          className="mt-2.5 w-full h-10 rounded-lg border border-gray-200 bg-gray-50 px-3 text-[14px] font-semibold text-gray-900 outline-none focus:border-[#f16a34] focus:ring-2 focus:ring-[#f16a34]/15"
+          className="mt-1.5 w-full h-9 rounded-lg border border-gray-200 bg-white px-3 text-[12px] font-medium text-gray-900 outline-none focus:border-[#f16a34] focus:ring-1 focus:ring-[#f16a34]/15"
           aria-label="Custom address name"
         />
       ) : null}

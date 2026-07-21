@@ -16,11 +16,9 @@ export default function SavedAddressPicker({
   if (addresses.length === 0) return null;
 
   return (
-    <div className="space-y-2.5">
-      <p className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400">
-        Saved addresses
-      </p>
-      <div className="space-y-2 max-h-44 overflow-y-auto pr-0.5">
+    <div className="space-y-1.5">
+      <p className="text-[11px] font-semibold text-gray-700">Saved addresses</p>
+      <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {addresses.map((addr) => {
           const active = selectedId === addr.id;
           return (
@@ -28,25 +26,21 @@ export default function SavedAddressPicker({
               key={addr.id}
               type="button"
               onClick={() => onSelect(addr.id)}
-              className={`w-full text-left rounded-xl border px-3.5 py-3 cursor-pointer transition-all ${
+              className={`shrink-0 max-w-[9.5rem] text-left rounded-lg border bg-white px-2.5 py-1.5 cursor-pointer transition-colors ${
                 active
-                  ? "border-[#f16a34] bg-[#fff8f5] ring-1 ring-[#f16a34]/20 shadow-sm"
-                  : "border-gray-100 bg-white hover:border-[#f16a34]/40 hover:bg-orange-50/30 shadow-[0_1px_3px_rgba(0,0,0,0.04)]"
+                  ? "border-[#f16a34]"
+                  : "border-gray-200 hover:border-gray-300"
               }`}
             >
-              <span className="flex items-center gap-2 mb-1">
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide ${
-                  active ? "bg-[#f16a34]/10 text-[#f16a34]" : "bg-gray-100 text-gray-600"
-                }`}>
-                  {addr.label || "Home"}
-                </span>
-                {addr.is_default ? (
-                  <span className="text-[10px] font-bold text-[#f16a34] bg-[#f16a34]/8 rounded-full px-1.5 py-0.5">
-                    Default
-                  </span>
-                ) : null}
+              <span
+                className={`block text-[11px] font-bold truncate ${
+                  active ? "text-[#f16a34]" : "text-gray-900"
+                }`}
+              >
+                {addr.label || "Home"}
+                {addr.is_default ? " · Default" : ""}
               </span>
-              <span className="block text-[12px] text-gray-500 leading-snug line-clamp-2">
+              <span className="block text-[10px] text-gray-500 leading-snug line-clamp-1">
                 {addr.formatted_address}
               </span>
             </button>
@@ -55,13 +49,13 @@ export default function SavedAddressPicker({
         <button
           type="button"
           onClick={() => onSelect("new")}
-          className={`w-full text-left rounded-xl border px-3.5 py-3 text-[12px] font-bold cursor-pointer transition-all ${
+          className={`shrink-0 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold cursor-pointer transition-colors bg-white whitespace-nowrap ${
             selectedId === "new"
-              ? "border-[#f16a34] bg-[#fff8f5] text-[#f16a34] ring-1 ring-[#f16a34]/20"
-              : "border-dashed border-gray-200 text-gray-500 hover:border-[#f16a34]/60 hover:text-[#f16a34]"
+              ? "border-[#f16a34] text-[#f16a34]"
+              : "border-dashed border-gray-300 text-gray-600 hover:border-[#f16a34] hover:text-[#f16a34]"
           }`}
         >
-          + Add new delivery address
+          + New
         </button>
       </div>
     </div>
