@@ -339,8 +339,10 @@ export default function Navbar({
   const [storiesOpen, setStoriesOpen] = useState(false);
   const hero = variant === "hero";
   const { customer, openLogin, openAccountMenu } = useWebsiteAuth();
+  const { closeCart, isOpen: cartOpen } = useMenuCart();
 
   const handleAccount = () => {
+    if (cartOpen) closeCart();
     if (customer) openAccountMenu();
     else openLogin();
   };

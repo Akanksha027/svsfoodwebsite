@@ -145,7 +145,7 @@ export default function MenuBrowser({
   return (
     <div className="max-w-[1100px] mx-auto">
       {visibleCategories.length > 0 && (
-        <div className="sticky top-14 sm:top-16 md:top-20 lg:top-[72px] z-[1350] -mx-4 sm:mx-0 px-4 sm:px-0 py-2.5 bg-svs-cream transition-all duration-300">
+        <div className="sticky top-14 sm:top-16 md:top-20 lg:top-[72px] z-[100] -mx-4 sm:mx-0 px-4 sm:px-0 py-2.5 bg-svs-cream transition-all duration-300">
           <div className="flex gap-4 sm:gap-5 overflow-x-auto pb-1">
             {visibleCategories.map((cat) => {
               const active = cat.id === activeCategoryId;
