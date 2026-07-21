@@ -203,26 +203,33 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
             </h2>
 
             <div
-              className="w-[80px] h-[98px] sm:w-[140px] sm:h-[175px] md:w-[180px] md:h-[225px] relative mt-0 sm:mt-4 shrink-0"
-              style={{ perspective: "800px" }}
+              className="w-[90px] h-[115px] sm:w-[150px] sm:h-[190px] md:w-[190px] md:h-[240px] relative mt-0 sm:mt-4 shrink-0"
+              style={{ perspective: "900px" }}
             >
-              <div className="w-full h-full relative revolving-bag scale-[0.75] sm:scale-100 md:scale-[1.1] origin-center">
-                <div className="bag-top-handle bag-front-handle"></div>
-                <div className="bag-top-handle bag-back-handle"></div>
-                <div className="bag-face bag-front">
-                  <span className="text-[10px] sm:text-[12px] font-black tracking-widest text-svs-ink">
-                    SVSFOOD
+              <div className="w-full h-full relative revolving-bag footer-envelope-bag scale-[0.8] sm:scale-100 md:scale-[1.05] origin-center">
+                <div className="bag-face bag-front footer-bag-front">
+                  <span className="footer-bag-wordmark" aria-hidden>
+                    <span className="footer-bag-svs">
+                      SVS
+                      <span className="footer-bag-star">★</span>
+                    </span>
+                    <span className="footer-bag-food">FOOD</span>
                   </span>
                 </div>
-                <div className="bag-face bag-back">
-                  <span className="text-[10px] sm:text-[12px] font-black tracking-widest text-svs-ink transform rotate-y-180">
-                    SVSFOOD
+                <div className="bag-face bag-back footer-bag-front">
+                  <span className="footer-bag-wordmark" aria-hidden>
+                    <span className="footer-bag-svs">
+                      SVS
+                      <span className="footer-bag-star">★</span>
+                    </span>
+                    <span className="footer-bag-food">FOOD</span>
                   </span>
                 </div>
-                <div className="bag-face bag-left"></div>
-                <div className="bag-face bag-right"></div>
+                <div className="bag-face bag-left" />
+                <div className="bag-face bag-right" />
+                <div className="bag-face footer-bag-bottom" aria-hidden />
               </div>
-              <div className="absolute -bottom-4 sm:-bottom-6 left-1/2 -translate-x-1/2 w-[70px] sm:w-[110px] md:w-[140px] h-[12px] sm:h-[18px] bg-svs-ink/10 rounded-[100%] blur-[8px]"></div>
+              <div className="absolute -bottom-4 sm:-bottom-6 left-1/2 -translate-x-1/2 w-[70px] sm:w-[110px] md:w-[140px] h-[12px] sm:h-[18px] bg-svs-ink/10 rounded-[100%] blur-[8px]" />
             </div>
           </div>
         </div>

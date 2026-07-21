@@ -4,7 +4,7 @@ import Link from "next/link";
 /** Bottom-of-page credit — used sitewide via root layout. */
 export default function PoweredBy() {
   return (
-    <div className="flex items-center justify-center gap-1.5 py-4 px-4 bg-svs-cream border-t border-svs-cream/80">
+    <div className="flex items-center justify-center gap-1.5 py-4 px-4 bg-white border-t border-gray-100">
       <span className="text-[13px] sm:text-sm font-semibold text-svs-ink/55">
         Powered by
       </span>

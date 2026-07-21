@@ -85,13 +85,13 @@ export default function DeliveringMomentsSection() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-20 items-start">
-          <div className="relative w-full aspect-[4/5] max-h-[560px] lg:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
+          <div className="relative w-full aspect-[4/5] sm:aspect-[3/4] max-h-[min(70vw,420px)] sm:max-h-[500px] lg:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
             <Image
               src="/images/svs.jpg"
               alt="SVS Food burgers ready to serve"
               fill
               className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 50vw"
+              sizes="(max-width: 1024px) 92vw, 50vw"
             />
           </div>
 

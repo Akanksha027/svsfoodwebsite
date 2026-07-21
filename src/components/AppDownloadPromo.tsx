@@ -41,9 +41,8 @@ export default function AppDownloadPromo({
       </a>
       <div className="min-w-0">
         <p
-          className={`font-extrabold text-gray-900 leading-tight ${
-            compact ? "text-[12px]" : "text-[13px]"
-          }`}
+          className={`font-extrabold text-gray-900 leading-tight ${compact ? "text-[12px]" : "text-[13px]"
+            }`}
         >
           Get the SVS Food app
         </p>

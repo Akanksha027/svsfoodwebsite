@@ -1,12 +1,25 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import AnimatedOrderButton from "@/components/AnimatedOrderButton";
 
-const HERO_VIDEO_SRC = "/bf.mp4";
+const HERO_VIDEO_SRC = "/bg1.mp4";
+
+const HERO_LINES = [
+  "We make our own buns",
+  "हम खुद बनाते हैं अपने बन",
+] as const;
+
+const TYPE_MS = 70;
+const DELETE_MS = 40;
+const HOLD_MS = 1800;
+const GAP_MS = 450;
 
 export default function HeroVideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [display, setDisplay] = useState("");
+  const [lineIndex, setLineIndex] = useState(0);
+  const [phase, setPhase] = useState<"typing" | "holding" | "deleting">("typing");
 
   useEffect(() => {
     const video = videoRef.current;
@@ -15,6 +28,38 @@ export default function HeroVideoSection() {
       /* autoplay may be blocked until interaction */
     });
   }, []);
+
+  useEffect(() => {
+    const full = HERO_LINES[lineIndex];
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (phase === "typing") {
+      if (display.length < full.length) {
+        timer = setTimeout(() => {
+          setDisplay(full.slice(0, display.length + 1));
+        }, TYPE_MS);
+      } else {
+        timer = setTimeout(() => setPhase("holding"), HOLD_MS);
+      }
+    } else if (phase === "holding") {
+      timer = setTimeout(() => setPhase("deleting"), GAP_MS);
+    } else if (phase === "deleting") {
+      if (display.length > 0) {
+        timer = setTimeout(() => {
+          setDisplay(display.slice(0, -1));
+        }, DELETE_MS);
+      } else {
+        timer = setTimeout(() => {
+          setLineIndex((i) => (i + 1) % HERO_LINES.length);
+          setPhase("typing");
+        }, GAP_MS);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [display, phase, lineIndex]);
+
+  const isHindi = lineIndex === 1;
 
   return (
     <section
@@ -43,10 +88,41 @@ export default function HeroVideoSection() {
         <div className="flex w-full flex-col items-center gap-8 sm:gap-10">
           <div className="flex flex-col items-center gap-3 sm:gap-4">
             <h1
-              className="max-w-[20ch] text-center text-[clamp(2rem,6vw,4.5rem)] font-bold uppercase leading-[1.05] tracking-[0.02em] text-[#f3e8c8]"
+              className={`max-w-[min(96vw,28ch)] text-center text-[clamp(1.45rem,4.6vw,3.75rem)] font-bold leading-[1.2] tracking-[0.02em] text-[#faf3dc] ${
+                isHindi ? "normal-case" : "uppercase"
+              }`}
               id="hero-text"
+              aria-live="polite"
             >
-              <span className="text-[#faf3dc]">&lsquo;We make our own buns&rsquo;</span>
+              <span className="relative inline-grid justify-items-center">
+                <span
+                  className="invisible col-start-1 row-start-1 whitespace-nowrap"
+                  aria-hidden
+                >
+                  &lsquo;{HERO_LINES[0]}&rsquo;
+                </span>
+                <span
+                  className="invisible col-start-1 row-start-1 whitespace-nowrap"
+                  aria-hidden
+                >
+                  &lsquo;{HERO_LINES[1]}&rsquo;
+                </span>
+                <span className="col-start-1 row-start-1 whitespace-nowrap">
+                  {display ? (
+                    <>
+                      &lsquo;{display}
+                      <span className="hero-type-caret" aria-hidden />
+                      &rsquo;
+                    </>
+                  ) : (
+                    <>
+                      &lsquo;
+                      <span className="hero-type-caret" aria-hidden />
+                      &rsquo;
+                    </>
+                  )}
+                </span>
+              </span>
             </h1>
           </div>
 

@@ -35,7 +35,7 @@ export const festiveDropTheme: FestiveDropTheme = {
       category: "burger",
       name: "Burgers",
       imageUrl:
-        "https://kalrtjvnbtauikrrvgxt.supabase.co/storage/v1/object/public/menu-media/categories/cat_pp_store_24475_542961/main/1780937279962-SUPREME-BURGER-Background-Removed.png",
+        "https://kalrtjvnbtauikrrvgxt.supabase.co/storage/v1/object/public/menu-media/categories/cat_pp_store_24475_542961/main/1780937279962-supremee-BURGER-Background-Removed.png",
       weight: 1,
     },
     {

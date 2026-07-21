@@ -62,7 +62,7 @@ function measurePanelPosition(anchor: HTMLElement): PanelPosition {
 function HomeIcon() {
   return (
     <svg
-      className="h-5 w-5 text-amber-500"
+      className="h-5 w-5 text-[#f16a34]"
       viewBox="0 0 24 24"
       fill="currentColor"
       aria-hidden
@@ -122,7 +122,7 @@ function AddressCard({
         onClick={onSelect}
         className="flex w-full items-start gap-3 border-0 bg-transparent p-0 cursor-pointer text-left"
       >
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-50">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#f16a34]/10">
           <HomeIcon />
         </span>
         <span className="min-w-0 flex-1">
@@ -138,7 +138,7 @@ function AddressCard({
         <button
           type="button"
           onClick={onEdit}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-600 cursor-pointer"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-[#f16a34]/20 bg-[#f16a34]/10 text-[#f16a34] cursor-pointer"
           aria-label="Edit address"
         >
           <EditIcon />
@@ -322,7 +322,7 @@ export default function ChangeLocationPanel({
         role="dialog"
         aria-modal="true"
         aria-labelledby="change-location-title"
-        className={`fixed z-[1551] bg-[#eef2f6] shadow-[0_20px_50px_rgba(0,0,0,0.18)] overflow-y-auto overscroll-contain ${
+        className={`fixed z-[1551] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-y-auto overscroll-contain ${
           isSheet
             ? "inset-x-0 bottom-0 rounded-t-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))] max-h-[min(88dvh,100dvh)]"
             : "rounded-2xl p-4 sm:p-5"
@@ -360,7 +360,7 @@ export default function ChangeLocationPanel({
             type="button"
             disabled={detectBusy}
             onClick={() => void onDetect()}
-            className="h-11 w-full rounded-lg bg-emerald-600 px-4 text-sm font-bold text-white border-0 cursor-pointer hover:bg-emerald-700 disabled:opacity-60"
+            className="h-11 w-full rounded-xl bg-[#f16a34] px-4 text-sm font-bold text-white border-0 cursor-pointer hover:bg-[#e05a28] disabled:opacity-60 shadow-sm"
           >
             {detectBusy ? "Detecting…" : "Detect my location"}
           </button>
@@ -377,7 +377,7 @@ export default function ChangeLocationPanel({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="search delivery location"
-              className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none focus:border-[#f16a34] focus:ring-2 focus:ring-[#f16a34]/15"
+              className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm text-gray-900 outline-none focus:border-[#f16a34] focus:ring-2 focus:ring-[#f16a34]/15"
             />
             {search.trim().length >= 3 ? (
               <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-10 max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg">
@@ -427,7 +427,7 @@ export default function ChangeLocationPanel({
           </div>
 
           {!customer ? (
-            <div className="rounded-xl border border-dashed border-gray-300 bg-white/80 p-4 text-center">
+            <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center">
               <p className="text-sm text-gray-600 mb-3">
                 Log in to see and save delivery addresses.
               </p>
@@ -443,7 +443,7 @@ export default function ChangeLocationPanel({
               </button>
             </div>
           ) : customer.addresses.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-gray-300 bg-white/80 p-4 text-center">
+            <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center">
               <p className="text-sm text-gray-600 mb-3">No saved addresses yet.</p>
               <button
                 type="button"

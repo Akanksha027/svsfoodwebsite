@@ -92,6 +92,51 @@ function OrderTypeIcon({
   );
 }
 
+function CancellationPolicy() {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="mx-4 mb-4 rounded-xl border border-gray-100 bg-white px-4 py-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <svg className="h-3.5 w-3.5 text-[#f16a34] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
+          </svg>
+          <span className="text-xs font-bold text-gray-700">Cancellation Policy</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setExpanded((p) => !p)}
+          className="text-[11px] font-bold text-[#f16a34] cursor-pointer border-0 bg-transparent shrink-0"
+        >
+          {expanded ? "Show less" : "Read more"}
+        </button>
+      </div>
+      {!expanded ? (
+        <p className="mt-1.5 text-[11px] text-gray-500 leading-relaxed">
+          Orders can be cancelled <span className="font-semibold">within 2 minutes</span> of placing. No cancellation once preparation begins.
+        </p>
+      ) : (
+        <div className="mt-2.5 space-y-2">
+          {[
+            ["2-min window", "Orders can be cancelled within 2 minutes of placing. After that, cancellation is not possible as food preparation begins."],
+            ["Full refund", "100% refund is issued for cancellations before preparation starts. Credited within 5–7 business days."],
+            ["Delivery orders", "Once a rider is assigned, cancellation is not allowed. Contact support for assistance."],
+            ["Wrong / missing item", "Raise a complaint within 30 minutes of delivery for a replacement or refund."],
+            ["Store's right", "SVS Food may cancel orders due to unavailability or operational constraints. Full refund will be issued."],
+          ].map(([title, desc]) => (
+            <div key={title} className="flex items-start gap-2">
+              <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#f16a34] shrink-0" />
+              <p className="text-[11px] text-gray-600 leading-relaxed">
+                <span className="font-semibold text-gray-800">{title}: </span>{desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function InfoIcon() {
   return (
     <svg
@@ -107,6 +152,7 @@ function InfoIcon() {
     </svg>
   );
 }
+
 
 function QtyStepper({
   quantity,
@@ -377,7 +423,7 @@ export default function CartDrawer() {
         id="menu-cart-drawer"
         aria-label="My cart"
         aria-hidden={!isOpen}
-        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,400px)] xl:w-[420px] bg-white border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
+        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,450px)] xl:w-[480px] bg-white sm:rounded-l-[2rem] border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
         style={{
@@ -486,7 +532,7 @@ export default function CartDrawer() {
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto overscroll-contain">
+            <div className="flex-1 overflow-y-auto overscroll-contain bg-white">
               <div className="mx-4 mt-4 rounded-xl border border-gray-200 bg-white p-3.5 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
                 <div className="flex items-start gap-3">
                   <div
@@ -603,8 +649,11 @@ export default function CartDrawer() {
               </div>
             </div>
 
+            {/* Cancellation Policy */}
+            <CancellationPolicy />
+
             {/* Order type picker */}
-            <div className="mx-4 mb-3">
+            <div className="mx-4 mb-3 bg-white">
               <p className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2">How would you like it?</p>
               <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                 {([

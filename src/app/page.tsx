@@ -5,6 +5,8 @@ import JourneySection from "@/components/JourneySection";
 import DeliveringMomentsSection from "@/components/DeliveringMomentsSection";
 import Footer from "@/components/Footer";
 import FestiveDrops from "@/components/FestiveDrops";
+import AppDownloadSection from "@/components/AppDownloadSection";
+import CitiesWeServeSection from "@/components/CitiesWeServeSection";
 
 export default function Home() {
   return (
@@ -16,6 +18,8 @@ export default function Home() {
       <DealsSection />
       <JourneySection />
       <DeliveringSection />
+      <AppDownloadSection />
+      <CitiesWeServeSection />
       <Footer />
     </>
   );
