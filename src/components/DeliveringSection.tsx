@@ -63,24 +63,7 @@ export default function DeliveringSection() {
           </div>
         </div>
 
-        <div className="mb-4 sm:mb-8 md:mb-12">
-          <h2 className="text-[1.25rem] sm:text-[1.5rem] md:text-[2rem] lg:text-[2.25rem] font-bold text-svs-ink mb-6 sm:mb-10 md:mb-12 tracking-tight leading-tight">
-            About SVS Food
-          </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 md:gap-16 lg:gap-24 mb-8 sm:mb-12 max-w-[1200px]">
-            <p className="text-[1rem] sm:text-[1.1rem] text-svs-ink/80 leading-relaxed">
-              Established in 2018 in Satna, Madhya Pradesh, SVS Food is a 100% Pure Vegetarian Quick Service Restaurant (QSR) brand committed to delivering fresh, hygienic, and high-quality food with speed and innovation. From the very beginning, our focus has been on combining traditional purity with modern technology to create an exceptional customer experience.
-            </p>
-            <p className="text-[1rem] sm:text-[1.1rem] text-svs-ink/80 leading-relaxed">
-              Our fully high-tech stores are equipped with self-order kiosks and WhatsApp order tracking, while our own mobile app and website enable seamless ordering. We currently serve over 800 orders daily and more than 1200 orders on weekends, reflecting the trust and growing love of our customers.
-            </p>
-          </div>
-
-          <button className="bg-svs-orange text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-[0.95rem] sm:text-[1.05rem] hover:bg-svs-orange-dark transition-colors w-full sm:w-auto">
-            Read more about us
-          </button>
-        </div>
       </div>
     </section>
   );

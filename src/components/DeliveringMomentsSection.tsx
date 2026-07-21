@@ -105,7 +105,7 @@ export default function DeliveringMomentsSection() {
                 <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
                   Freshly Baked Buns
                 </h3>
-                <div className="bg-svs-ink text-svs-yellow px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
+                <div className="bg-svs-ink text-white px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
                   <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
                     We bake our own
                   </span>
@@ -119,7 +119,7 @@ export default function DeliveringMomentsSection() {
                 <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
                   Tech-Driven Experience
                 </h3>
-                <div className="bg-svs-ink text-svs-yellow px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
+                <div className="bg-svs-ink text-white px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
                   <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
                     Fully automated
                   </span>
@@ -133,7 +133,7 @@ export default function DeliveringMomentsSection() {
                 <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
                   World-Level Standards
                 </h3>
-                <div className="bg-svs-ink text-svs-yellow px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
+                <div className="bg-svs-ink text-white px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
                   <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
                     Global expansion
                   </span>
@@ -147,7 +147,7 @@ export default function DeliveringMomentsSection() {
                 <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
                   Seamless & Fast
                 </h3>
-                <div className="bg-svs-ink text-svs-yellow px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
+                <div className="bg-svs-ink text-white px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
                   <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
                     Less human interaction
                   </span>
@@ -161,9 +161,9 @@ export default function DeliveringMomentsSection() {
                 <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
                   100% Pure Veg
                 </h3>
-                <div className="bg-svs-ink text-svs-yellow px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
+                <div className="bg-svs-ink text-white px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
                   <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
-                    Pure Sanatan
+                    Pure & Authentic
                   </span>
                 </div>
                 <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
