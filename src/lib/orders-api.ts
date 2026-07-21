@@ -146,6 +146,26 @@ export async function confirmCodPlace(input: {
   });
 }
 
+/** Cancel unpaid checkout after customer backs out of UPI. */
+export async function abandonCheckoutPayment(input: {
+  storeId: string;
+  orderId: string;
+  transactionId?: string;
+}) {
+  return apiRequest<{
+    order_id: string;
+    cancelled: boolean;
+    status: string;
+  }>("/payments/abandon", {
+    method: "POST",
+    storeId: input.storeId,
+    body: {
+      order_id: input.orderId,
+      payment_session_id: input.transactionId || undefined,
+    },
+  });
+}
+
 export async function confirmCashPayment(input: {
   storeId: string;
   orderId: string;

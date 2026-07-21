@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { resolveStoreLocation } from "@/data/locations";
-import { getPaymentStatus } from "@/lib/orders-api";
+import { abandonCheckoutPayment, getPaymentStatus } from "@/lib/orders-api";
 import { formatInr } from "@/lib/menu-api";
-import { Suspense } from "react";
+import { useCart } from "@/context/CartContext";
 
 type PendingPayment = {
   orderId: string;
@@ -23,12 +23,14 @@ type PendingPayment = {
 function PayInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { clearCart } = useCart();
   const orderIdParam = searchParams.get("order") || "";
   const storeSlug = searchParams.get("store") || "";
 
   const [pending, setPending] = useState<PendingPayment | null>(null);
   const [status, setStatus] = useState<"waiting" | "paid" | "failed">("waiting");
   const [error, setError] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     try {
@@ -64,6 +66,7 @@ function PayInner() {
         if (result.internal_status === "paid") {
           setStatus("paid");
           sessionStorage.removeItem("svs_pending_payment");
+          clearCart();
           router.replace(
             `/order/${encodeURIComponent(pending.orderId)}?store=${encodeURIComponent(store.id)}`,
           );
@@ -82,7 +85,23 @@ function PayInner() {
       cancelled = true;
       window.clearInterval(id);
     };
-  }, [pending, status, storeSlug, router]);
+  }, [pending, status, storeSlug, router, clearCart]);
+
+  const onCancelPayment = async () => {
+    if (!pending || cancelling) return;
+    setCancelling(true);
+    try {
+      await abandonCheckoutPayment({
+        storeId: pending.storeId,
+        orderId: pending.orderId,
+        transactionId: pending.transactionId,
+      });
+    } catch {
+      /* still leave pay screen */
+    }
+    sessionStorage.removeItem("svs_pending_payment");
+    router.replace("/menu");
+  };
 
   const qrSrc = useMemo(() => {
     if (!pending?.qrPayload) return null;
@@ -152,6 +171,18 @@ function PayInner() {
                   Mock payment mode: backend will auto-confirm in UAT/mock.
                 </p>
               ) : null}
+
+              <button
+                type="button"
+                disabled={cancelling || status === "paid"}
+                onClick={() => void onCancelPayment()}
+                className="w-full h-11 rounded-full border border-svs-ink/15 bg-transparent text-sm font-bold text-svs-ink/70 cursor-pointer disabled:opacity-50"
+              >
+                {cancelling ? "Cancelling…" : "Cancel payment"}
+              </button>
+              <p className="text-xs text-svs-ink/45">
+                Cancels this order. Your cart stays so you can try again.
+              </p>
             </div>
           ) : (
             <p className="text-svs-ink/50">Loading payment...</p>

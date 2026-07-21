@@ -126,8 +126,8 @@ export default function CartDrawerPayStep({
           </h3>
           <p className="mt-2 text-sm text-gray-500 max-w-[280px]">
             {status === "expired"
-              ? "We didn’t receive payment in time. Your order is saved — you can pay from the order page."
-              : error || "Something went wrong with this payment."}
+              ? "We didn’t receive payment in time. Your cart is still saved — you can try again."
+              : error || "Something went wrong with this payment. Your cart is still here."}
           </p>
           <p className="mt-3 text-xs font-semibold text-gray-400 tabular-nums">
             Order #{pending.orderNumber}
@@ -138,7 +138,7 @@ export default function CartDrawerPayStep({
           onClick={onCancel}
           className="h-12 w-full rounded-xl bg-[#f16a34] text-white text-sm font-extrabold border-0 cursor-pointer"
         >
-          View order
+          Back to cart
         </button>
         <button
           type="button"
@@ -257,7 +257,7 @@ export default function CartDrawerPayStep({
           Cancel payment
         </button>
         <p className="mt-2 text-center text-[11px] text-gray-400">
-          Order is saved. You can pay later from the order page.
+          Cancels this order. Your cart stays so you can try again.
         </p>
       </div>
     </div>

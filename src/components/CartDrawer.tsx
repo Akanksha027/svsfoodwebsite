@@ -19,6 +19,7 @@ import { formatInr } from "@/lib/menu-api";
 import { useBodyScrollLock } from "@/lib/body-scroll-lock";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import { persistCheckoutDeliveryAddress } from "@/lib/website-customer-api";
+import { abandonCheckoutPayment } from "@/lib/orders-api";
 import { resolveDeliveryCoords } from "@/lib/reverse-geocode";
 
 const SVS_ORANGE = "#f16a34";
@@ -250,6 +251,9 @@ export default function CartDrawer() {
     orderNumber: string | number;
     storeSlug: string;
   } | null>(null);
+  const [paymentCancelNotice, setPaymentCancelNotice] = useState<string | null>(
+    null,
+  );
 
   const checkoutActive = isOpen && itemCount > 0;
   const checkout = useWebCheckout({ active: checkoutActive });
@@ -297,8 +301,15 @@ export default function CartDrawer() {
       setStep("cart");
       setPendingPay(null);
       setDoneOrder(null);
+      setPaymentCancelNotice(null);
     }
   }, [isOpen, cancelActivePlaceOrder]);
+
+  useEffect(() => {
+    if (!paymentCancelNotice) return;
+    const id = window.setTimeout(() => setPaymentCancelNotice(null), 6000);
+    return () => window.clearTimeout(id);
+  }, [paymentCancelNotice]);
 
   useEffect(() => {
     if (itemCount === 0 && step === "cart") {
@@ -321,19 +332,23 @@ export default function CartDrawer() {
 
   const leavePayScreen = useCallback(() => {
     const pending = pendingPay;
-    setPendingPay(null);
-    if (pending) {
-      setStep("cart");
-      closeCart();
-      router.push(
-        `/order/${encodeURIComponent(pending.orderId)}?store=${encodeURIComponent(pending.storeSlug)}`,
-      );
-      return;
-    }
-    // Still creating order/payment — abort in-flight placement.
     cancelActivePlaceOrder();
-    setStep("checkout2");
-  }, [pendingPay, closeCart, router, cancelActivePlaceOrder]);
+    setPendingPay(null);
+
+    if (pending) {
+      void abandonCheckoutPayment({
+        storeId: pending.storeId,
+        orderId: pending.orderId,
+        transactionId: pending.transactionId,
+      }).catch(() => undefined);
+    }
+
+    // Keep cart; never send to order/map page on cancel.
+    setPaymentCancelNotice(
+      "Payment cancelled. Your cart is still here — place the order again when you’re ready.",
+    );
+    setStep("cart");
+  }, [pendingPay, cancelActivePlaceOrder]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -378,6 +393,7 @@ export default function CartDrawer() {
   const handlePlaceOrder = useCallback(async () => {
     const attempt = ++placeOrderAttemptRef.current;
     const payingOnline = checkout.effectivePay === "online";
+    setPaymentCancelNotice(null);
     if (payingOnline) {
       // Switch to pay shell immediately so we never flash empty cart.
       setPendingPay(null);
@@ -387,9 +403,24 @@ export default function CartDrawer() {
       const result = await checkout.placeOrder({
         isCancelled: () => isPlaceOrderCancelled(attempt),
       });
-      if (isPlaceOrderCancelled(attempt)) return;
+      if (isPlaceOrderCancelled(attempt)) {
+        if (result.kind === "online") {
+          void abandonCheckoutPayment({
+            storeId: result.pending.storeId,
+            orderId: result.pending.orderId,
+            transactionId: result.pending.transactionId,
+          }).catch(() => undefined);
+        }
+        setPaymentCancelNotice(
+          "Payment cancelled. Your cart is still here — place the order again when you’re ready.",
+        );
+        setStep("cart");
+        setPendingPay(null);
+        return;
+      }
       await saveDeliveryAddressIfNeeded();
       if (result.kind === "cod") {
+        clearCart();
         closeCart();
         setStep("cart");
         router.push(
@@ -399,12 +430,17 @@ export default function CartDrawer() {
       }
       setPendingPay(result.pending);
       setStep("pay");
-      clearCart();
+      // Keep cart until UPI succeeds — cancel returns to cart with items.
     } catch (err) {
       if (
         err instanceof PlaceOrderAbortedError ||
         isPlaceOrderCancelled(attempt)
       ) {
+        setPaymentCancelNotice(
+          "Payment cancelled. Your cart is still here — place the order again when you’re ready.",
+        );
+        setStep("cart");
+        setPendingPay(null);
         return;
       }
       if (payingOnline) {
@@ -423,14 +459,16 @@ export default function CartDrawer() {
 
   const handlePaid = useCallback(
     (orderId: string, storeSlug: string) => {
+      clearCart();
       setPendingPay(null);
+      setPaymentCancelNotice(null);
       closeCart();
       setStep("cart");
       router.push(
         `/order/${encodeURIComponent(orderId)}?store=${encodeURIComponent(storeSlug)}`,
       );
     },
-    [closeCart, router],
+    [clearCart, closeCart, router],
   );
 
   const finishAndClose = () => {
@@ -580,6 +618,23 @@ export default function CartDrawer() {
         ) : (
           <>
             <div className="flex-1 overflow-y-auto overscroll-contain bg-white">
+              {paymentCancelNotice ? (
+                <div className="mx-4 mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-3">
+                  <p className="text-sm font-bold text-amber-900">
+                    Order cancelled
+                  </p>
+                  <p className="mt-0.5 text-xs text-amber-800/90 leading-snug">
+                    {paymentCancelNotice}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentCancelNotice(null)}
+                    className="mt-2 text-[11px] font-bold text-amber-900/70 border-0 bg-transparent p-0 cursor-pointer underline"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              ) : null}
               <div className="mx-4 mt-4 rounded-xl border border-gray-200 bg-white p-3.5 shadow-[0_1px_4px_rgba(0,0,0,0.04)]">
                 <div className="flex items-start gap-3">
                   <div

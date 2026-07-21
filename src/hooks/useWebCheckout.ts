@@ -21,6 +21,7 @@ import {
   createPaymentSession,
   createWebOrder,
   confirmCodPlace,
+  abandonCheckoutPayment,
   type WebOrderType,
 } from "@/lib/orders-api";
 import { isValidIndianMobile, normalizeIndianMobile } from "@/lib/indian-phone";
@@ -220,6 +221,7 @@ export function useWebCheckout(options: Options = {}) {
     }
 
     setBusy(true);
+    let createdOrderId: string | null = null;
     try {
       let deliveryCoords =
         orderType === "delivery" ? resolveDeliveryCoords(addressHint) : null;
@@ -298,6 +300,7 @@ export function useWebCheckout(options: Options = {}) {
         customerLongitude: deliveryCoords?.lng,
         customerNotes: notes.trim() || undefined,
       });
+      createdOrderId = order.order_id;
 
       throwIfCancelled();
 
@@ -336,10 +339,18 @@ export function useWebCheckout(options: Options = {}) {
         isMock: session.is_mock === true,
       };
 
-      // Don't clear cart here — caller switches to pay UI first to avoid
-      // an empty-cart flash, then clears.
+      // Keep cart until payment succeeds — cancel restores checkout UX.
       return { kind: "online", pending };
     } catch (err) {
+      if (err instanceof PlaceOrderAbortedError) {
+        if (createdOrderId) {
+          void abandonCheckoutPayment({
+            storeId: store.backendStoreId,
+            orderId: createdOrderId,
+          }).catch(() => undefined);
+        }
+        throw err;
+      }
       const message =
         err instanceof Error ? err.message : "Checkout failed";
       setError(message);
