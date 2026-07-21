@@ -8,15 +8,14 @@ import { useMenuCart } from "@/context/MenuCartContext";
 /**
  * Navbar is transparent on every page. Home hero uses white icons while
  * #hero-section sits behind the bar; elsewhere uses ink icons on the page bg.
- * Menu and account pages use Blinkit-style delivery + cart in the same navbar.
+ * Menu page only uses Blinkit-style delivery + cart in the navbar.
  */
 export default function SiteNavbar() {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const isMenu =
-    pathname === "/menu" ||
-    pathname.startsWith("/menu/") ||
-    pathname === "/account";
+  const isMenu = pathname === "/menu" || pathname.startsWith("/menu/");
+  const isAccount =
+    pathname === "/account" || pathname.startsWith("/account/");
   const { closeCart, isOpen } = useMenuCart();
   const [overHero, setOverHero] = useState(isHome);
 
@@ -52,5 +51,12 @@ export default function SiteNavbar() {
 
   const variant = isHome && overHero ? "hero" : "default";
 
-  return <Navbar variant={variant} menuMode={isMenu} homePage={isHome} />;
+  return (
+    <Navbar
+      variant={variant}
+      menuMode={isMenu}
+      homePage={isHome}
+      accountPage={isAccount}
+    />
+  );
 }

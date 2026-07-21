@@ -1,11 +1,12 @@
 /**
  * Official SVS Food logo assets — public/logo/
  *
- * | Variant   | Background   | File           |
- * |-----------|--------------|----------------|
- * | on-orange | SVS Orange   | on-orange.png  |
- * | on-ink    | SVS Ink      | on-ink.png     |
- * | on-mark   | White navbar | logo-with-no-bg.png (all orange) |
+ * | Variant   | Use on              | File          |
+ * |-----------|---------------------|---------------|
+ * | on-orange | SVS Orange surfaces | on-orange.png |
+ * | on-ink    | Dark / hero (white) | on-ink.svg    |
+ * | on-white  | Light / cream pages | on-white.svg  |
+ * | on-mark   | Compact orange mark | on-mark.svg   |
  */
 export type BrandLogoVariant =
   | "on-orange"
@@ -17,7 +18,9 @@ export type BrandLogoVariant =
 
 export const BRAND_LOGO_SRC: Record<BrandLogoVariant, string> = {
   "on-orange": "/logo/on-orange.png",
-  "on-ink": "/logo/on-ink.png",
+  /** White + orange mark for dark / hero backgrounds. */
+  "on-ink": "/logo/on-ink.svg",
+  /** Ink + orange mark for light backgrounds. */
   "on-white": "/logo/on-white.svg",
   "on-cream": "/logo/on-cream.svg",
   /** All-orange transparent mark for white navbar. */

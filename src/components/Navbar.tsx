@@ -14,12 +14,13 @@ const SVS_ORANGE = "#f16a34";
 const HANDLING_FEE = 2;
 
 const iconBtnBase =
-  "flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full border-none bg-transparent cursor-pointer transition-colors duration-200 no-underline shrink-0";
+  "flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full border-none bg-transparent cursor-pointer transition-colors duration-200 no-underline shrink-0";
 
 const iconBtnDefault = `${iconBtnBase} text-svs-ink/70 hover:bg-svs-cream hover:text-svs-orange`;
 const iconBtnHero = `${iconBtnBase} text-white hover:bg-white/15 hover:text-white`;
 
-const iconSvg = "w-[18px] h-[18px] sm:w-5 sm:h-5 lg:w-6 lg:h-6";
+const iconSvg = "w-5 h-5 sm:w-[22px] sm:h-[22px] lg:w-7 lg:h-7";
+const storyRingSize = "w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12";
 
 function truncateText(text: string, max = 48) {
   if (text.length <= max) return text;
@@ -47,7 +48,7 @@ function StoryTriggerButton({
       aria-label="Open SVS stories"
       onClick={onClick}
     >
-      <span className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11">
+      <span className={`relative flex items-center justify-center ${storyRingSize}`}>
         <span
           className={`absolute inset-0 rounded-full story-ring-spin ${ringClass}`}
           style={{ transformStyle: "flat" }}
@@ -112,7 +113,7 @@ function MenuCenterBar() {
 
   return (
     <div
-      className="hidden lg:flex flex-1 min-w-0 mx-3 xl:mx-5 items-center justify-between gap-4 h-14 max-w-[900px] xl:max-w-[980px] px-2 xl:px-3"
+      className="hidden lg:flex flex-1 min-w-0 mx-3 xl:mx-5 items-center justify-between gap-4 h-14 max-w-[900px] xl:max-w-[980px] px-2 xl:px-3 self-end mb-0.5"
       id="menu-nav-center-bar"
     >
       <div className="min-w-0 flex flex-col justify-center">
@@ -147,7 +148,7 @@ function OrangeCartButton() {
       aria-expanded={isOpen}
     >
       <svg
-        className="h-5 w-5 shrink-0"
+        className="h-5 w-5 lg:h-[22px] lg:w-[22px] shrink-0"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -176,6 +177,7 @@ function NavIcons({
   hero = false,
   menuMode = false,
   homePage = false,
+  accountPage = false,
   onAccount,
 }: {
   onNavigate?: () => void;
@@ -183,6 +185,7 @@ function NavIcons({
   hero?: boolean;
   menuMode?: boolean;
   homePage?: boolean;
+  accountPage?: boolean;
   onAccount: () => void;
 }) {
   const { itemCount } = useCart();
@@ -194,7 +197,7 @@ function NavIcons({
       {showCartAndLocation ? (
         <Link
           href="/cart"
-          className={`${iconBtn} relative overflow-hidden w-11 h-11 sm:w-12 sm:h-12 lg:w-14 lg:h-14`}
+          className={`${iconBtn} relative overflow-hidden w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-16 lg:h-16`}
           id="btn-cart"
           aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
           onClick={onNavigate}
@@ -242,7 +245,7 @@ function NavIcons({
         />
       ) : null}
 
-      {showCartAndLocation ? (
+      {showCartAndLocation && !accountPage ? (
         <Link
           href="/locations"
           className={iconBtn}
@@ -323,12 +326,15 @@ export default function Navbar({
   variant = "default",
   menuMode = false,
   homePage = false,
+  accountPage = false,
 }: {
   variant?: "default" | "hero";
   /** Blinkit-style delivery + cart — menu page only */
   menuMode?: boolean;
   /** Home `/` — hide cart + location icons in the bar */
   homePage?: boolean;
+  /** Account/profile — sit slightly lower with white page bg */
+  accountPage?: boolean;
 }) {
   const [storiesOpen, setStoriesOpen] = useState(false);
   const hero = variant === "hero";
@@ -343,21 +349,24 @@ export default function Navbar({
     <nav
       data-navbar-variant={hero ? "hero" : "default"}
       data-menu-mode={menuMode ? "true" : "false"}
-      style={{ backgroundColor: "transparent" }}
-      className={`fixed top-0 left-0 right-0 z-[1400] flex flex-nowrap items-center h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow] duration-300 bg-transparent border-b border-transparent shadow-none ${
-        hero ? "text-white" : "text-gray-500"
-      }`}
+      data-account-page={accountPage ? "true" : "false"}
+      style={{ backgroundColor: menuMode ? "#fff4ee" : "transparent" }}
+      className={`fixed left-0 right-0 z-[1400] flex flex-nowrap items-end h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b border-transparent shadow-none ${
+        accountPage
+          ? "top-3 sm:top-4 lg:top-5 pb-3 sm:pb-3.5 lg:pb-4"
+          : "top-0 pb-1.5 sm:pb-2 lg:pb-2.5"
+      } ${menuMode ? "bg-svs-cream" : "bg-transparent"} ${hero ? "text-white" : "text-gray-500"}`}
       id="main-navbar"
     >
       <Link
         href="/"
-        className="flex items-center justify-center no-underline shrink-0 z-[1] py-1 pr-2"
+        className="flex items-center justify-center no-underline shrink-0 z-[1] pr-2"
         id="navbar-brand"
         aria-label="SVS Food home"
       >
         <BrandLogo
-          variant={hero ? "on-white" : "on-ink"}
-          height={48}
+          variant={hero ? "on-ink" : "on-mark"}
+          height={52}
           priority
         />
       </Link>
@@ -374,6 +383,7 @@ export default function Navbar({
             hero={hero}
             menuMode={menuMode}
             homePage={homePage}
+            accountPage={accountPage}
             onOpenStories={() => setStoriesOpen(true)}
             onAccount={handleAccount}
           />

@@ -801,7 +801,7 @@ function AccountInner() {
   };
 
   const shell =
-    "min-h-[calc(100dvh-3.5rem)] sm:min-h-[calc(100dvh-4rem)] lg:min-h-[calc(100dvh-72px)] pt-14 sm:pt-16 lg:pt-[72px] bg-[#f4f6fb]";
+    "min-h-[calc(100dvh-3.5rem)] sm:min-h-[calc(100dvh-4rem)] lg:min-h-[calc(100dvh-72px)] pt-[calc(3.5rem+0.75rem)] sm:pt-[calc(4rem+1rem)] lg:pt-[calc(72px+1.25rem)] bg-white";
 
   if (loading) {
     return (
@@ -895,7 +895,7 @@ function AccountInner() {
         </button>
 
       <div className="flex flex-col lg:flex-row lg:items-start gap-5 lg:gap-8">
-        <aside className="lg:w-[280px] xl:w-[300px] shrink-0 lg:sticky lg:top-[88px] space-y-3">
+        <aside className="lg:w-[280px] xl:w-[300px] shrink-0 lg:sticky lg:top-[108px] space-y-3">
           <div className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
             <div className="px-4 py-4 flex items-center gap-3.5 bg-gradient-to-br from-[#fff8f4] to-white border-b border-black/[0.03]">
               <div className="relative h-14 w-14 shrink-0 rounded-2xl overflow-hidden bg-[#fff4ee] ring-2 ring-white shadow-sm">
@@ -1147,7 +1147,7 @@ function AccountInner() {
 
 export default function AccountPage() {
   return (
-    <Suspense fallback={<div className="min-h-[100dvh] bg-[#f4f5f7] flex items-center justify-center"><p className="text-sm text-gray-500">Loading…</p></div>}>
+    <Suspense fallback={<div className="min-h-[100dvh] bg-white flex items-center justify-center"><p className="text-sm text-gray-500">Loading…</p></div>}>
       <AccountInner />
     </Suspense>
   );

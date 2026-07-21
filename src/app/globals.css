@@ -378,13 +378,19 @@ html {
   will-change: transform;
 }
 
-/* Navbar — always transparent on every page and breakpoint */
-#main-navbar {
+/* Navbar — transparent everywhere except menu page where scrollable content sits below */
+#main-navbar:not([data-menu-mode="true"]) {
   background: transparent !important;
   background-color: transparent !important;
   border-bottom-color: transparent !important;
   box-shadow: none !important;
   backdrop-filter: none;
+}
+
+#main-navbar[data-menu-mode="true"] {
+  background-color: var(--color-svs-cream) !important;
+  border-bottom-color: transparent !important;
+  isolation: isolate;
 }
 
 #main-navbar[data-navbar-variant="default"],
@@ -468,4 +474,100 @@ html {
   display: block;
   width: 100%;
   height: 100%;
+}
+
+/* Hero animated CTA — SVS orange theme */
+.hero-animated-btn {
+  --hero-btn-accent: #ffffff;
+  --hero-btn-hover-text: var(--color-svs-ink);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 36px;
+  border: 4px solid transparent;
+  border-radius: 100px;
+  background-color: transparent;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hero-btn-accent);
+  box-shadow: 0 0 0 2px var(--hero-btn-accent);
+  cursor: pointer;
+  overflow: hidden;
+  text-decoration: none;
+  transition:
+    all 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    border-radius 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.hero-animated-btn__arr {
+  position: absolute;
+  width: 24px;
+  fill: var(--hero-btn-accent);
+  z-index: 9;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.hero-animated-btn__arr--1 {
+  right: 16px;
+}
+
+.hero-animated-btn__arr--2 {
+  left: -25%;
+}
+
+.hero-animated-btn__circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background-color: var(--hero-btn-accent);
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.hero-animated-btn__text {
+  position: relative;
+  z-index: 1;
+  transform: translateX(-12px);
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.hero-animated-btn:hover {
+  box-shadow: 0 0 0 12px transparent;
+  color: var(--hero-btn-hover-text);
+  border-radius: 12px;
+}
+
+.hero-animated-btn:hover .hero-animated-btn__arr--1 {
+  right: -25%;
+}
+
+.hero-animated-btn:hover .hero-animated-btn__arr--2 {
+  left: 16px;
+}
+
+.hero-animated-btn:hover .hero-animated-btn__text {
+  transform: translateX(12px);
+}
+
+.hero-animated-btn:hover .hero-animated-btn__arr {
+  fill: var(--hero-btn-hover-text);
+}
+
+.hero-animated-btn:active {
+  scale: 0.95;
+  box-shadow: 0 0 0 4px var(--hero-btn-accent);
+}
+
+.hero-animated-btn:hover .hero-animated-btn__circle {
+  width: 220px;
+  height: 220px;
+  opacity: 1;
 }
