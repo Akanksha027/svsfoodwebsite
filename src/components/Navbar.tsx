@@ -405,28 +405,39 @@ function NavIcons({
       {!menuMode ? (
         <Link
           href="/menu"
-          className={iconBtn}
+          className={`${iconBtn} relative overflow-visible w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-14 lg:h-14`}
           id="btn-menu"
-          aria-label="Menu"
+          aria-label="Order now"
           onClick={onNavigate}
         >
-          <svg
-            className={svgClass}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            <path d="M4 3h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
-            <path d="M17 3h1a2 2 0 0 1 2 2v2H17V3z" />
-            <path d="M17 9h3v10a2 2 0 0 1-2 2h-1" />
-            <path d="M8 7h4" />
-            <path d="M8 11h5" />
-            <path d="M8 15h3" />
-          </svg>
+          <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
+            <span className="scale-[0.38] sm:scale-[0.42] lg:scale-[0.46]">
+              <span
+                className="block w-[96px] h-[128px] relative"
+                style={{ perspective: "900px" }}
+              >
+                <span className="block w-full h-full relative revolving-bag revolving-bag--slow footer-envelope-bag nav-order-bag">
+                  <span className="bag-face bag-front footer-bag-front">
+                    <span className="nav-order-bag__label" aria-hidden>
+                      ORDER
+                      <br />
+                      NOW
+                    </span>
+                  </span>
+                  <span className="bag-face bag-back footer-bag-front">
+                    <span className="nav-order-bag__label" aria-hidden>
+                      ORDER
+                      <br />
+                      NOW
+                    </span>
+                  </span>
+                  <span className="bag-face bag-left" />
+                  <span className="bag-face bag-right" />
+                  <span className="bag-face footer-bag-bottom" aria-hidden />
+                </span>
+              </span>
+            </span>
+          </span>
         </Link>
       ) : null}
     </>

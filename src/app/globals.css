@@ -324,6 +324,21 @@ html.svs-scroll-locked .cart-bar-shell {
   transform-style: preserve-3d;
 }
 
+.revolving-bag--slow {
+  animation-duration: 14s;
+}
+
+.nav-order-bag__label {
+  display: block;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 0.06em;
+  color: #1a1a1a;
+  text-transform: uppercase;
+}
+
 .bag-face {
   position: absolute;
   left: 50%;
