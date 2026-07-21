@@ -42,12 +42,11 @@ export default function HeroVideoSection() {
       <div className="relative z-[2] flex h-full flex-col items-center justify-center px-5 pb-10 sm:px-8 sm:pb-12 md:px-10 md:pb-14 lg:px-14 lg:pb-16 text-center">
         <div className="flex w-full flex-col items-center gap-8 sm:gap-10">
           <div className="flex flex-col items-center gap-3 sm:gap-4">
-           
             <h1
               className="max-w-[20ch] text-center text-[clamp(2rem,6vw,4.5rem)] font-bold uppercase leading-[1.05] tracking-[0.02em] text-[#f3e8c8]"
               id="hero-text"
             >
-              <span className="text-[#faf3dc]">&lsquo;we make our own buns&rsquo;</span>
+              <span className="text-[#faf3dc]">&lsquo;We make our own buns&rsquo;</span>
             </h1>
           </div>
 
