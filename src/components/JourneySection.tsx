@@ -25,7 +25,7 @@ function JourneyCard({
 
   return (
     <article className="relative flex flex-col shrink-0 w-[240px] sm:w-[300px] md:w-[340px] lg:w-[360px]">
-      <div className="relative mb-8 sm:mb-12 md:mb-14 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-full overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-svs-cream">
+      <div className="relative mb-4 sm:mb-6 md:mb-8 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-full overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-svs-cream">
         <Image
           src={stop.image}
           alt={stop.imageAlt ?? stop.year}
@@ -240,7 +240,7 @@ export default function JourneySection() {
       <div
         className={`${panelClass} h-[100svh] w-full overflow-hidden flex flex-col bg-svs-cream`}
       >
-        <div className="shrink-0 px-4 sm:px-6 md:px-10 lg:px-16 pt-[120px] sm:pt-[96px] md:pt-[108px] lg:pt-[116px] flex flex-col items-center sm:items-start text-center sm:text-left">
+        <div className="shrink-0 px-4 sm:px-6 md:px-10 lg:px-16 pt-[72px] sm:pt-[80px] lg:pt-[88px] flex flex-col items-center sm:items-start text-center sm:text-left">
           <h2 className="text-[1.75rem] sm:text-[2rem] md:text-[2.15rem] lg:text-[2.15rem] font-black text-svs-ink leading-tight tracking-tight">
             {journeySectionTitle}
           </h2>
@@ -249,7 +249,7 @@ export default function JourneySection() {
           </p>
         </div>
 
-        <div className="relative flex-1 min-h-0 w-full flex items-center md:items-start mt-4 sm:mt-8 md:mt-16 pb-8 sm:pb-10 md:pb-14">
+        <div className="relative flex-1 min-h-0 w-full flex items-center md:items-start mt-2 sm:mt-4 md:mt-8 pb-4 sm:pb-6 md:pb-8">
           <div className="w-full pt-8 sm:pt-6 md:pt-0">
             <div
               ref={trackRef}
