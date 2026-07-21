@@ -11,6 +11,7 @@ import { RollingCounter } from "@/components/RollingCounter";
 import { computeTotals, lineUnitTotal, useCart } from "@/context/CartContext";
 import { useMenuCart } from "@/context/MenuCartContext";
 import {
+  PlaceOrderAbortedError,
   useWebCheckout,
   type PendingPayment,
 } from "@/hooks/useWebCheckout";
@@ -161,6 +162,16 @@ export default function CartDrawer() {
   const checkout = useWebCheckout({ active: checkoutActive });
   const { customer, refreshCustomer } = useWebsiteAuth();
   const deliveryAddressModeRef = useRef<string | "new">("new");
+  const placeOrderAttemptRef = useRef(0);
+  const cancelledPlaceOrderAttemptRef = useRef<number | null>(null);
+
+  const cancelActivePlaceOrder = useCallback(() => {
+    cancelledPlaceOrderAttemptRef.current = placeOrderAttemptRef.current;
+  }, []);
+
+  const isPlaceOrderCancelled = useCallback((attempt: number) => {
+    return cancelledPlaceOrderAttemptRef.current === attempt;
+  }, []);
 
   const saveDeliveryAddressIfNeeded = useCallback(async () => {
     if (!customer || checkout.orderType !== "delivery") return;
@@ -189,11 +200,12 @@ export default function CartDrawer() {
 
   useEffect(() => {
     if (!isOpen) {
+      cancelActivePlaceOrder();
       setStep("cart");
       setPendingPay(null);
       setDoneOrder(null);
     }
-  }, [isOpen]);
+  }, [isOpen, cancelActivePlaceOrder]);
 
   useEffect(() => {
     if (itemCount === 0 && step === "cart") {
@@ -225,9 +237,10 @@ export default function CartDrawer() {
       );
       return;
     }
-    // Still creating payment session — return to checkout details.
+    // Still creating order/payment — abort in-flight placement.
+    cancelActivePlaceOrder();
     setStep("checkout2");
-  }, [pendingPay, closeCart, router]);
+  }, [pendingPay, closeCart, router, cancelActivePlaceOrder]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -257,6 +270,12 @@ export default function CartDrawer() {
             : "Order confirmed";
 
   const goBack = () => {
+    if (
+      (step === "checkout2" && checkout.busy) ||
+      (step === "pay" && !pendingPay)
+    ) {
+      cancelActivePlaceOrder();
+    }
     if (step === "checkout2") setStep("checkout1");
     else if (step === "checkout1") setStep("cart");
     else if (step === "pay") leavePayScreen();
@@ -264,6 +283,7 @@ export default function CartDrawer() {
   };
 
   const handlePlaceOrder = useCallback(async () => {
+    const attempt = ++placeOrderAttemptRef.current;
     const payingOnline = checkout.effectivePay === "online";
     if (payingOnline) {
       // Switch to pay shell immediately so we never flash empty cart.
@@ -271,7 +291,10 @@ export default function CartDrawer() {
       setStep("pay");
     }
     try {
-      const result = await checkout.placeOrder();
+      const result = await checkout.placeOrder({
+        isCancelled: () => isPlaceOrderCancelled(attempt),
+      });
+      if (isPlaceOrderCancelled(attempt)) return;
       await saveDeliveryAddressIfNeeded();
       if (result.kind === "cod") {
         closeCart();
@@ -284,7 +307,13 @@ export default function CartDrawer() {
       setPendingPay(result.pending);
       setStep("pay");
       clearCart();
-    } catch {
+    } catch (err) {
+      if (
+        err instanceof PlaceOrderAbortedError ||
+        isPlaceOrderCancelled(attempt)
+      ) {
+        return;
+      }
       if (payingOnline) {
         setStep("checkout2");
         setPendingPay(null);
@@ -292,6 +321,7 @@ export default function CartDrawer() {
     }
   }, [
     checkout,
+    isPlaceOrderCancelled,
     saveDeliveryAddressIfNeeded,
     closeCart,
     router,
@@ -325,10 +355,16 @@ export default function CartDrawer() {
         type="button"
         aria-label="Close cart"
         onClick={() => {
-          if (step === "pay") leavePayScreen();
-          else if (step === "checkout2") setStep("checkout1");
-          else if (step === "checkout1") setStep("cart");
-          else closeCart();
+          if (step === "pay") {
+            leavePayScreen();
+          } else if (step === "checkout2") {
+            if (checkout.busy) cancelActivePlaceOrder();
+            setStep("checkout1");
+          } else if (step === "checkout1") {
+            setStep("cart");
+          } else {
+            closeCart();
+          }
         }}
         className={`fixed inset-0 z-[1100] border-0 cursor-pointer touch-none transition-opacity duration-300 ease-out ${
           isOpen

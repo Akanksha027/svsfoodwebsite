@@ -48,6 +48,18 @@ export type CheckoutPlaced =
     }
   | { kind: "online"; pending: PendingPayment };
 
+export class PlaceOrderAbortedError extends Error {
+  constructor() {
+    super("Place order cancelled");
+    this.name = "PlaceOrderAbortedError";
+  }
+}
+
+type PlaceOrderOptions = {
+  /** When true, stop before confirming COD / returning payment session. */
+  isCancelled?: () => boolean;
+};
+
 type Options = {
   /** When false, skip GPS bootstrap (drawer closed). */
   active?: boolean;
@@ -179,8 +191,15 @@ export function useWebCheckout(options: Options = {}) {
     void applyLocation(true);
   }, [active, orderType, pinReady, addressHint, applyLocation]);
 
-  const placeOrder = useCallback(async (): Promise<CheckoutPlaced> => {
+  const placeOrder = useCallback(async (
+    options: PlaceOrderOptions = {},
+  ): Promise<CheckoutPlaced> => {
     setError(null);
+    const throwIfCancelled = () => {
+      if (options.isCancelled?.()) {
+        throw new PlaceOrderAbortedError();
+      }
+    };
     const mobile = normalizeIndianMobile(phone.trim());
     if (!isValidIndianMobile(mobile)) {
       throw new Error("Enter a valid 10-digit mobile number.");
@@ -280,11 +299,14 @@ export function useWebCheckout(options: Options = {}) {
         customerNotes: notes.trim() || undefined,
       });
 
+      throwIfCancelled();
+
       if (effectivePay === "cod") {
         await confirmCodPlace({
           storeId: store.backendStoreId,
           orderId: order.order_id,
         });
+        throwIfCancelled();
         clearCart();
         return {
           kind: "cod",
@@ -300,6 +322,8 @@ export function useWebCheckout(options: Options = {}) {
         amount: totals.grandTotal,
         customerPhone: mobile,
       });
+
+      throwIfCancelled();
 
       const pending: PendingPayment = {
         orderId: order.order_id,
