@@ -270,7 +270,7 @@ export default function AddItemSheet({
                   {variants[0]?.group_name || "Choose option"}
                 </p>
                 {hasDistinctVariantImages ? (
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2">
                     {variants.map((variant) => (
                       <VariantImageCard
                         key={variant.item_id}
@@ -282,7 +282,7 @@ export default function AddItemSheet({
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2">
                     {variants.map((variant) => {
                       const selected =
                         selectedVariant?.item_id === variant.item_id;

@@ -4,12 +4,11 @@ import DealsSection from "@/components/DealsSection";
 import JourneySection from "@/components/JourneySection";
 import DeliveringMomentsSection from "@/components/DeliveringMomentsSection";
 import Footer from "@/components/Footer";
-import BagossScope from "@/components/BagossScope";
 import FestiveDrops from "@/components/FestiveDrops";
 
 export default function Home() {
   return (
-    <BagossScope>
+    <>
       {/* <FestiveDrops /> */}
       <HeroVideoSection />
 
@@ -18,6 +17,6 @@ export default function Home() {
       <JourneySection />
       <DeliveringSection />
       <Footer />
-    </BagossScope>
+    </>
   );
 }

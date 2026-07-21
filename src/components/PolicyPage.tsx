@@ -23,7 +23,7 @@ export default function PolicyPage({ policy }: PolicyPageProps) {
 
   return (
     <main className="min-h-screen bg-svs-white pt-24 sm:pt-28 md:pt-32 pb-16 flex flex-col items-center">
-      <div className="w-[90%] mx-auto">
+      <div className="w-[90%] max-w-4xl mx-auto">
         <Link
           href="/"
           className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-svs-ink/60 hover:text-svs-orange no-underline transition-colors"

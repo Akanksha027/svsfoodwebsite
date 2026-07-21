@@ -60,9 +60,9 @@ function StoreCard({
         </span>
       </div>
 
-      {/* Phone (1 col): side-by-side. Tablet (2 col): stacked. Desktop: side-by-side */}
-      <div className="flex flex-row sm:flex-col lg:flex-row items-start justify-between gap-3 sm:gap-3 md:gap-4 lg:gap-6 px-1.5 sm:px-2 pt-3 sm:pt-4 pb-3 sm:pb-4 md:pb-5">
-        <div className="flex flex-col items-start gap-1 sm:gap-1.5 md:gap-2 shrink-0 max-w-[42%] sm:max-w-none lg:max-w-[36%]">
+      {/* Phone: stacked. Tablet (2 col): stacked. Desktop: side-by-side */}
+      <div className="flex flex-col lg:flex-row items-start justify-between gap-3 sm:gap-3 md:gap-4 lg:gap-6 px-1.5 sm:px-2 pt-3 sm:pt-4 pb-3 sm:pb-4 md:pb-5">
+        <div className="flex flex-col items-start gap-1 sm:gap-1.5 md:gap-2 shrink-0 w-full lg:max-w-[36%]">
           <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-svs-ink leading-tight tracking-tight">
             {store.city}
           </h2>
@@ -82,13 +82,13 @@ function StoreCard({
           </a>
         </div>
 
-        <div className="flex flex-col justify-between gap-1.5 sm:gap-2 md:gap-2.5 min-w-0 flex-1 text-right sm:text-left">
+        <div className="flex flex-col justify-between gap-1.5 sm:gap-2 md:gap-2.5 min-w-0 w-full lg:flex-1 text-left">
           <p className="text-[10px] sm:text-xs md:text-sm lg:text-[15px] text-svs-ink leading-snug break-words">
             {store.address}
           </p>
           <a
             href={`tel:+91${store.phone}`}
-            className="text-[10px] sm:text-xs md:text-sm text-svs-ink/50 hover:text-svs-ink transition-colors min-h-[32px] inline-flex items-center justify-end sm:justify-start"
+            className="text-[10px] sm:text-xs md:text-sm text-svs-ink/50 hover:text-svs-ink transition-colors min-h-[32px] inline-flex items-center justify-start"
           >
             +91{store.phone}
           </a>

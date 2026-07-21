@@ -668,7 +668,7 @@ function NewAddressForm({ customer, onCancel, onSaved }: { customer: any, onCanc
         <span className="font-semibold text-gray-700">Area / Locality *</span>
         <textarea value={area} onChange={e => setArea(e.target.value)} className={textareaClass} rows={2} />
       </label>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-3">
         <label className="block text-xs">
           <span className="font-semibold text-gray-700">Landmark</span>
           <input value={landmark} onChange={e => setLandmark(e.target.value)} className={inputClass} />
@@ -691,6 +691,16 @@ function NewAddressForm({ customer, onCancel, onSaved }: { customer: any, onCanc
 
 const navBtn =
   "w-full flex items-center gap-3 px-3 py-2.5 text-left text-[14px] font-semibold border-0 cursor-pointer transition-colors rounded-xl";
+
+const MOBILE_ACCOUNT_SECTIONS: { id: AccountSection; label: string }[] = [
+  { id: "profile", label: "Profile" },
+  { id: "orders", label: "Orders" },
+  { id: "addresses", label: "Addresses" },
+  { id: "notifications", label: "Alerts" },
+  { id: "gift_cards", label: "Gifts" },
+  { id: "rewards", label: "Rewards" },
+  { id: "help", label: "Help" },
+];
 
 function IconBackArrow({ className = "w-5 h-5" }: { className?: string }) {
   return (
@@ -898,8 +908,30 @@ function AccountInner() {
           <span>Back</span>
         </button>
 
+        <nav
+          className="lg:hidden mb-4 -mx-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          aria-label="Account sections"
+        >
+          <div className="flex gap-2 min-w-max px-1 pb-1">
+            {MOBILE_ACCOUNT_SECTIONS.map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => goSection(id)}
+                className={`shrink-0 px-3.5 py-2 rounded-full text-[13px] font-extrabold border cursor-pointer transition-colors ${
+                  section === id
+                    ? "bg-[#f16a34] text-white border-[#f16a34] shadow-sm"
+                    : "bg-white text-gray-600 border-black/[0.06] hover:bg-gray-50"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </nav>
+
       <div className="flex flex-col lg:flex-row lg:items-start gap-5 lg:gap-8">
-        <aside className="lg:w-[280px] xl:w-[300px] shrink-0 lg:sticky lg:top-[108px] space-y-3">
+        <aside className="hidden lg:block lg:w-[280px] xl:w-[300px] shrink-0 lg:sticky lg:top-[108px] space-y-3">
           <div className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
             <div className="px-4 py-4 flex items-center gap-3.5 bg-gradient-to-br from-[#fff8f4] to-white border-b border-black/[0.03]">
               <div className="relative h-14 w-14 shrink-0 rounded-2xl overflow-hidden bg-[#fff4ee] ring-2 ring-white shadow-sm">
@@ -970,7 +1002,7 @@ function AccountInner() {
           </div>
         </aside>
 
-        <main className="flex-1 min-w-0 pb-20 lg:pb-6 max-w-none">
+        <main className="flex-1 min-w-0 pb-28 lg:pb-6 max-w-none">
           {section === "profile" ? (
             <AccountProfileForm
               key={customer.id}

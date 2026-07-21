@@ -371,7 +371,7 @@ export default function CartBar() {
       ) : null}
 
       {itemCount > 0 ? (
-        <div className="cart-bar-shell fixed bottom-4 left-0 right-0 z-[900] px-4 pointer-events-none">
+        <div className="cart-bar-shell fixed bottom-[max(1rem,env(safe-area-inset-bottom,0px))] left-0 right-0 z-[900] px-4 pointer-events-none">
           <Link
             ref={pillRef}
             href="/cart"

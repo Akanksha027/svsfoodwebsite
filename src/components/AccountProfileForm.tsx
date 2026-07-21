@@ -332,8 +332,8 @@ export default function AccountProfileForm({
         </aside>
       </div>
 
-      {/* Save bar */}
-      <div className="sticky bottom-0 z-10 -mx-1 px-1 pb-1 pt-2 bg-gradient-to-t from-[#f4f6fb] via-[#f4f6fb] to-transparent">
+      {/* Save bar — lifted above mobile cart bar */}
+      <div className="sticky bottom-[calc(5.25rem+env(safe-area-inset-bottom,0px))] lg:bottom-0 z-10 -mx-1 px-1 pb-1 pt-2 bg-gradient-to-t from-[#f4f6fb] via-[#f4f6fb] to-transparent">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl bg-white/95 backdrop-blur-md border border-black/[0.06] shadow-[0_-4px_24px_rgba(15,23,42,0.08)] px-4 py-3.5 sm:px-6">
           <div className="min-h-[20px]">
             {error ? (

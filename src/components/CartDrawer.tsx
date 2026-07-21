@@ -606,7 +606,7 @@ export default function CartDrawer() {
             {/* Order type picker */}
             <div className="mx-4 mb-3">
               <p className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2">How would you like it?</p>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                 {([
                   { type: "dine_in" as const, label: "Dine-in" },
                   { type: "takeaway" as const, label: "Takeaway" },
@@ -622,7 +622,7 @@ export default function CartDrawer() {
                         if (type === "dine_in") checkout.setPayMethod("online");
                       }}
                       className={[
-                        "aspect-square flex flex-col items-center justify-center gap-2 rounded-none text-[11px] font-extrabold border cursor-pointer transition-all",
+                        "aspect-square flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-none text-[10px] sm:text-[11px] font-extrabold border cursor-pointer transition-all px-0.5",
                         active
                           ? "bg-orange-50 border-[#f16a34] text-[#f16a34] ring-1 ring-[#f16a34]/20"
                           : "bg-white border-gray-200 text-gray-500 hover:border-[#f16a34]/30",

@@ -28,8 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} antialiased`}>
-      <body>
+    <html lang="en" className={`${inter.variable} font-bagoss antialiased`}>
+      <body className="font-bagoss">
         <CartProvider>
           <WebsiteAuthProvider>
             <MenuCartProvider>

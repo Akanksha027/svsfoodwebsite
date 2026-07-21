@@ -197,13 +197,13 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
             </div>
           </div>
 
-          <div className="flex flex-row items-center justify-center lg:justify-end gap-6 sm:gap-10 lg:gap-12 xl:gap-16 shrink-0 lg:ml-auto lg:pr-2 xl:pr-6">
-            <h2 className="text-2xl sm:text-4xl md:text-5xl text-svs-orange/70 font-serif italic tracking-wider">
+          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-4 sm:gap-6 lg:gap-12 xl:gap-16 shrink-0 lg:ml-auto lg:pr-2 xl:pr-6 w-full lg:w-auto">
+            <h2 className="font-atma text-[clamp(1.75rem,8vw,3.75rem)] text-svs-orange/70 font-bold tracking-wide leading-none text-center sm:text-left">
               SVSFOOD
             </h2>
 
             <div
-              className="w-[90px] h-[110px] sm:w-[140px] sm:h-[175px] md:w-[180px] md:h-[225px] relative mt-2 sm:mt-4 shrink-0"
+              className="w-[80px] h-[98px] sm:w-[140px] sm:h-[175px] md:w-[180px] md:h-[225px] relative mt-0 sm:mt-4 shrink-0"
               style={{ perspective: "800px" }}
             >
               <div className="w-full h-full relative revolving-bag scale-[0.75] sm:scale-100 md:scale-[1.1] origin-center">

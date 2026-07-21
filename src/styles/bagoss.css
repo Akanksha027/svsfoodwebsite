@@ -1,4 +1,4 @@
-/* Bagoss Standard — woff2 only (home + locations via BagossScope) */
+/* Bagoss Standard — site-wide via globals.css + root layout */
 
 @font-face {
   font-family: "Bagoss";

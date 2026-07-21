@@ -148,15 +148,15 @@ function MenuCenterBar({
       ref={anchorRef}
       type="button"
       onClick={onOpenLocation}
-      className="flex min-w-0 flex-col justify-center h-14 ml-4 sm:ml-6 md:ml-8 lg:ml-10 xl:ml-12 px-0.5 sm:px-1 border-0 bg-transparent cursor-pointer text-left group shrink max-w-[min(70vw,480px)]"
+      className="flex min-w-0 flex-col justify-center h-12 sm:h-14 ml-1.5 sm:ml-4 md:ml-8 lg:ml-10 xl:ml-12 px-0.5 sm:px-1 border-0 bg-transparent cursor-pointer text-left group shrink max-w-[min(52vw,480px)] sm:max-w-[min(62vw,480px)]"
       id="menu-nav-center-bar"
       aria-label="Change delivery location"
       aria-expanded={open}
     >
-      <span className="text-[13px] sm:text-[15px] font-bold leading-tight text-gray-900 group-hover:text-[#f16a34] transition-colors whitespace-nowrap">
+      <span className="text-[11px] sm:text-[15px] font-bold leading-tight text-gray-900 group-hover:text-[#f16a34] transition-colors truncate">
         Delivering in few minutes
       </span>
-      <span className="mt-0.5 flex min-w-0 max-w-full items-center gap-0.5 text-[11px] sm:text-[13px] text-gray-500">
+      <span className="mt-0.5 flex min-w-0 max-w-full items-center gap-0.5 text-[10px] sm:text-[13px] text-gray-500">
         <svg
           className="h-3.5 w-3.5 shrink-0 text-gray-400"
           viewBox="0 0 24 24"
@@ -245,7 +245,12 @@ function NavIcons({
   onAccount: () => void;
 }) {
   const { itemCount } = useCart();
-  const iconBtn = hero ? iconBtnHero : iconBtnDefault;
+  const iconBtn = menuMode
+    ? `${iconBtnBase} w-9 h-9 sm:w-10 sm:h-10 text-svs-ink/70 hover:bg-white/60 hover:text-svs-orange`
+    : hero
+      ? iconBtnHero
+      : iconBtnDefault;
+  const svgClass = menuMode ? "w-[18px] h-[18px] sm:w-5 sm:h-5" : iconSvg;
   const showCartAndLocation = !menuMode && !homePage;
 
   return (
@@ -310,7 +315,7 @@ function NavIcons({
           onClick={onNavigate}
         >
           <svg
-            className={iconSvg}
+            className={svgClass}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -332,7 +337,7 @@ function NavIcons({
         aria-label="Gift cards"
         onClick={onNavigate}
       >
-        <GiftCardNavIcon className={iconSvg} />
+        <GiftCardNavIcon className={svgClass} />
       </Link>
 
       <button
@@ -343,7 +348,7 @@ function NavIcons({
         onClick={onAccount}
       >
         <svg
-          className={iconSvg}
+          className={svgClass}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -366,7 +371,7 @@ function NavIcons({
           onClick={onNavigate}
         >
           <svg
-            className={iconSvg}
+            className={svgClass}
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -461,10 +466,10 @@ export default function Navbar({
 
       {menuMode ? <div className="min-w-2 flex-1" aria-hidden /> : null}
 
-      <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2] gap-0.5 sm:gap-1.5 lg:gap-2">
+      <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2] gap-0 sm:gap-1 lg:gap-2">
         {menuMode ? <OrangeCartButton /> : null}
         <div
-          className="flex flex-nowrap items-center gap-0.5 sm:gap-1.5 lg:gap-2"
+          className={`flex flex-nowrap items-center ${menuMode ? "gap-0 sm:gap-0.5" : "gap-0.5 sm:gap-1.5 lg:gap-2"}`}
           id="navbar-icons"
         >
           <NavIcons

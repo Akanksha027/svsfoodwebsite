@@ -18,7 +18,7 @@ export default function HeroVideoSection() {
 
   return (
     <section
-      className="relative w-full h-[100svh] min-h-[520px] max-h-[1200px] overflow-hidden bg-svs-ink"
+      className="relative w-full h-[100svh] min-h-[480px] max-h-[1200px] overflow-hidden bg-svs-ink"
       id="hero-section"
     >
       <video

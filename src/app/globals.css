@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "../styles/bagoss.css";
+@import "../styles/atma.css";
 
 @theme inline {
   /* SVS brand palette */
@@ -18,8 +20,9 @@
   --color-surface: #fff4ee;
   --color-muted: color-mix(in srgb, #1a1a1a 55%, transparent);
 
-  --font-sans: var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
+  --font-sans: var(--font-bagoss);
   --font-bagoss: "Bagoss", var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
+  --font-atma: "Atma", var(--font-bagoss);
 }
 
 /* Reset - do not zero margin/padding here; it overrides Tailwind utilities */
@@ -32,7 +35,7 @@
 body {
   background-color: var(--color-svs-white);
   color: var(--color-svs-ink);
-  font-family: var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
+  font-family: var(--font-bagoss);
   /* clip does not break position:sticky the way overflow-x:hidden does */
   overflow-x: clip;
 }
@@ -45,6 +48,10 @@ html {
 
 .font-bagoss {
   font-family: var(--font-bagoss);
+}
+
+.font-atma {
+  font-family: var(--font-atma);
 }
 
 
@@ -486,11 +493,11 @@ html {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 16px 36px;
+  padding: clamp(12px, 3vw, 16px) clamp(24px, 6vw, 36px);
   border: 4px solid transparent;
   border-radius: 100px;
   background-color: transparent;
-  font-size: 16px;
+  font-size: clamp(13px, 2.8vw, 16px);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;

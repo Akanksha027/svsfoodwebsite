@@ -146,7 +146,7 @@ export default function MenuBrowser({
     <div className="max-w-[1100px] mx-auto">
       {visibleCategories.length > 0 && (
         <div className="sticky top-14 sm:top-16 md:top-20 lg:top-[72px] z-[100] -mx-4 sm:mx-0 px-4 sm:px-0 py-2.5 bg-svs-cream transition-all duration-300">
-          <div className="flex gap-4 sm:gap-5 overflow-x-auto pb-1">
+          <div className="flex gap-3 sm:gap-4 md:gap-5 overflow-x-auto pb-1 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {visibleCategories.map((cat) => {
               const active = cat.id === activeCategoryId;
               const catImage = cat.image_url || cat.icon_url || null;
@@ -155,12 +155,12 @@ export default function MenuBrowser({
                   key={cat.id}
                   type="button"
                   onClick={() => scrollToCategory(cat.id)}
-                  className={`group shrink-0 flex flex-col items-center gap-2 w-[88px] sm:w-[100px] cursor-pointer bg-transparent border-0 p-0 outline-none ${
+                  className={`group shrink-0 flex flex-col items-center gap-1.5 sm:gap-2 w-[76px] sm:w-[88px] md:w-[100px] cursor-pointer bg-transparent border-0 p-0 outline-none ${
                     active ? "opacity-100" : "opacity-80"
                   }`}
                 >
                   <div className={`relative shrink-0 transition-all duration-300 ${
-                    isOpen ? "w-[56px] h-[56px] sm:w-[60px] sm:h-[60px]" : "w-[68px] h-[68px] sm:w-[76px] sm:h-[76px]"
+                    isOpen ? "w-[48px] h-[48px] sm:w-[56px] sm:h-[56px]" : "w-[56px] h-[56px] sm:w-[68px] sm:h-[68px] md:w-[76px] md:h-[76px]"
                   }`}>
                     <div className="absolute inset-0 pointer-events-none transition-transform duration-200 ease-out will-change-transform origin-center scale-100 group-hover:scale-110">
                       {catImage ? (
@@ -242,7 +242,7 @@ function CategorySection({
     <section
       id={`cat-${category.id}`}
       ref={sectionRef}
-      className="scroll-mt-[148px] sm:scroll-mt-[156px] md:scroll-mt-[180px] lg:scroll-mt-[200px]"
+      className="scroll-mt-[132px] sm:scroll-mt-[148px] md:scroll-mt-[168px] lg:scroll-mt-[188px]"
     >
       <div className="flex items-center gap-3 mb-4 sm:mb-5">
         {category.image_url || category.icon_url ? (
@@ -264,7 +264,7 @@ function CategorySection({
         </span>
       </div>
 
-      <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-3.5">
+      <ul className="grid grid-cols-1 min-[360px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-3.5">
         {items.map((item) => (
           <li key={item.id}>
             <MenuItemCard

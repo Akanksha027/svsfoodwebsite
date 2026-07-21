@@ -31,7 +31,8 @@ function JourneyCard({
           alt={stop.imageAlt ?? stop.year}
           fill
           sizes="(max-width: 640px) 240px, (max-width: 768px) 300px, 360px"
-          className="object-cover"
+          className="object-cover object-center"
+          unoptimized={stop.image.startsWith("/journey/")}
         />
       </div>
 
@@ -253,7 +254,7 @@ export default function JourneySection() {
           <div className="w-full pt-8 sm:pt-6 md:pt-0">
             <div
               ref={trackRef}
-              className="relative md:absolute md:top-0 left-0 flex items-start will-change-transform pl-4 sm:pl-6 md:pl-10 lg:pl-16 pr-[10vw] sm:pr-[14vw] md:pr-[18vw]"
+              className="relative md:absolute md:top-0 left-0 flex items-start will-change-transform pl-4 sm:pl-6 md:pl-10 lg:pl-16 pr-[30vw] sm:pr-[34vw] md:pr-[38vw]"
               style={{ transform: "translate3d(0px,0,0)" }}
             >
               <div

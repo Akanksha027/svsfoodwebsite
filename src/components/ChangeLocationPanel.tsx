@@ -36,6 +36,8 @@ type PanelPosition = {
   width: number;
 };
 
+type PanelLayout = "dropdown" | "sheet";
+
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -164,6 +166,7 @@ export default function ChangeLocationPanel({
   const { customer, openLogin, refreshCustomer } = useWebsiteAuth();
   const [mounted, setMounted] = useState(false);
   const [panelPos, setPanelPos] = useState<PanelPosition | null>(null);
+  const [panelLayout, setPanelLayout] = useState<PanelLayout>("dropdown");
   const [search, setSearch] = useState("");
   const [searchBusy, setSearchBusy] = useState(false);
   const [searchResults, setSearchResults] = useState<
@@ -186,17 +189,25 @@ export default function ChangeLocationPanel({
       return;
     }
     const anchor = anchorRef.current;
-    if (!anchor) return;
+    const mq = window.matchMedia("(max-width: 767px)");
 
     const update = () => {
+      if (mq.matches) {
+        setPanelLayout("sheet");
+        setPanelPos({ top: 0, left: 0, width: window.innerWidth });
+        return;
+      }
+      setPanelLayout("dropdown");
       if (!anchorRef.current) return;
       setPanelPos(measurePanelPosition(anchorRef.current));
     };
 
     update();
+    mq.addEventListener("change", update);
     window.addEventListener("resize", update);
     window.addEventListener("scroll", update, true);
     return () => {
+      mq.removeEventListener("change", update);
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
     };
@@ -297,6 +308,8 @@ export default function ChangeLocationPanel({
 
   if (!mounted || !open || !panelPos) return null;
 
+  const isSheet = panelLayout === "sheet";
+
   return createPortal(
     <>
       <button
@@ -309,13 +322,21 @@ export default function ChangeLocationPanel({
         role="dialog"
         aria-modal="true"
         aria-labelledby="change-location-title"
-        className="fixed z-[1551] rounded-2xl bg-[#eef2f6] p-4 sm:p-5 shadow-[0_20px_50px_rgba(0,0,0,0.18)] overflow-y-auto overscroll-contain"
-        style={{
-          top: panelPos.top,
-          left: panelPos.left,
-          width: panelPos.width,
-          maxHeight: `min(82vh, calc(100vh - ${panelPos.top}px - 12px))`,
-        }}
+        className={`fixed z-[1551] bg-[#eef2f6] shadow-[0_20px_50px_rgba(0,0,0,0.18)] overflow-y-auto overscroll-contain ${
+          isSheet
+            ? "inset-x-0 bottom-0 rounded-t-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))] max-h-[min(88dvh,100dvh)]"
+            : "rounded-2xl p-4 sm:p-5"
+        }`}
+        style={
+          isSheet
+            ? undefined
+            : {
+                top: panelPos.top,
+                left: panelPos.left,
+                width: panelPos.width,
+                maxHeight: `min(82vh, calc(100vh - ${panelPos.top}px - 12px))`,
+              }
+        }
       >
         <div className="flex items-center justify-between gap-3 mb-4">
           <h2

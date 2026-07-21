@@ -35,7 +35,7 @@ export default function CartPage() {
               Back to menu
             </Link>
           </div>
-          <h1 className="text-3xl font-extrabold text-svs-ink tracking-tight mb-1">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-svs-ink tracking-tight mb-1">
             Your cart
           </h1>
           <p className="text-sm text-svs-ink/50 mb-6">
@@ -58,7 +58,7 @@ export default function CartPage() {
                 {lines.map((line) => (
                   <li
                     key={line.key}
-                    className="flex gap-3 rounded-2xl border border-svs-cream bg-svs-white p-3"
+                    className="flex flex-wrap sm:flex-nowrap gap-3 rounded-2xl border border-svs-cream bg-svs-white p-3"
                   >
                     <div className="relative w-16 h-16 shrink-0 rounded-xl overflow-hidden bg-svs-cream">
                       {line.imageUrl ? (
@@ -109,7 +109,7 @@ export default function CartPage() {
                         </button>
                       </div>
                     </div>
-                    <p className="font-extrabold text-svs-ink shrink-0">
+                    <p className="font-extrabold text-svs-ink w-full sm:w-auto text-right sm:shrink-0 mt-1 sm:mt-0">
                       {formatInr(line.unitPrice * line.quantity)}
                     </p>
                   </li>

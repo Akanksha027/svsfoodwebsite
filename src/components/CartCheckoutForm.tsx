@@ -322,7 +322,7 @@ export default function CartCheckoutForm({
                   className={textareaClass}
                 />
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2">
                 <label className="block text-xs">
                   <span className="font-semibold text-gray-700">Landmark</span>
                   <input

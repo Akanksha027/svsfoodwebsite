@@ -22,9 +22,8 @@ export const journeyStops: JourneyStop[] = [
       "Five years of dreaming, learning, and reimagining what pure vegetarian fast food could become.",
     description:
       "Years spent understanding customer preferences, studying global QSR brands, experimenting with recipes, and building the foundation for a brand that would redefine vegetarian dining.",
-    image:
-      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80",
-    imageAlt: "Recipe research and food experimentation",
+    image: "/journey/im1.png",
+    imageAlt: "SVS Food kitchen team experimenting with burger recipes",
   },
   {
     id: "stop-2018",
@@ -33,9 +32,8 @@ export const journeyStops: JourneyStop[] = [
     tagline: "One small outlet in Satna, one big dream for the future.",
     description:
       "SVS Food was born with a mission to serve fresh, hygienic, and 100% pure vegetarian food with speed and consistency.",
-    image:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80",
-    imageAlt: "First SVS Food outlet",
+    image: "/journey/NEV00857.jpg",
+    imageAlt: "Guests dining at the first SVS Food restaurant",
   },
   {
     id: "stop-2019",
@@ -44,9 +42,8 @@ export const journeyStops: JourneyStop[] = [
     tagline: "Every smile became our motivation to do better.",
     description:
       "With growing customer love, SVS Food focused on quality, service, and creating unforgettable food experiences.",
-    image:
-      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80",
-    imageAlt: "Happy customers at SVS Food",
+    image: "/journey/NEV00805.jpg",
+    imageAlt: "A family enjoying SVS Food together",
   },
   {
     id: "stop-2020",
@@ -55,9 +52,8 @@ export const journeyStops: JourneyStop[] = [
     tagline: "When the world slowed down, our commitment only grew stronger.",
     description:
       "A year of resilience, learning, and strengthening the promise of safe and hygienic food.",
-    image:
-      "https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80",
-    imageAlt: "Safe and hygienic kitchen operations",
+    image: "/journey/cust3.png",
+    imageAlt: "SVS Food team serving customers through challenging times",
   },
   {
     id: "stop-2021",
@@ -66,9 +62,8 @@ export const journeyStops: JourneyStop[] = [
     tagline: "We didn't just serve food—we crafted an experience.",
     description:
       "From recipes to operations, every detail was refined to deliver speed, consistency, and satisfaction.",
-    image:
-      "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80",
-    imageAlt: "Crafting the SVS Food experience",
+    image: "/journey/NEV00796.jpg",
+    imageAlt: "SVS Food burgers, fries, and refined in-house recipes",
   },
   {
     id: "stop-2022",
@@ -77,9 +72,8 @@ export const journeyStops: JourneyStop[] = [
     tagline: "Tradition met technology to create something extraordinary.",
     description:
       "The journey accelerated with smarter systems, stronger operations, and a vision to build India's most loved pure-veg QSR brand.",
-    image:
-      "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&q=80",
-    imageAlt: "Innovation in operations",
+    image: "/journey/im2.png",
+    imageAlt: "SVS Food staff using digital POS and ordering systems",
   },
   {
     id: "stop-2023",
@@ -88,9 +82,8 @@ export const journeyStops: JourneyStop[] = [
     tagline: "Fresh buns, Jain options, and innovation at every step.",
     description:
       "SVS Food strengthened its identity with preservative-free in-house buns and a menu designed for every vegetarian family.",
-    image:
-      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=80",
-    imageAlt: "Fresh in-house buns and vegetarian menu",
+    image: "/journey/NEV00687.jpg",
+    imageAlt: "SVS Food branded packaging, desserts, and menu variety",
   },
   {
     id: "stop-2024",
@@ -99,9 +92,8 @@ export const journeyStops: JourneyStop[] = [
     tagline: "Ordering became smarter, faster, and more seamless.",
     description:
       "With self-order kiosks, WhatsApp tracking, and digital ordering experiences, SVS Food embraced the future of food service.",
-    image:
-      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80",
-    imageAlt: "Digital ordering and kiosks",
+    image: "/journey/im3.png",
+    imageAlt: "SVS Food delivery bike with scan-to-order QR code",
   },
   {
     id: "stop-2025",
@@ -110,9 +102,8 @@ export const journeyStops: JourneyStop[] = [
     tagline: "From a local favorite to a growing movement.",
     description:
       "More stores, more customers, and a stronger belief that pure vegetarian food can compete on the biggest stage.",
-    image:
-      "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=800&q=80",
-    imageAlt: "Growing SVS Food stores",
+    image: "/journey/NEV00749.jpg",
+    imageAlt: "Friends celebrating with SVS Food burgers",
   },
   {
     id: "stop-2026",
@@ -121,9 +112,8 @@ export const journeyStops: JourneyStop[] = [
     tagline: "A dream that started on Rewa Road is now inspiring millions.",
     description:
       "With thousands of happy customers and national recognition, SVS Food continues its mission to become the world's largest pure vegetarian food chain.",
-    image:
-      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80",
-    imageAlt: "SVS Food expanding nationwide",
+    image: "/journey/NEV00667.jpg",
+    imageAlt: "SVS Food order packed with Rewa Road branding",
   },
 ];
 
