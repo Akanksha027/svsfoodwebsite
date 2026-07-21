@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  journeyClosingLine,
+  journeySectionSubtitle,
   journeySectionTitle,
   journeyStops,
   type JourneyStop,
@@ -22,13 +24,13 @@ function JourneyCard({
   const isLast = index === total - 1;
 
   return (
-    <article className="relative flex flex-col shrink-0 w-[210px] sm:w-[260px] md:w-[300px] lg:w-[320px]">
+    <article className="relative flex flex-col shrink-0 w-[240px] sm:w-[300px] md:w-[340px] lg:w-[360px]">
       <div className="relative mb-8 sm:mb-12 md:mb-14 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-full overflow-hidden rounded-[1.25rem] sm:rounded-[2rem] bg-svs-cream">
         <Image
           src={stop.image}
           alt={stop.imageAlt ?? stop.year}
           fill
-          sizes="(max-width: 640px) 210px, (max-width: 768px) 260px, 320px"
+          sizes="(max-width: 640px) 240px, (max-width: 768px) 300px, 360px"
           className="object-cover"
         />
       </div>
@@ -39,11 +41,19 @@ function JourneyCard({
       >
         <div className="relative z-10 w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-svs-orange mb-3 sm:mb-4" />
 
-        <h3 className="mb-2 sm:mb-3 text-2xl sm:text-4xl md:text-5xl font-black text-svs-ink leading-none text-left">
+        <h3 className="mb-1.5 sm:mb-2 text-2xl sm:text-4xl md:text-[2.75rem] font-black text-svs-ink leading-none text-left">
           {stop.year}
         </h3>
 
-        <p className="text-[0.85rem] sm:text-[0.95rem] md:text-[1.05rem] leading-relaxed text-svs-ink/75 max-w-[280px] text-left">
+        <p className="mb-2 sm:mb-2.5 text-[0.95rem] sm:text-[1.05rem] md:text-[1.1rem] font-extrabold text-svs-ink text-left">
+          {stop.title}
+        </p>
+
+        <p className="mb-2 sm:mb-3 text-[0.8rem] sm:text-[0.9rem] md:text-[0.95rem] leading-relaxed italic text-svs-orange/90 max-w-[320px] text-left">
+          &ldquo;{stop.tagline}&rdquo;
+        </p>
+
+        <p className="text-[0.8rem] sm:text-[0.9rem] md:text-[0.95rem] leading-relaxed text-svs-ink/75 max-w-[320px] text-left">
           {stop.description}
         </p>
 
@@ -234,9 +244,8 @@ export default function JourneySection() {
           <h2 className="text-[1.75rem] sm:text-[2rem] md:text-[2.15rem] lg:text-[2.15rem] font-black text-svs-ink leading-tight tracking-tight">
             {journeySectionTitle}
           </h2>
-          <p className="mt-1.5 sm:mt-3 text-sm sm:text-lg md:text-xl text-svs-ink/60 max-w-[500px]">
-            From a single kitchen to a nationwide favourite. Our story in
-            moments.
+          <p className="mt-1.5 sm:mt-3 text-sm sm:text-lg md:text-xl text-svs-ink/60 max-w-[560px]">
+            {journeySectionSubtitle}
           </p>
         </div>
 
@@ -253,12 +262,19 @@ export default function JourneySection() {
               >
                 {journeyStops.map((stop, index) => (
                   <JourneyCard
-                    key={`${stop.id}-${index}`}
+                    key={stop.id}
                     stop={stop}
                     index={index}
                     total={total}
                   />
                 ))}
+
+                <div className="relative flex flex-col justify-center shrink-0 w-[240px] sm:w-[300px] md:w-[340px] lg:w-[380px] pl-2 sm:pl-4">
+                  <div className="h-3.5 w-3.5 rounded-full bg-svs-orange mb-4 sm:mb-5" />
+                  <p className="text-xl sm:text-2xl md:text-[1.75rem] font-black text-svs-ink leading-snug max-w-[340px]">
+                    &ldquo;{journeyClosingLine}&rdquo;
+                  </p>
+                </div>
               </div>
             </div>
           </div>

@@ -312,36 +312,7 @@ export default function AccountProfileForm({
         </div>
 
         <aside className="xl:col-span-4 space-y-5">
-          <div className="rounded-2xl bg-gradient-to-br from-[#fff8f4] via-white to-[#fff4ee] border border-[#f16a34]/10 p-5 sm:p-6 shadow-[0_4px_24px_rgba(241,106,52,0.08)]">
-            <h3 className="text-[15px] font-extrabold text-gray-900 mb-1">Complete your profile</h3>
-            <p className="text-[13px] text-gray-500 mb-4">
-              A few quick steps to unlock the full SVS Food experience.
-            </p>
-            <ul className="space-y-3">
-              {checklist.map((item) => (
-                <li key={item.label} className="flex items-center gap-3">
-                  <span
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold transition-colors ${
-                      item.done
-                        ? "bg-emerald-500 text-white shadow-[0_2px_8px_rgba(16,185,129,0.35)]"
-                        : "bg-white border border-gray-200 text-gray-400"
-                    }`}
-                  >
-                    {item.done ? (
-                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" aria-hidden>
-                        <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    ) : (
-                      "·"
-                    )}
-                  </span>
-                  <span className={`text-[14px] font-semibold ${item.done ? "text-gray-700" : "text-gray-500"}`}>
-                    {item.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+
 
           <div className="rounded-2xl bg-white border border-black/[0.05] shadow-[0_4px_24px_rgba(15,23,42,0.06)] p-5 sm:p-6">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff4ee] text-[#f16a34] mb-3">
