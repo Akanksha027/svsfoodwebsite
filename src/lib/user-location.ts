@@ -60,6 +60,21 @@ function persistLocation(location: SavedUserLocation) {
   }
 }
 
+/** Save GPS coords from a saved address or search pick (no browser prompt). */
+export function writeSavedUserLocation(input: {
+  lat: number;
+  lng: number;
+  accuracy?: number;
+  savedAt?: string;
+}): void {
+  persistLocation({
+    lat: input.lat,
+    lng: input.lng,
+    accuracy: input.accuracy,
+    savedAt: input.savedAt ?? new Date().toISOString(),
+  });
+}
+
 function markPermissionDenied() {
   try {
     localStorage.setItem(LOCATION_DENIED_KEY, "1");

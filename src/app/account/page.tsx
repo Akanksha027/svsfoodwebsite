@@ -744,6 +744,10 @@ function AccountInner() {
     else if (tab === "help") setSection("help");
     else setSection("orders");
 
+    if (tab === "addresses" && searchParams.get("add") === "1") {
+      setAddingAddress(true);
+    }
+
     if (orderId && storeSlug) {
       // Came from COD checkout → show active tab + live panel
       setOrdersTab("active");

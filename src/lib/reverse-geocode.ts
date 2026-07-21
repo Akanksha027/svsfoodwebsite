@@ -42,6 +42,11 @@ function writeCachedAddressHint(hint: DeliveryAddressHint) {
   }
 }
 
+/** Persist a delivery area hint (e.g. saved address or search pick). */
+export function cacheDeliveryAddressHint(hint: DeliveryAddressHint): void {
+  writeCachedAddressHint(hint);
+}
+
 function pickDisplayName(data: Record<string, unknown>): string {
   const addr = (data.address ?? {}) as Record<string, string>;
   const parts = [
