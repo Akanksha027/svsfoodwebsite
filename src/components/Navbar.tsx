@@ -416,30 +416,28 @@ function NavIcons({
           onClick={onNavigate}
         >
           <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
-            <span className="scale-[0.38] sm:scale-[0.42] lg:scale-[0.46]">
+            <span className="nav-order-bag-scale">
               <span
-                className="block w-[96px] h-[128px] relative nav-order-bag-stage"
+                className="block w-[96px] h-[128px] relative"
                 style={{ perspective: "900px" }}
               >
-                <span className="nav-order-bag-tilt block w-full h-full">
-                  <span className="block w-full h-full relative revolving-bag revolving-bag--slow footer-envelope-bag nav-order-bag">
-                    <span className="bag-face bag-front footer-bag-front">
-                      <span className="nav-order-bag__label" aria-hidden>
-                        ORDER
-                        <br />
-                        NOW
-                      </span>
+                <span className="block w-full h-full relative revolving-bag revolving-bag--slow footer-envelope-bag nav-order-bag">
+                  <span className="bag-face bag-back footer-bag-front">
+                    <span className="nav-order-bag__label" aria-hidden>
+                      ORDER
+                      <br />
+                      NOW
                     </span>
-                    <span className="bag-face bag-back footer-bag-front">
-                      <span className="nav-order-bag__label" aria-hidden>
-                        ORDER
-                        <br />
-                        NOW
-                      </span>
+                  </span>
+                  <span className="bag-face bag-left" />
+                  <span className="bag-face bag-right" />
+                  <span className="bag-face footer-bag-bottom" aria-hidden />
+                  <span className="bag-face bag-front footer-bag-front">
+                    <span className="nav-order-bag__label" aria-hidden>
+                      ORDER
+                      <br />
+                      NOW
                     </span>
-                    <span className="bag-face bag-left" />
-                    <span className="bag-face bag-right" />
-                    <span className="bag-face footer-bag-bottom" aria-hidden />
                   </span>
                 </span>
               </span>

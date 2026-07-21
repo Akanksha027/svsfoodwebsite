@@ -339,32 +339,26 @@ html.svs-scroll-locked .cart-bar-shell {
   text-transform: uppercase;
 }
 
-.nav-order-bag-stage {
+.nav-order-bag-scale {
+  display: block;
+  transform: scale(0.38);
   transform-style: preserve-3d;
 }
 
-.nav-order-bag-tilt {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transform-origin: 50% 88%;
-  transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+@media (min-width: 640px) {
+  .nav-order-bag-scale {
+    transform: scale(0.42);
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-order-bag-scale {
+    transform: scale(0.46);
+  }
 }
 
 .nav-order-bag {
-  transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-#btn-menu:hover .nav-order-bag-tilt,
-#btn-menu:focus-visible .nav-order-bag-tilt {
-  transform: rotateX(-26deg) translateY(-14px) translateZ(18px) scale(1.14);
-}
-
-#btn-menu:hover .nav-order-bag,
-#btn-menu:focus-visible .nav-order-bag {
-  animation: none;
-  transform: rotateY(0deg);
+  transform-style: preserve-3d;
 }
 
 .bag-face {
