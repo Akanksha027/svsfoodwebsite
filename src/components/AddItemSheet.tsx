@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -35,6 +34,50 @@ type AddItemSheetProps = {
   onRemove?: (selection: AddItemSelection) => void;
 };
 
+function pickImageUrl(
+  ...candidates: Array<string | null | undefined>
+): string | null {
+  for (const c of candidates) {
+    const s = String(c || "").trim();
+    if (!s || s === "null" || s === "undefined") continue;
+    if (s.startsWith("http://") || s.startsWith("https://") || s.startsWith("/")) {
+      return s;
+    }
+  }
+  return null;
+}
+
+/** Native img avoids Next/Image remote-host failures for Petpooja CDNs. */
+function SheetImage({
+  src,
+  alt = "",
+  className,
+}: {
+  src: string;
+  alt?: string;
+  className?: string;
+}) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-svs-orange/40">
+        SVS
+      </div>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      decoding="async"
+      onError={() => setFailed(true)}
+      draggable={false}
+    />
+  );
+}
+
 export default function AddItemSheet({
   item,
   categoryImageUrl,
@@ -66,17 +109,31 @@ export default function AddItemSheet({
     Record<string, string[]>
   >({});
   const [mounted, setMounted] = useState(false);
+  const [visible, setVisible] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setVisible(true));
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   useBodyScrollLock(mounted);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" || e.key === "Enter") onClose();
+      if (e.key === "Escape") requestClose();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose]);
+
+  function requestClose() {
+    setVisible(false);
+    window.setTimeout(onClose, 280);
+  }
 
   const selectedVariant =
     variants.find((v) => v.item_id === selectedId) || variants[0] || null;
@@ -127,18 +184,20 @@ export default function AddItemSheet({
     return true;
   }, [hasVariants, selectedVariant, addonGroups, selectedAddons]);
 
+  const fallbackImage = pickImageUrl(
+    item.image_url,
+    Array.isArray(item.image_urls) ? item.image_urls[0] : null,
+    categoryImageUrl,
+  );
+
   const heroImage =
-    (selectedVariant?.image_url && String(selectedVariant.image_url)) ||
-    item.image_url ||
-    (Array.isArray(item.image_urls) && item.image_urls[0]) ||
-    categoryImageUrl ||
-    null;
+    pickImageUrl(selectedVariant?.image_url) || fallbackImage;
 
   const hasDistinctVariantImages = useMemo(() => {
     const urls = new Set(
       variants
-        .map((v) => v.image_url)
-        .filter((u): u is string => Boolean(u && String(u).trim())),
+        .map((v) => pickImageUrl(v.image_url))
+        .filter((u): u is string => Boolean(u)),
     );
     return urls.size >= 2;
   }, [variants]);
@@ -195,41 +254,41 @@ export default function AddItemSheet({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[1050] flex items-end sm:items-center justify-center sm:p-4 md:p-6"
-      style={{
-        paddingBottom: "env(safe-area-inset-bottom, 0px)",
-      }}
+      className="fixed inset-0 z-[1600] flex items-end sm:items-center justify-center sm:p-5 md:p-8"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
       <button
         type="button"
         aria-label="Close"
-        className="absolute inset-0 bg-black/50 border-0 cursor-pointer"
-        onClick={onClose}
-        onPointerDown={(e) => {
-          // Close on outside press even if a child steals the click.
-          if (e.target === e.currentTarget) onClose();
-        }}
+        className={`absolute inset-0 border-0 cursor-pointer transition-opacity duration-300 ease-out ${
+          visible ? "opacity-100" : "opacity-0"
+        }`}
+        style={{ backgroundColor: "rgba(15, 15, 15, 0.55)" }}
+        onClick={requestClose}
       />
 
       <div
         role="dialog"
         aria-modal="true"
         aria-label={`Customise ${item.name}`}
-        className="relative z-[1051] flex flex-col w-full sm:w-[min(100%,26rem)] md:w-[min(100%,28rem)] max-h-[min(92dvh,720px)] sm:max-h-[min(88dvh,680px)] rounded-t-2xl sm:rounded-2xl bg-svs-white shadow-xl overflow-hidden"
+        className={`relative z-[1601] flex flex-col w-full sm:w-[min(100%,34rem)] md:w-[min(100%,38rem)] max-h-[min(94dvh,820px)] rounded-t-[1.5rem] sm:rounded-[1.5rem] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          visible
+            ? "opacity-100 translate-y-0 sm:scale-100"
+            : "opacity-0 translate-y-8 sm:translate-y-4 sm:scale-[0.96]"
+        }`}
         onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
       >
-        {/* Scrollable body — footer stays pinned */}
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]">
-          <div className="relative w-full bg-svs-cream aspect-[16/10] max-h-[min(32vh,220px)] sm:max-h-[240px] md:max-h-[260px]">
+        <div
+          className="flex-1 min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] bg-white"
+          data-scroll-lock-allow
+        >
+          <div className="relative w-full bg-white aspect-[4/3] sm:aspect-[16/10] max-h-[min(42vh,320px)] sm:max-h-[340px] md:max-h-[380px]">
             {heroImage ? (
-              <Image
+              <SheetImage
                 src={heroImage}
-                alt=""
-                fill
-                className="object-contain p-2 sm:p-3"
-                sizes="(max-width: 640px) 100vw, 420px"
-                priority
+                alt={item.name}
+                className="absolute inset-0 m-auto max-h-full max-w-full w-full h-full object-contain p-4 sm:p-6"
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-svs-orange/40">
@@ -238,16 +297,16 @@ export default function AddItemSheet({
             )}
             <button
               type="button"
-              onClick={onClose}
-              className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-svs-white/95 border-0 shadow-sm flex items-center justify-center cursor-pointer text-svs-ink text-lg font-bold"
+              onClick={requestClose}
+              className="absolute top-3 left-3 h-10 w-10 rounded-full bg-white border border-black/[0.06] shadow-md flex items-center justify-center cursor-pointer text-svs-ink text-lg font-bold hover:bg-gray-50 transition-colors"
               aria-label="Go back"
             >
               ←
             </button>
           </div>
 
-          <div className="px-3.5 sm:px-4 pt-3 pb-4">
-            <h2 className="text-base sm:text-lg font-extrabold text-svs-ink leading-snug">
+          <div className="px-5 sm:px-6 pt-4 pb-5 bg-white">
+            <h2 className="text-lg sm:text-xl font-extrabold text-svs-ink leading-snug">
               {item.name}
             </h2>
             {selectedVariant ? (
@@ -255,34 +314,34 @@ export default function AddItemSheet({
                 {selectedVariant.variant_name}
               </p>
             ) : null}
-            <p className="mt-1 text-[15px] sm:text-base font-bold text-svs-ink tabular-nums">
+            <p className="mt-1.5 text-base sm:text-lg font-bold text-svs-ink tabular-nums">
               {formatInr(displayPrice)}
             </p>
             {item.description ? (
-              <p className="mt-2 text-sm text-svs-ink/55 line-clamp-3">
+              <p className="mt-2 text-sm text-svs-ink/55 leading-relaxed">
                 {item.description}
               </p>
             ) : null}
 
             {hasVariants ? (
-              <div className="mt-4">
-                <p className="text-xs font-bold uppercase tracking-wide text-svs-ink/45 mb-2">
+              <div className="mt-5">
+                <p className="text-xs font-bold uppercase tracking-wide text-svs-ink/45 mb-2.5">
                   {variants[0]?.group_name || "Choose option"}
                 </p>
                 {hasDistinctVariantImages ? (
-                  <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2.5">
                     {variants.map((variant) => (
                       <VariantImageCard
                         key={variant.item_id}
                         variant={variant}
-                        fallback={heroImage}
+                        fallback={fallbackImage}
                         selected={selectedVariant?.item_id === variant.item_id}
                         onSelect={() => setSelectedId(variant.item_id)}
                       />
                     ))}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2.5">
                     {variants.map((variant) => {
                       const selected =
                         selectedVariant?.item_id === variant.item_id;
@@ -291,16 +350,16 @@ export default function AddItemSheet({
                           key={variant.item_id}
                           type="button"
                           onClick={() => setSelectedId(variant.item_id)}
-                          className={`rounded-xl border-2 px-2.5 sm:px-3 py-2 sm:py-2.5 text-left cursor-pointer transition-colors ${
+                          className={`rounded-xl border-2 px-3 py-2.5 text-left cursor-pointer transition-colors ${
                             selected
-                              ? "border-svs-orange bg-svs-cream"
-                              : "border-svs-cream bg-svs-white hover:border-svs-orange/40"
+                              ? "border-svs-orange bg-[#fff4ee]"
+                              : "border-gray-200 bg-white hover:border-svs-orange/40"
                           }`}
                         >
-                          <span className="block text-[13px] sm:text-sm font-semibold text-svs-ink leading-snug">
+                          <span className="block text-sm font-semibold text-svs-ink leading-snug">
                             {variant.variant_name}
                           </span>
-                          <span className="mt-0.5 block text-[11px] sm:text-xs font-bold text-svs-ink/60 tabular-nums">
+                          <span className="mt-0.5 block text-xs font-bold text-svs-ink/60 tabular-nums">
                             {formatInr(variant.price)}
                           </span>
                         </button>
@@ -318,14 +377,14 @@ export default function AddItemSheet({
               const hint = isSingle ? "Pick one" : `Pick up to ${max}`;
               const picks = selectedAddons[group.id] || [];
               return (
-                <div key={group.id} className="mt-4">
+                <div key={group.id} className="mt-5">
                   <p className="text-xs font-bold uppercase tracking-wide text-svs-ink/45">
                     {group.name}
                   </p>
-                  <p className="mt-0.5 mb-2 text-[11px] text-svs-ink/40">
+                  <p className="mt-0.5 mb-2.5 text-[11px] text-svs-ink/40">
                     {hint}
                   </p>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     {group.items.map((option) => {
                       const selected = picks.includes(option.id);
                       return (
@@ -333,26 +392,26 @@ export default function AddItemSheet({
                           key={option.id}
                           type="button"
                           onClick={() => toggleAddon(group, option)}
-                          className={`w-full flex items-center gap-2.5 sm:gap-3 rounded-xl border-2 px-2.5 sm:px-3 py-2 sm:py-2.5 text-left cursor-pointer transition-colors ${
+                          className={`w-full flex items-center gap-3 rounded-xl border-2 px-3 py-2.5 text-left cursor-pointer transition-colors ${
                             selected
-                              ? "border-svs-orange bg-svs-cream"
-                              : "border-svs-cream bg-svs-white hover:border-svs-orange/35"
+                              ? "border-svs-orange bg-[#fff4ee]"
+                              : "border-gray-200 bg-white hover:border-svs-orange/35"
                           }`}
                         >
                           <span
                             className={`shrink-0 h-5 w-5 rounded-[5px] border-2 flex items-center justify-center text-[11px] font-bold ${
                               selected
                                 ? "border-svs-orange bg-svs-orange text-white"
-                                : "border-svs-ink/25 bg-svs-white text-transparent"
+                                : "border-svs-ink/25 bg-white text-transparent"
                             }`}
                             aria-hidden
                           >
                             ✓
                           </span>
-                          <span className="flex-1 min-w-0 text-[13px] sm:text-sm font-semibold text-svs-ink">
+                          <span className="flex-1 min-w-0 text-sm font-semibold text-svs-ink">
                             {option.name}
                           </span>
-                          <span className="shrink-0 text-[11px] sm:text-xs font-bold text-svs-ink/55 tabular-nums">
+                          <span className="shrink-0 text-xs font-bold text-svs-ink/55 tabular-nums">
                             {option.price > 0
                               ? `+${formatInr(option.price)}`
                               : formatInr(0)}
@@ -373,20 +432,19 @@ export default function AddItemSheet({
           </div>
         </div>
 
-        {/* Sticky qty — Enter / outside tap closes with current selection */}
         <div
-          className="shrink-0 border-t border-svs-cream bg-svs-white px-3.5 sm:px-4 pt-3"
+          className="shrink-0 border-t border-gray-100 bg-white px-5 sm:px-6 pt-3.5"
           style={{
-            paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))",
+            paddingBottom: "max(0.85rem, env(safe-area-inset-bottom, 0px))",
           }}
         >
           <div className="flex items-center justify-center">
-            <div className="inline-flex h-11 sm:h-12 items-center overflow-hidden rounded-xl bg-svs-orange text-white shadow-sm">
+            <div className="inline-flex h-12 items-center overflow-hidden rounded-xl bg-svs-orange text-white shadow-sm">
               <button
                 type="button"
                 onClick={handleMinus}
                 disabled={stagedQty <= 0}
-                className="w-10 sm:w-11 h-full flex items-center justify-center text-xl font-bold border-0 bg-transparent cursor-pointer hover:bg-svs-orange-dark disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-11 h-full flex items-center justify-center text-xl font-bold border-0 bg-transparent cursor-pointer hover:bg-svs-orange-dark disabled:opacity-40 disabled:cursor-not-allowed"
                 aria-label="Decrease"
               >
                 −
@@ -402,7 +460,7 @@ export default function AddItemSheet({
                 type="button"
                 onClick={handlePlus}
                 disabled={!canSubmit}
-                className="w-10 sm:w-11 h-full flex items-center justify-center text-xl font-bold border-0 bg-transparent cursor-pointer hover:bg-svs-orange-dark disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-11 h-full flex items-center justify-center text-xl font-bold border-0 bg-transparent cursor-pointer hover:bg-svs-orange-dark disabled:opacity-40 disabled:cursor-not-allowed"
                 aria-label="Increase"
               >
                 +
@@ -416,7 +474,6 @@ export default function AddItemSheet({
   );
 }
 
-/** Stable key for matching cart lines to a sheet selection. */
 export function selectionKey(
   itemId: string,
   addons: { id: string; quantity: number }[],
@@ -435,27 +492,25 @@ function VariantImageCard({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const src = variant.image_url || fallback;
+  const src = pickImageUrl(variant.image_url, fallback);
   return (
     <button
       type="button"
       onClick={onSelect}
-      className={`relative rounded-xl border-2 overflow-hidden text-left cursor-pointer bg-svs-cream ${
-        selected ? "border-svs-orange" : "border-transparent"
+      className={`relative rounded-xl border-2 overflow-hidden text-left cursor-pointer bg-white ${
+        selected ? "border-svs-orange" : "border-gray-200"
       }`}
     >
-      <div className="relative aspect-square w-full max-h-[140px] sm:max-h-none">
+      <div className="relative aspect-square w-full max-h-[150px] bg-white">
         {src ? (
-          <Image
+          <SheetImage
             src={src}
             alt=""
-            fill
-            className="object-contain p-2"
-            sizes="160px"
+            className="absolute inset-0 w-full h-full object-contain p-2"
           />
         ) : null}
       </div>
-      <div className="px-2 pb-2">
+      <div className="px-2.5 pb-2.5">
         <p className="text-xs font-semibold text-svs-ink line-clamp-2">
           {variant.variant_name}
         </p>
