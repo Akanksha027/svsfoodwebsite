@@ -235,16 +235,17 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
         </div>
 
         <div className="w-full">
-          <p className="text-[13px] sm:text-[14px] text-svs-ink/60 text-center lg:text-left">
-            <span className="font-bold text-svs-ink">OUR STORES:</span>{" "}
-            <Link href="/locations" className="hover:text-svs-orange">
-              Jabalpur
-            </Link>
-            {" | "}
-            <Link href="/locations" className="hover:text-svs-orange">
-              Satna
-            </Link>
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 text-[13px] sm:text-[14px] text-svs-ink/60 text-center sm:text-left leading-relaxed">
+            <p className="font-bold text-svs-ink shrink-0 sm:min-w-[11rem]">
+              CORPORATE ADDRESS:
+            </p>
+            <div className="min-w-0">
+              <p>Shop No. 200, Mezanine Floor,</p>
+              <p>Ojas Imperia, Bandariya Tiraha,</p>
+              <p>Narmada Road, Jabalpur,</p>
+              <p>Madhya Pradesh 482001</p>
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 pt-2 border-t border-svs-cream">

@@ -245,21 +245,18 @@ export default function JourneySection() {
           <h2 className="text-[1.75rem] sm:text-[2rem] md:text-[2.15rem] lg:text-[2.15rem] font-black text-svs-ink leading-tight tracking-tight">
             {journeySectionTitle}
           </h2>
-          <p className="mt-1.5 sm:mt-3 text-sm sm:text-lg md:text-xl text-svs-ink/60 max-w-[560px]">
-            {journeySectionSubtitle}
-          </p>
         </div>
 
-        <div className="relative flex-1 min-h-0 w-full flex items-center md:items-start mt-2 sm:mt-4 md:mt-8 pb-4 sm:pb-6 md:pb-8">
-          <div className="w-full pt-8 sm:pt-6 md:pt-0">
+        <div className="relative flex-1 min-h-0 w-full flex items-center mt-8 sm:mt-12 md:mt-16 pb-4 sm:pb-6 md:pb-8">
+          <div className="w-full">
             <div
               ref={trackRef}
-              className="relative md:absolute md:top-0 left-0 flex items-start will-change-transform pl-4 sm:pl-6 md:pl-10 lg:pl-16 pr-[50px]"
+              className="relative flex items-start will-change-transform pl-4 sm:pl-6 md:pl-10 lg:pl-16 pr-[50px]"
               style={{ transform: "translate3d(0px,0,0)" }}
             >
               <div
                 ref={cardsRowRef}
-                className="relative z-[2] flex items-start gap-8 sm:gap-12 md:gap-16 lg:gap-20"
+                className="relative z-[2] flex items-start gap-16 sm:gap-24 md:gap-32 lg:gap-40"
               >
                 {journeyStops.map((stop, index) => (
                   <JourneyCard

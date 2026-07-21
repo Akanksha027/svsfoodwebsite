@@ -117,7 +117,7 @@ export const journeyStops: JourneyStop[] = [
   },
 ];
 
-export const journeySectionTitle = "Our journey.";
+export const journeySectionTitle = "Milestones that shaped us";
 
 export const journeySectionSubtitle =
   "From ideation to a growing movement — the milestones that shaped SVS Food.";
