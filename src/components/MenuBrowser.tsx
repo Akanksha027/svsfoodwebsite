@@ -9,8 +9,8 @@ import { RollingCounter } from "@/components/RollingCounter";
 import { type StoreLocation } from "@/data/locations";
 import { SELECTED_STORE_KEY } from "@/lib/config";
 import { cartLineKey, useCart } from "@/context/CartContext";
-import { useMenuCart } from "@/context/MenuCartContext";
 import { useMenuSearch } from "@/context/MenuSearchContext";
+import MenuNavSearch from "@/components/MenuNavSearch";
 import { formatInr, titleCaseName } from "@/lib/menu-api";
 import { preloadImage, preloadImages } from "@/lib/preload-image";
 import type { MenuCategory, MenuItem, MenuPayload } from "@/lib/menu-types";
@@ -76,11 +76,16 @@ export default function MenuBrowser({
   errorMessage,
 }: MenuBrowserProps) {
   const { setStoreId } = useCart();
-  const { isOpen } = useMenuCart();
   const { query: searchQuery, setQuery: setSearchQuery } = useMenuSearch();
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+  const categoryBtnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const categoryScrollRef = useRef<HTMLDivElement | null>(null);
+  const stickyStackRef = useRef<HTMLDivElement | null>(null);
   const scrollingToRef = useRef(false);
+  const lastActiveRef = useRef<string | null>(null);
+  const stripScrollRaf = useRef<number | null>(null);
+  const stripScrollTimer = useRef<number | null>(null);
 
   useEffect(() => {
     if (initialQuery.trim()) setSearchQuery(initialQuery.trim());
@@ -162,6 +167,37 @@ export default function MenuBrowser({
     [categories, itemsByCategory],
   );
 
+  // Keep sticky offset locked to real navbar height (no gap for items to peek through).
+  useEffect(() => {
+    const nav = document.getElementById("main-navbar");
+    const stack = stickyStackRef.current;
+    if (!nav) return;
+
+    const sync = () => {
+      const nh = Math.round(nav.getBoundingClientRect().height);
+      if (nh <= 0) return;
+      document.body.style.setProperty("--menu-nav-sticky-top", `${nh}px`);
+      document.body.style.setProperty("--menu-nav-offset", `${nh}px`);
+      const sh = stack ? Math.round(stack.getBoundingClientRect().height) : 0;
+      if (sh > 0) {
+        document.body.style.setProperty(
+          "--menu-nav-scroll-mt",
+          `${nh + sh}px`,
+        );
+      }
+    };
+
+    sync();
+    const ro = new ResizeObserver(sync);
+    ro.observe(nav);
+    if (stack) ro.observe(stack);
+    window.addEventListener("resize", sync);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", sync);
+    };
+  }, [isSearching, visibleCategories.length]);
+
   useEffect(() => {
     if (visibleCategories.length === 0) {
       setActiveCategoryId(null);
@@ -181,46 +217,157 @@ export default function MenuBrowser({
     );
   }, [visibleCategories]);
 
+  // Stable scroll-spy: last section whose top crossed the sticky stack bottom.
   useEffect(() => {
-    const nodes = visibleCategories
-      .map((c) => sectionRefs.current[c.id])
-      .filter(Boolean) as HTMLElement[];
-    if (nodes.length === 0) return;
+    if (isSearching || visibleCategories.length === 0) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (scrollingToRef.current) return;
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        const top = visible[0];
-        if (top?.target?.id) {
-          setActiveCategoryId(top.target.id.replace(/^cat-/, ""));
+    let raf = 0;
+    let settleTimer: number | null = null;
+    lastActiveRef.current = activeCategoryId;
+
+    const pickActive = () => {
+      if (scrollingToRef.current) return;
+
+      const stack = document.querySelector(".menu-sticky-stack");
+      const nav = document.getElementById("main-navbar");
+      const focusY = stack
+        ? stack.getBoundingClientRect().bottom + 8
+        : (nav?.getBoundingClientRect().bottom ?? 72) + 12;
+
+      // Last category whose section top has scrolled past the sticky edge.
+      let nextId = visibleCategories[0]?.id ?? null;
+      for (const cat of visibleCategories) {
+        const el = sectionRefs.current[cat.id];
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= focusY) {
+          nextId = cat.id;
+        } else {
+          break;
         }
-      },
-      { rootMargin: "-30% 0px -55% 0px", threshold: [0.1, 0.25, 0.5] },
-    );
+      }
 
-    for (const node of nodes) observer.observe(node);
-    return () => observer.disconnect();
-  }, [visibleCategories]);
+      if (!nextId || nextId === lastActiveRef.current) return;
+
+      // Hysteresis: ignore tiny boundary crossings while previous still covers focus.
+      const prevId = lastActiveRef.current;
+      if (prevId) {
+        const prevEl = sectionRefs.current[prevId];
+        if (prevEl) {
+          const prev = prevEl.getBoundingClientRect();
+          if (prev.top <= focusY + 48 && prev.bottom > focusY + 80) {
+            return;
+          }
+        }
+      }
+
+      lastActiveRef.current = nextId;
+      setActiveCategoryId(nextId);
+    };
+
+    const onScroll = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        pickActive();
+      });
+      if (settleTimer != null) window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        pickActive();
+      }, 120);
+    };
+
+    pickActive();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      if (settleTimer != null) window.clearTimeout(settleTimer);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only rebind when category list / search mode changes
+  }, [visibleCategories, isSearching]);
+
+  // Nudge horizontal strip only after vertical scroll settles; never while finger is moving.
+  useEffect(() => {
+    if (!activeCategoryId || isSearching) return;
+    const btn = categoryBtnRefs.current[activeCategoryId];
+    const scroller = categoryScrollRef.current;
+    if (!btn || !scroller) return;
+
+    if (stripScrollTimer.current != null) {
+      window.clearTimeout(stripScrollTimer.current);
+    }
+    if (stripScrollRaf.current != null) {
+      cancelAnimationFrame(stripScrollRaf.current);
+      stripScrollRaf.current = null;
+    }
+
+    const nudge = () => {
+      const btnLeft = btn.offsetLeft;
+      const btnRight = btnLeft + btn.offsetWidth;
+      const viewLeft = scroller.scrollLeft;
+      const viewRight = viewLeft + scroller.clientWidth;
+      const pad = 20;
+
+      // Only scroll when the tile is actually clipped — avoids constant micro-nudges.
+      if (btnLeft >= viewLeft + pad && btnRight <= viewRight - pad) return;
+
+      const target = btnLeft - scroller.clientWidth / 2 + btn.offsetWidth / 2;
+      const max = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+      const next = Math.max(0, Math.min(target, max));
+      if (Math.abs(scroller.scrollLeft - next) < 16) return;
+
+      scroller.scrollTo({ left: next, behavior: "smooth" });
+    };
+
+    // Wait until scroll idle so horizontal motion does not fight vertical scroll.
+    stripScrollTimer.current = window.setTimeout(nudge, 280);
+
+    const onScroll = () => {
+      if (stripScrollTimer.current != null) {
+        window.clearTimeout(stripScrollTimer.current);
+      }
+      stripScrollTimer.current = window.setTimeout(nudge, 280);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (stripScrollTimer.current != null) {
+        window.clearTimeout(stripScrollTimer.current);
+      }
+    };
+  }, [activeCategoryId, isSearching]);
 
   const scrollToCategory = (categoryId: string) => {
     const el = sectionRefs.current[categoryId];
     if (!el) return;
+    lastActiveRef.current = categoryId;
     setActiveCategoryId(categoryId);
     scrollingToRef.current = true;
     el.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => {
       scrollingToRef.current = false;
-    }, 700);
+    }, 1000);
   };
 
   return (
     <div className="max-w-[1100px] mx-auto">
-      {!isSearching && visibleCategories.length > 0 && (
-        <div className="sticky top-[var(--menu-nav-sticky-top,4.5rem)] z-[100] -mx-4 sm:mx-0 px-4 sm:px-0 py-2.5 bg-svs-cream transition-all duration-300">
-          <div className="flex gap-3 sm:gap-4 md:gap-5 overflow-x-auto pb-1 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* Search + categories scroll up together, then stick under the logo bar */}
+      <div
+        ref={stickyStackRef}
+        className="menu-sticky-stack sticky z-[1390] -mx-4 sm:mx-0 px-4 sm:px-0 pt-2 pb-2 sm:pb-3 bg-svs-cream"
+      >
+        <div className="menu-sticky-search md:hidden mb-1 w-full mt-0">
+          <MenuNavSearch docked />
+        </div>
+
+        {!isSearching && visibleCategories.length > 0 ? (
+          <div
+            ref={categoryScrollRef}
+            className="menu-category-scroll flex gap-2.5 sm:gap-3 md:gap-3.5 overflow-x-auto pb-0.5 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {visibleCategories.map((cat) => {
               const active = cat.id === activeCategoryId;
               const catImage = cat.image_url || cat.icon_url || null;
@@ -228,44 +375,40 @@ export default function MenuBrowser({
                 <button
                   key={cat.id}
                   type="button"
+                  ref={(node) => {
+                    categoryBtnRefs.current[cat.id] = node;
+                  }}
                   onClick={() => scrollToCategory(cat.id)}
-                  className={`group shrink-0 flex flex-col items-center gap-1.5 sm:gap-2 w-[76px] sm:w-[88px] md:w-[100px] cursor-pointer bg-transparent border-0 p-0 outline-none ${
-                    active ? "opacity-100" : "opacity-80"
+                  className={`menu-category-tile shrink-0 cursor-pointer border-0 p-0 outline-none ${
+                    active ? "menu-category-tile--active" : ""
                   }`}
+                  aria-current={active ? "true" : undefined}
                 >
-                  <div className={`relative shrink-0 transition-all duration-300 ${
-                    isOpen ? "w-[48px] h-[48px] sm:w-[56px] sm:h-[56px]" : "w-[56px] h-[56px] sm:w-[68px] sm:h-[68px] md:w-[76px] md:h-[76px]"
-                  }`}>
-                    <div className="absolute inset-0 pointer-events-none transition-transform duration-200 ease-out will-change-transform origin-center scale-100 group-hover:scale-110">
-                      {catImage ? (
+                  <span className="menu-category-tile__icon-ring" aria-hidden>
+                    {catImage ? (
+                      <span className="menu-category-tile__icon-media">
                         <Image
                           src={catImage}
                           alt=""
                           fill
                           draggable={false}
-                          className="object-contain pointer-events-none select-none"
-                          sizes="88px"
+                          className="object-contain pointer-events-none select-none p-1"
+                          sizes="72px"
                         />
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-svs-orange/70">
-                          SVS
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <span
-                    className={`pointer-events-none text-xs sm:text-sm font-bold leading-tight text-center line-clamp-2 ${
-                      active ? "text-svs-orange" : "text-svs-ink/80"
-                    }`}
-                  >
+                      </span>
+                    ) : (
+                      <span className="menu-category-tile__icon-fallback">SVS</span>
+                    )}
+                  </span>
+                  <span className="menu-category-tile__label">
                     {titleCaseName(cat.name)}
                   </span>
                 </button>
               );
             })}
           </div>
-        </div>
-      )}
+        ) : null}
+      </div>
 
       {errorMessage && (
         <div className="mt-8 rounded-2xl border border-svs-orange/20 bg-svs-cream px-5 py-8 text-center text-svs-orange-dark">

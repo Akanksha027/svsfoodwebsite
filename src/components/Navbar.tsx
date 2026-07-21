@@ -157,9 +157,8 @@ function MenuNavSearch({ docked = false }: { docked?: boolean }) {
 
   return (
     <form
-      className={`menu-nav-search ${docked ? "menu-nav-search--docked" : ""} ${
-        entered ? "menu-nav-search--visible" : ""
-      } ${focused || query ? "menu-nav-search--active" : ""}`}
+      className={`menu-nav-search ${docked ? "menu-nav-search--docked" : ""} ${entered ? "menu-nav-search--visible" : ""
+        } ${focused || query ? "menu-nav-search--active" : ""}`}
       onSubmit={(e) => e.preventDefault()}
       id="menu-nav-search"
     >
@@ -193,9 +192,8 @@ function MenuNavSearch({ docked = false }: { docked?: boolean }) {
       />
 
       <span
-        className={`menu-nav-search__clear-wrap ${
-          query ? "menu-nav-search__clear-wrap--visible" : ""
-        }`}
+        className={`menu-nav-search__clear-wrap ${query ? "menu-nav-search__clear-wrap--visible" : ""
+          }`}
       >
         <button
           type="button"
@@ -472,22 +470,20 @@ export default function Navbar({
       data-menu-mode={menuMode ? "true" : "false"}
       data-account-page={accountPage ? "true" : "false"}
       style={{ backgroundColor: menuMode ? "#fff4ee" : "transparent" }}
-      className={`fixed left-0 right-0 z-[1400] ${
-        menuMode
+      className={`fixed left-0 right-0 z-[1400] ${menuMode
           ? "flex flex-col md:flex-row md:items-center"
           : "flex flex-nowrap items-end h-14 sm:h-16 md:h-20 lg:h-[72px]"
-      } px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b border-transparent shadow-none ${
-        accountPage
+        } px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b border-transparent shadow-none ${accountPage
           ? "top-3 sm:top-4 lg:top-5 pb-3 sm:pb-3.5 lg:pb-4 items-end"
           : menuMode
             ? "top-0 pb-0"
             : "top-0 pb-1.5 sm:pb-2 lg:pb-2.5"
-      } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-500"}`}
+        } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-500"}`}
       id="main-navbar"
     >
       {menuMode ? (
-        <>
-          <div className="menu-nav-top-row flex w-full items-center h-14 sm:h-16 md:h-20 lg:h-[72px] min-w-0 relative">
+        <div className="menu-nav-inner flex w-full flex-col md:contents min-w-0 bg-svs-cream">
+          <div className="menu-nav-top-row flex w-full items-center h-12 sm:h-14 md:h-20 lg:h-[72px] min-w-0 relative">
             <div className="flex min-w-0 flex-1 items-center md:max-w-[42%] lg:max-w-[38%] xl:max-w-[36%]">
               <Link
                 href="/"
@@ -516,7 +512,9 @@ export default function Navbar({
             </div>
 
             <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2] gap-0.5 min-[400px]:gap-1 sm:gap-1.5 lg:gap-2.5 pl-1">
-              <OrangeCartButton />
+              <div className="hidden md:block">
+                <OrangeCartButton />
+              </div>
               <div
                 className="flex flex-nowrap items-center gap-0 sm:gap-0.5"
                 id="navbar-icons"
@@ -537,10 +535,7 @@ export default function Navbar({
             </div>
           </div>
 
-          <div className="menu-nav-search-row md:hidden flex w-full justify-center pb-2.5 sm:pb-3 shrink-0">
-            <MenuNavSearch docked />
-          </div>
-        </>
+        </div>
       ) : (
         <Link
           href="/"
@@ -559,25 +554,25 @@ export default function Navbar({
       {!menuMode ? <div className="min-w-2 flex-1" aria-hidden /> : null}
 
       {!menuMode ? (
-      <div className="flex flex-nowrap items-center shrink-0 relative z-[2] gap-1.5 sm:gap-2 lg:gap-2.5 ml-auto">
-        <div
-          className="flex flex-nowrap items-center gap-0.5 sm:gap-1.5 lg:gap-2"
-          id="navbar-icons"
-        >
-          <NavIcons
-            hero={hero}
-            menuMode={menuMode}
-            homePage={homePage}
-            accountPage={accountPage}
-            onNavigate={() => {
-              if (cartOpen) closeCart();
-              if (locationOpen) setLocationOpen(false);
-            }}
-            onOpenStories={() => setStoriesOpen(true)}
-            onAccount={handleAccount}
-          />
+        <div className="flex flex-nowrap items-center shrink-0 relative z-[2] gap-1.5 sm:gap-2 lg:gap-2.5 ml-auto">
+          <div
+            className="flex flex-nowrap items-center gap-0.5 sm:gap-1.5 lg:gap-2"
+            id="navbar-icons"
+          >
+            <NavIcons
+              hero={hero}
+              menuMode={menuMode}
+              homePage={homePage}
+              accountPage={accountPage}
+              onNavigate={() => {
+                if (cartOpen) closeCart();
+                if (locationOpen) setLocationOpen(false);
+              }}
+              onOpenStories={() => setStoriesOpen(true)}
+              onAccount={handleAccount}
+            />
+          </div>
         </div>
-      </div>
       ) : null}
 
       <StoryViewer open={storiesOpen} onClose={() => setStoriesOpen(false)} />
