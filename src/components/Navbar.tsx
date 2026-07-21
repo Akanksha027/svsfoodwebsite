@@ -22,6 +22,11 @@ const iconBtnBase =
 const iconBtnDefault = `${iconBtnBase} text-svs-ink/70 hover:bg-svs-cream hover:text-svs-orange`;
 const iconBtnHero = `${iconBtnBase} text-white hover:bg-white/15 hover:text-white`;
 
+const navOrderBtn =
+  "flex items-center justify-center relative overflow-visible w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-14 lg:h-14 rounded-full border-none bg-transparent cursor-pointer transition-[color,transform] duration-300 no-underline shrink-0 text-svs-ink/70 hover:text-svs-orange hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-svs-orange/40 focus-visible:ring-offset-2";
+
+const navOrderBtnHero = `${navOrderBtn} text-white hover:text-white focus-visible:ring-white/50`;
+
 const iconSvg = "w-5 h-5 sm:w-[22px] sm:h-[22px] lg:w-7 lg:h-7";
 
 function GiftCardNavIcon({ className }: { className?: string }) {
@@ -405,7 +410,7 @@ function NavIcons({
       {!menuMode ? (
         <Link
           href="/menu"
-          className={`${iconBtn} relative overflow-visible w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-14 lg:h-14`}
+          className={hero ? navOrderBtnHero : navOrderBtn}
           id="btn-menu"
           aria-label="Order now"
           onClick={onNavigate}
@@ -413,27 +418,29 @@ function NavIcons({
           <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
             <span className="scale-[0.38] sm:scale-[0.42] lg:scale-[0.46]">
               <span
-                className="block w-[96px] h-[128px] relative"
+                className="block w-[96px] h-[128px] relative nav-order-bag-stage"
                 style={{ perspective: "900px" }}
               >
-                <span className="block w-full h-full relative revolving-bag revolving-bag--slow footer-envelope-bag nav-order-bag">
-                  <span className="bag-face bag-front footer-bag-front">
-                    <span className="nav-order-bag__label" aria-hidden>
-                      ORDER
-                      <br />
-                      NOW
+                <span className="nav-order-bag-tilt block w-full h-full">
+                  <span className="block w-full h-full relative revolving-bag revolving-bag--slow footer-envelope-bag nav-order-bag">
+                    <span className="bag-face bag-front footer-bag-front">
+                      <span className="nav-order-bag__label" aria-hidden>
+                        ORDER
+                        <br />
+                        NOW
+                      </span>
                     </span>
-                  </span>
-                  <span className="bag-face bag-back footer-bag-front">
-                    <span className="nav-order-bag__label" aria-hidden>
-                      ORDER
-                      <br />
-                      NOW
+                    <span className="bag-face bag-back footer-bag-front">
+                      <span className="nav-order-bag__label" aria-hidden>
+                        ORDER
+                        <br />
+                        NOW
+                      </span>
                     </span>
+                    <span className="bag-face bag-left" />
+                    <span className="bag-face bag-right" />
+                    <span className="bag-face footer-bag-bottom" aria-hidden />
                   </span>
-                  <span className="bag-face bag-left" />
-                  <span className="bag-face bag-right" />
-                  <span className="bag-face footer-bag-bottom" aria-hidden />
                 </span>
               </span>
             </span>
@@ -490,7 +497,9 @@ export default function Navbar({
           ? "top-3 sm:top-4 lg:top-5 pb-3 sm:pb-3.5 lg:pb-4 items-end"
           : menuMode
             ? "top-0 pb-0"
-            : "top-0 pb-1.5 sm:pb-2 lg:pb-2.5"
+            : homePage
+              ? "top-3 sm:top-4 lg:top-5 pb-1.5 sm:pb-2 lg:pb-2.5"
+              : "top-0 pb-1.5 sm:pb-2 lg:pb-2.5"
         } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-500"}`}
       id="main-navbar"
     >
