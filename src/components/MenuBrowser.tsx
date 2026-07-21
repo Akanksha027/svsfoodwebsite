@@ -631,6 +631,11 @@ function MenuItemCard({
     });
   };
 
+  const openCard = () => {
+    if (!available || !customisable) return;
+    setPickerOpen(true);
+  };
+
   const onIncrement = () => {
     if (!available) return;
     if (customisable) {
@@ -662,9 +667,19 @@ function MenuItemCard({
   return (
     <>
       <article
+        role={customisable && available ? "button" : undefined}
+        tabIndex={customisable && available ? 0 : undefined}
+        onClick={openCard}
+        onKeyDown={(e) => {
+          if (!customisable || !available) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openCard();
+          }
+        }}
         className={`flex flex-col h-full rounded-xl border border-svs-cream bg-svs-white p-2.5 sm:p-3 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ${
           available ? "" : "opacity-60"
-        }`}
+        } ${customisable && available ? "cursor-pointer" : ""}`}
       >
         <div
           ref={imageRef}
@@ -719,7 +734,10 @@ function MenuItemCard({
           </div>
 
           {quantity > 0 ? (
-            <div className="shrink-0 inline-flex items-center h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm">
+            <div
+              className="shrink-0 inline-flex items-center h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
               <button
                 type="button"
                 onClick={onDecrement}
@@ -745,7 +763,10 @@ function MenuItemCard({
             <button
               type="button"
               disabled={!available}
-              onClick={onAdd}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAdd();
+              }}
               className="shrink-0 h-8 min-w-[64px] px-3 rounded-lg border-2 border-svs-orange bg-svs-cream text-svs-orange text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
             >
               Add
