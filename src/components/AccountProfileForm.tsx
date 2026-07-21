@@ -141,8 +141,7 @@ export default function AccountProfileForm({
           aria-hidden
         />
 
-        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center">
+        <div className="relative flex flex-col items-center gap-5 sm:flex-row sm:items-center">
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
@@ -194,25 +193,6 @@ export default function AccountProfileForm({
                 Verified member
               </div>
             </div>
-          </div>
-
-          <div className="w-full lg:max-w-[220px] rounded-2xl bg-white/12 backdrop-blur-md border border-white/20 px-4 py-4">
-            <div className="flex items-end justify-between gap-2 mb-2">
-              <p className="text-[12px] font-bold uppercase tracking-wider text-white/80">
-                Profile strength
-              </p>
-              <p className="text-xl font-extrabold text-white tabular-nums">{completion}%</p>
-            </div>
-            <div className="h-2 rounded-full bg-white/20 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-white transition-all duration-500 ease-out"
-                style={{ width: `${completion}%` }}
-              />
-            </div>
-            <p className="mt-2 text-[12px] text-white/75 leading-snug">
-              Complete your profile for a smoother checkout experience.
-            </p>
-          </div>
         </div>
 
         <input

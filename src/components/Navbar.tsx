@@ -22,6 +22,27 @@ const iconBtnHero = `${iconBtnBase} text-white hover:bg-white/15 hover:text-whit
 const iconSvg = "w-5 h-5 sm:w-[22px] sm:h-[22px] lg:w-7 lg:h-7";
 const storyRingSize = "w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12";
 
+function GiftIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" />
+      <path d="M12 22V7" />
+      <path d="M2 7h20v5H2V7z" />
+      <path d="M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7z" />
+      <path d="M12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z" />
+    </svg>
+  );
+}
+
 function truncateText(text: string, max = 48) {
   if (text.length <= max) return text;
   return `${text.slice(0, max).trimEnd()}…`;
@@ -191,6 +212,7 @@ function NavIcons({
   const { itemCount } = useCart();
   const iconBtn = hero ? iconBtnHero : iconBtnDefault;
   const showCartAndLocation = !menuMode && !homePage;
+  const showGift = homePage || menuMode || accountPage;
 
   return (
     <>
@@ -267,6 +289,17 @@ function NavIcons({
             <circle cx="12" cy="10" r="3" />
           </svg>
         </Link>
+      ) : null}
+
+      {showGift ? (
+        <button
+          type="button"
+          className={iconBtn}
+          id="btn-gift-cards"
+          aria-label="Gift cards"
+        >
+          <GiftIcon className={iconSvg} />
+        </button>
       ) : null}
 
       <button
@@ -368,7 +401,7 @@ export default function Navbar({
       >
         <BrandLogo
           variant={hero ? "on-ink" : "on-mark"}
-          height={52}
+          height={menuMode ? 42 : 52}
           priority
         />
       </Link>
