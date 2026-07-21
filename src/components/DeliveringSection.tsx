@@ -33,7 +33,7 @@ export default function DeliveringSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8 md:gap-12 items-start mb-12 sm:mb-16 md:mb-24">
           <div className="relative w-full aspect-[4/5] max-h-[520px] md:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
             <Image
-              src="/images/cust1.jpg"
+              src="/images/cust0.jpg"
               alt="Guest enjoying SVS Food"
               fill
               className="object-cover"

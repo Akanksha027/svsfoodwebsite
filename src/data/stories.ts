@@ -55,7 +55,7 @@ export const storySlides: StorySlide[] = [
   {
     id: "story-4",
     type: "image",
-    src: "/images/cust1.jpg",
+    src: "/images/cust0.jpg",
     title: "SVS MOMENTS",
     headline: "Cravings, sorted.",
     durationMs: 5000,
