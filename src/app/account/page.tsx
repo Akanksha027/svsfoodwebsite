@@ -198,7 +198,7 @@ function ComingSoonPanel({
   blurb: string;
 }) {
   return (
-    <div className="max-w-xl">
+    <div>
       <h1 className="text-[20px] sm:text-[22px] font-extrabold text-gray-900 tracking-tight mb-3">
         {title}
       </h1>
@@ -692,9 +692,17 @@ function NewAddressForm({ customer, onCancel, onSaved }: { customer: any, onCanc
 const navBtn =
   "w-full flex items-center gap-3 px-3 py-2.5 text-left text-[14px] font-semibold border-0 cursor-pointer transition-colors rounded-xl";
 
+function IconBackArrow({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function PageTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3 mb-4 max-w-2xl">
+    <div className="flex items-center justify-between gap-3 mb-5">
       <h1 className="text-[20px] sm:text-[22px] font-extrabold text-gray-900 tracking-tight">
         {children}
       </h1>
@@ -873,8 +881,21 @@ function AccountInner() {
 
   return (
     <div className={shell}>
-      <div className="mx-auto max-w-6xl px-3 sm:px-4 lg:px-6 py-4 sm:py-5 lg:py-6 flex flex-col lg:flex-row lg:items-start gap-4 lg:gap-5">
-        <aside className="lg:w-[300px] shrink-0 lg:sticky lg:top-[88px] space-y-3">
+      <div className="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6">
+        {/* Back button */}
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 mb-4 px-3 py-2 rounded-xl text-[13px] font-semibold text-gray-600 bg-white border border-black/[0.06] shadow-[0_1px_3px_rgba(0,0,0,0.04)] cursor-pointer hover:bg-gray-50 hover:text-gray-900 transition-colors"
+          id="btn-back"
+          aria-label="Go back"
+        >
+          <IconBackArrow className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+
+      <div className="flex flex-col lg:flex-row lg:items-start gap-5 lg:gap-8">
+        <aside className="lg:w-[280px] xl:w-[300px] shrink-0 lg:sticky lg:top-[88px] space-y-3">
           <div className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
             <div className="px-4 py-4 flex items-center gap-3.5 bg-gradient-to-br from-[#fff8f4] to-white border-b border-black/[0.03]">
               <div className="relative h-14 w-14 shrink-0 rounded-2xl overflow-hidden bg-[#fff4ee] ring-2 ring-white shadow-sm">
@@ -945,16 +966,13 @@ function AccountInner() {
           </div>
         </aside>
 
-        <main className="flex-1 min-w-0 pb-20 lg:pb-6">
+        <main className="flex-1 min-w-0 pb-20 lg:pb-6 max-w-none">
           {section === "profile" ? (
-            <>
-              <PageTitle>Profile</PageTitle>
-              <AccountProfileForm
-                key={customer.id}
-                customer={customer}
-                onSaved={(c) => setCustomer(c)}
-              />
-            </>
+            <AccountProfileForm
+              key={customer.id}
+              customer={customer}
+              onSaved={(c) => setCustomer(c)}
+            />
           ) : section === "notifications" ? (
             <>
               <PageTitle>Notifications</PageTitle>
@@ -984,7 +1002,7 @@ function AccountInner() {
               <PageTitle>Orders</PageTitle>
 
               {liveOrderId && liveStoreSlug && (
-                <div className="mb-4 max-w-2xl">
+                <div className="mb-4">
                   <LiveOrderPanel
                     orderId={liveOrderId}
                     storeSlug={liveStoreSlug}
@@ -1022,7 +1040,7 @@ function AccountInner() {
                 </button>
               </div>
 
-              <div className="space-y-2.5 max-w-2xl">
+              <div className="space-y-2.5">
                 {ordersLoading ? (
                   <div className="rounded-2xl bg-white border border-black/[0.04] px-5 py-10 text-center text-sm text-gray-500">
                     Loading orders…
@@ -1073,7 +1091,7 @@ function AccountInner() {
               >
                 Addresses
               </PageTitle>
-              <div className="space-y-2.5 max-w-2xl">
+              <div className="space-y-2.5">
                 {addingAddress && (
                   <NewAddressForm
                     customer={customer}
@@ -1117,10 +1135,11 @@ function AccountInner() {
             </>
           )}
 
-          <div className="lg:hidden mt-6 max-w-2xl rounded-2xl bg-white border border-black/[0.04] p-3">
+          <div className="lg:hidden mt-6 rounded-2xl bg-white border border-black/[0.04] p-3">
             <AppDownloadPromo />
           </div>
         </main>
+      </div>
       </div>
     </div>
   );

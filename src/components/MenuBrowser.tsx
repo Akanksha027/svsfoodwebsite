@@ -2,22 +2,13 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
-import AddItemSheet, {
-  type AddItemSelection,
-} from "@/components/AddItemSheet";
-import { RollingCounter } from "@/components/RollingCounter";
 import { type StoreLocation } from "@/data/locations";
 import { SELECTED_STORE_KEY } from "@/lib/config";
-import { cartLineKey, useCart } from "@/context/CartContext";
+import { useCart } from "@/context/CartContext";
 import { useMenuCart } from "@/context/MenuCartContext";
 import { formatInr, titleCaseName } from "@/lib/menu-api";
 import { preloadImage, preloadImages } from "@/lib/preload-image";
 import type { MenuCategory, MenuItem, MenuPayload } from "@/lib/menu-types";
-import {
-  itemHasVariants,
-  itemNeedsPicker,
-  variantItemIds,
-} from "@/lib/menu-types";
 
 type MenuBrowserProps = {
   store: StoreLocation;
@@ -109,6 +100,7 @@ export default function MenuBrowser({
     );
   }, [visibleCategories]);
 
+  // Warm category artwork before first add-to-cart fly animation.
   useEffect(() => {
     void preloadImages(
       visibleCategories.map((c) => c.image_url || c.icon_url),
@@ -153,7 +145,7 @@ export default function MenuBrowser({
   return (
     <div className="max-w-[1100px] mx-auto">
       {visibleCategories.length > 0 && (
-        <div className="sticky top-[56px] sm:top-[64px] md:top-[80px] lg:top-[72px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-2 bg-svs-cream">
+        <div className="sticky top-[56px] sm:top-[64px] md:top-[80px] lg:top-[72px] z-40 -mx-4 sm:mx-0 px-4 sm:px-0 py-2 bg-svs-cream/95 backdrop-blur-md transition-all duration-300">
           <div className="flex gap-4 sm:gap-5 overflow-x-auto pb-1">
             {visibleCategories.map((cat) => {
               const active = cat.id === activeCategoryId;
@@ -167,13 +159,9 @@ export default function MenuBrowser({
                     active ? "opacity-100" : "opacity-80"
                   }`}
                 >
-                  <div
-                    className={`relative shrink-0 transition-all duration-300 ${
-                      isOpen
-                        ? "w-[56px] h-[56px] sm:w-[60px] sm:h-[60px]"
-                        : "w-[68px] h-[68px] sm:w-[76px] sm:h-[76px]"
-                    }`}
-                  >
+                  <div className={`relative shrink-0 transition-all duration-300 ${
+                    isOpen ? "w-[56px] h-[56px] sm:w-[60px] sm:h-[60px]" : "w-[68px] h-[68px] sm:w-[76px] sm:h-[76px]"
+                  }`}>
                     <div className="absolute inset-0 pointer-events-none transition-transform duration-200 ease-out will-change-transform origin-center scale-100 group-hover:scale-110">
                       {catImage ? (
                         <Image
@@ -297,38 +285,26 @@ function MenuItemCard({
   item: MenuItem;
   categoryImageUrl: string | null;
 }) {
-  const {
-    addItem,
-    setQuantity,
-    lines,
-    quantityForItemIds,
-    decrementLastMatching,
-  } = useCart();
+  const { addItem, setQuantity, lines } = useCart();
   const imageRef = useRef<HTMLDivElement>(null);
-  const [pickerOpen, setPickerOpen] = useState(false);
   const displayImage =
     item.image_url ||
     (Array.isArray(item.image_urls) && item.image_urls[0]) ||
     categoryImageUrl ||
     null;
   const available = item.is_available !== false;
-  const customisable = itemNeedsPicker(item);
-  const hasVariants = itemHasVariants(item);
+  const customisable =
+    Array.isArray(item.variants) && item.variants.length > 0;
   const unitPrice = Number(item.price) || 0;
-  const childIds = useMemo(() => {
-    if (hasVariants) return variantItemIds(item);
-    return [item.id];
-  }, [hasVariants, item]);
-  const quantity = quantityForItemIds(childIds);
+  const line = lines.find((l) => l.itemId === item.id);
+  const quantity = line?.quantity ?? 0;
 
   useEffect(() => {
     void preloadImage(categoryImageUrl);
   }, [categoryImageUrl]);
 
   const flySource = () => {
-    if (typeof window !== "undefined" && window.innerWidth >= 1024) {
-      return undefined;
-    }
+    if (typeof window !== "undefined" && window.innerWidth >= 1024) return undefined;
     const rect = imageRef.current?.getBoundingClientRect();
     return rect
       ? {
@@ -342,44 +318,8 @@ function MenuItemCard({
       : undefined;
   };
 
-  const commitSelection = (selection: AddItemSelection) => {
-    const variantSuffix = selection.variant?.variant_name
-      ? ` (${selection.variant.variant_name})`
-      : "";
-    void preloadImage(categoryImageUrl).then(() => {
-      addItem(
-        {
-          itemId: selection.itemId,
-          petpoojaItemId: selection.petpoojaItemId,
-          name: `${item.name}${variantSuffix}`,
-          unitPrice: selection.unitPrice,
-          imageUrl: selection.variant?.image_url || displayImage,
-          chipImageUrl: categoryImageUrl,
-          isVeg: item.is_veg,
-          parentItemId: hasVariants ? item.id : null,
-          variantName: selection.variant?.variant_name ?? null,
-          variantGroupName: selection.variant?.group_name ?? null,
-          addons: selection.addons,
-          quantity: selection.quantity,
-        },
-        flySource(),
-      );
-    });
-  };
-
-  const removeSelection = (selection: AddItemSelection) => {
-    const key = cartLineKey(selection.itemId, selection.addons);
-    const line = lines.find((l) => l.key === key);
-    if (!line) return;
-    setQuantity(line.key, line.quantity - 1);
-  };
-
   const onAdd = () => {
     if (!available) return;
-    if (customisable) {
-      setPickerOpen(true);
-      return;
-    }
     void preloadImage(categoryImageUrl).then(() => {
       addItem(
         {
@@ -398,136 +338,115 @@ function MenuItemCard({
 
   const onIncrement = () => {
     if (!available) return;
-    if (customisable) {
-      setPickerOpen(true);
-      return;
-    }
     onAdd();
   };
 
   const onDecrement = () => {
     if (quantity <= 0) return;
-    if (customisable) {
-      decrementLastMatching(childIds);
-      return;
-    }
-    const line = lines.find((l) => l.itemId === item.id);
-    if (!line) return;
-    setQuantity(line.key, quantity - 1);
+    setQuantity(item.id, quantity - 1);
   };
 
   const subtitle =
     item.description?.trim() ||
-    (customisable
-      ? "Customisable"
-      : item.is_veg === false
-        ? "Non-veg"
-        : "Veg");
+    (customisable ? "Customisable" : item.is_veg === false ? "Non-veg" : "Veg");
 
   return (
-    <>
-      <article
-        className={`flex flex-col h-full rounded-xl border border-svs-cream bg-svs-white p-2.5 sm:p-3 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ${
-          available ? "" : "opacity-60"
-        }`}
+    <article
+      className={`flex flex-col h-full rounded-xl border border-svs-cream bg-svs-white p-2.5 sm:p-3 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ${
+        available ? "" : "opacity-60"
+      }`}
+    >
+      {/* Image — top, centered, no bg box */}
+      <div
+        ref={imageRef}
+        className="relative w-full aspect-[4/3] flex items-center justify-center mb-2"
       >
-        <div
-          ref={imageRef}
-          className="relative w-full aspect-[4/3] flex items-center justify-center mb-2"
-        >
-          {displayImage ? (
-            <Image
-              src={displayImage}
-              alt={item.name}
-              fill
-              className="object-contain pointer-events-none select-none p-1"
-              sizes="(max-width: 640px) 45vw, 200px"
-              draggable={false}
-            />
-          ) : (
-            <div className="text-xs font-semibold text-svs-orange/40">SVS</div>
-          )}
-          {!available ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-svs-white/70 rounded-lg">
-              <span className="text-[11px] font-bold text-svs-orange-dark uppercase tracking-wide">
-                Sold out
-              </span>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="flex items-center gap-1.5 mb-1 min-h-[18px]">
-          <VegDot isVeg={item.is_veg !== false} />
-          {customisable ? (
-            <span className="text-[10px] font-semibold text-svs-ink/40 uppercase tracking-wide">
-              Options
+        {displayImage ? (
+          <Image
+            src={displayImage}
+            alt={item.name}
+            fill
+            className="object-contain pointer-events-none select-none p-1"
+            sizes="(max-width: 640px) 45vw, 200px"
+            draggable={false}
+          />
+        ) : (
+          <div className="text-xs font-semibold text-svs-orange/40">SVS</div>
+        )}
+        {!available ? (
+          <div className="absolute inset-0 flex items-center justify-center bg-svs-white/70 rounded-lg">
+            <span className="text-[11px] font-bold text-svs-orange-dark uppercase tracking-wide">
+              Sold out
             </span>
+          </div>
+        ) : null}
+      </div>
+
+      {/* Veg / type pill */}
+      <div className="flex items-center gap-1.5 mb-1 min-h-[18px]">
+        <VegDot isVeg={item.is_veg !== false} />
+        {customisable ? (
+          <span className="text-[10px] font-semibold text-svs-ink/40 uppercase tracking-wide">
+            Options
+          </span>
+        ) : null}
+      </div>
+
+      {/* Title */}
+      <h3 className="text-[13px] sm:text-sm font-semibold text-svs-ink leading-snug line-clamp-2 min-h-[2.6em] mb-0.5">
+        {item.name}
+      </h3>
+
+      {/* Subtitle — weight / description line */}
+      <p className="text-[11px] sm:text-xs text-svs-ink/40 line-clamp-1 mb-auto">
+        {subtitle}
+      </p>
+
+      {/* Footer — price left, ADD / stepper right */}
+      <div className="flex items-end justify-between gap-2 mt-3 pt-1">
+        <div className="min-w-0">
+          <p className="text-[15px] sm:text-base font-bold text-svs-ink leading-none tabular-nums">
+            {formatInr(unitPrice)}
+          </p>
+          {customisable ? (
+            <p className="text-[10px] text-svs-ink/40 mt-0.5">onwards</p>
           ) : null}
         </div>
 
-        <h3 className="text-[13px] sm:text-sm font-semibold text-svs-ink leading-snug line-clamp-2 min-h-[2.6em] mb-0.5">
-          {item.name}
-        </h3>
-
-        <p className="text-[11px] sm:text-xs text-svs-ink/40 line-clamp-1 mb-auto">
-          {subtitle}
-        </p>
-
-        <div className="flex items-end justify-between gap-2 mt-3 pt-1">
-          <div className="min-w-0">
-            <p className="text-[15px] sm:text-base font-bold text-svs-ink leading-none tabular-nums">
-              {formatInr(unitPrice)}
-            </p>
-            {customisable ? (
-              <p className="text-[10px] text-svs-ink/40 mt-0.5">onwards</p>
-            ) : null}
-          </div>
-
-          {quantity > 0 ? (
-            <div className="shrink-0 inline-flex items-center h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm">
-              <button
-                type="button"
-                onClick={onDecrement}
-                className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
-                aria-label={`Remove one ${item.name}`}
-              >
-                −
-              </button>
-              <span className="min-w-[22px] flex items-center justify-center">
-                <RollingCounter value={quantity} fontSize={14} color="#ffffff" />
-              </span>
-              <button
-                type="button"
-                disabled={!available}
-                onClick={onIncrement}
-                className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
-                aria-label={`Add one ${item.name}`}
-              >
-                +
-              </button>
-            </div>
-          ) : (
+        {quantity > 0 ? (
+          <div className="shrink-0 inline-flex items-center h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm">
+            <button
+              type="button"
+              onClick={onDecrement}
+              className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
+              aria-label={`Remove one ${item.name}`}
+            >
+              −
+            </button>
+            <span className="min-w-[22px] text-center text-sm font-bold tabular-nums">
+              {quantity}
+            </span>
             <button
               type="button"
               disabled={!available}
-              onClick={onAdd}
-              className="shrink-0 h-8 min-w-[64px] px-3 rounded-lg border-2 border-svs-orange bg-svs-cream text-svs-orange text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
+              onClick={onIncrement}
+              className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
+              aria-label={`Add one ${item.name}`}
             >
-              Add
+              +
             </button>
-          )}
-        </div>
-      </article>
-
-      {pickerOpen ? (
-        <AddItemSheet
-          item={item}
-          categoryImageUrl={categoryImageUrl}
-          onClose={() => setPickerOpen(false)}
-          onAdd={commitSelection}
-          onRemove={removeSelection}
-        />
-      ) : null}
-    </>
+          </div>
+        ) : (
+          <button
+            type="button"
+            disabled={!available}
+            onClick={onAdd}
+            className="shrink-0 h-8 min-w-[64px] px-3 rounded-lg border-2 border-svs-orange bg-svs-cream text-svs-orange text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
+          >
+            Add
+          </button>
+        )}
+      </div>
+    </article>
   );
 }

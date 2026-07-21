@@ -11,8 +11,6 @@ import {
 import { fetchOrder } from "@/lib/orders-api";
 import { formatInr } from "@/lib/menu-api";
 import CodOnlinePayPanel from "@/components/CodOnlinePayPanel";
-import OrderStatusRail from "@/components/OrderStatusRail";
-import OrderContactPhone from "@/components/OrderContactPhone";
 
 type OrderData = Awaited<ReturnType<typeof fetchOrder>>;
 
@@ -184,6 +182,63 @@ function mapEmbedUrl(
   return `https://maps.google.com/maps?q=${store.lat},${store.lng}&z=15&hl=en&output=embed`;
 }
 
+function StepRail({
+  steps,
+  activeIndex,
+  cancelled,
+}: {
+  steps: TrackStep[];
+  activeIndex: number;
+  cancelled: boolean;
+}) {
+  return (
+    <ol className="space-y-0">
+      {steps.map((step, i) => {
+        const done = !cancelled && activeIndex > i;
+        const current = !cancelled && activeIndex === i;
+        const muted = cancelled || activeIndex < i;
+        return (
+          <li key={step.id} className="flex gap-3">
+            <div className="flex flex-col items-center">
+              <span
+                className={[
+                  "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-extrabold border-2 transition-colors",
+                  done
+                    ? "bg-svs-green border-svs-green text-white"
+                    : current
+                      ? "bg-svs-orange border-svs-orange text-white animate-pulse"
+                      : "bg-white border-svs-cream text-svs-ink/30",
+                ].join(" ")}
+              >
+                {done ? "✓" : i + 1}
+              </span>
+              {i < steps.length - 1 ? (
+                <span
+                  className={[
+                    "w-0.5 flex-1 min-h-[22px] my-1 rounded-full",
+                    done ? "bg-svs-green/50" : "bg-svs-cream",
+                  ].join(" ")}
+                />
+              ) : null}
+            </div>
+            <div className={`pb-4 ${muted ? "opacity-40" : ""}`}>
+              <p
+                className={[
+                  "text-sm font-extrabold leading-tight",
+                  current ? "text-svs-orange" : "text-svs-ink",
+                ].join(" ")}
+              >
+                {step.title}
+              </p>
+              <p className="text-xs text-svs-ink/45 mt-0.5">{step.subtitle}</p>
+            </div>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 function OrderInner() {
   const params = useParams<{ orderId: string }>();
   const searchParams = useSearchParams();
@@ -330,7 +385,7 @@ function OrderInner() {
               </p>
             </div>
 
-            {isCod && !isDelivered(order) && !cancelled ? (
+            {order.cod_unpaid ? (
               <CodOnlinePayPanel
                 orderId={order.order_id}
                 amount={order.grand_total}
@@ -344,41 +399,31 @@ function OrderInner() {
               />
             ) : null}
 
-            {(order.customer_mobile ||
-              (order.order_type === "delivery" && order.customer_address)) ? (
-              <div className="rounded-2xl border border-svs-cream px-4 py-3 space-y-3">
-                <OrderContactPhone
-                  phone={order.customer_mobile}
-                  canChange={
-                    !cancelled &&
-                    order.can_change_customer_mobile !== false &&
-                    !order.customer_mobile_changed
-                  }
-                  storeId={store.backendStoreId}
-                  orderId={order.order_id}
-                  tone="light"
-                  onChanged={(mobile) =>
-                    setOrder((prev) =>
-                      prev
-                        ? {
-                            ...prev,
-                            customer_mobile: mobile,
-                            customer_mobile_changed: true,
-                            can_change_customer_mobile: false,
-                          }
-                        : prev,
-                    )
-                  }
-                />
-                {order.order_type === "delivery" && order.customer_address ? (
-                  <div>
-                    <p className="text-[11px] font-extrabold uppercase tracking-wide text-svs-ink/35 mb-1">
-                      Delivering to
+            {showRider ? (
+              <div className="flex items-center gap-3 rounded-2xl border border-svs-cream bg-svs-cream/60 px-3.5 py-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-svs-orange text-white text-lg font-extrabold">
+                  {(order.rider_name || "R").charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-svs-ink/40">
+                    Your rider
+                  </p>
+                  <p className="truncate font-extrabold text-svs-ink">
+                    {order.rider_name || "Assigned"}
+                  </p>
+                  {order.rider_status ? (
+                    <p className="text-xs font-semibold text-svs-ink/45 capitalize">
+                      {order.rider_status.replace(/_/g, " ")}
                     </p>
-                    <p className="text-sm font-semibold text-svs-ink leading-snug">
-                      {order.customer_address}
-                    </p>
-                  </div>
+                  ) : null}
+                </div>
+                {order.rider_phone ? (
+                  <a
+                    href={`tel:${order.rider_phone}`}
+                    className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-svs-ink px-4 text-sm font-extrabold text-white no-underline"
+                  >
+                    Call
+                  </a>
                 ) : null}
               </div>
             ) : null}
@@ -387,21 +432,23 @@ function OrderInner() {
               <p className="text-[11px] font-extrabold uppercase tracking-[0.06em] text-svs-ink/35 mb-3">
                 Order status
               </p>
-              <OrderStatusRail
+              <StepRail
                 steps={steps}
                 activeIndex={cancelled ? -1 : railIndex}
                 cancelled={cancelled}
-                rider={
-                  showRider
-                    ? {
-                        name: order.rider_name,
-                        phone: order.rider_phone,
-                        status: order.rider_status,
-                      }
-                    : null
-                }
               />
             </div>
+
+            {order.order_type === "delivery" && order.customer_address ? (
+              <div className="rounded-2xl border border-svs-cream px-4 py-3">
+                <p className="text-[11px] font-extrabold uppercase tracking-wide text-svs-ink/35 mb-1">
+                  Delivering to
+                </p>
+                <p className="text-sm font-semibold text-svs-ink leading-snug">
+                  {order.customer_address}
+                </p>
+              </div>
+            ) : null}
 
             <div className="rounded-2xl border border-svs-cream overflow-hidden">
               <button
@@ -420,6 +467,9 @@ function OrderInner() {
                 <div className="border-t border-svs-cream px-4 py-3 space-y-2 text-sm text-svs-ink/70">
                   <Row label="Type" value={order.order_type.replace(/_/g, " ")} />
                   {isCod ? <Row label="Payment" value="Cash on delivery" /> : null}
+                  {order.customer_mobile ? (
+                    <Row label="Phone" value={order.customer_mobile} />
+                  ) : null}
                   {order.delivery_charges ? (
                     <Row
                       label="Delivery"

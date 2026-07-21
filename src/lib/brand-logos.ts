@@ -12,15 +12,17 @@ export type BrandLogoVariant =
   | "on-ink"
   | "on-white"
   | "on-cream"
-  | "on-mark";
+  | "on-mark"
+  | "theme";
 
 export const BRAND_LOGO_SRC: Record<BrandLogoVariant, string> = {
   "on-orange": "/logo/on-orange.png",
-  "on-ink": "/logo/on-ink.svg",
+  "on-ink": "/logo/on-ink.png",
   "on-white": "/logo/on-white.svg",
   "on-cream": "/logo/on-cream.svg",
   /** All-orange transparent mark for white navbar. */
   "on-mark": "/logo/on-mark.svg",
+  "theme": "/logo/SVS FOOD LOGO.svg",
 };
 
 /** Width / height per variant. */
@@ -30,6 +32,7 @@ export const BRAND_LOGO_ASPECT: Record<BrandLogoVariant, number> = {
   "on-white": 580 / 480,
   "on-cream": 580 / 480,
   "on-mark": 580 / 480,
+  "theme": 580 / 480,
 };
 
 /** Digital minimum logo height per brand guidelines. */

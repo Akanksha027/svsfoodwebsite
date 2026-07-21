@@ -16,7 +16,7 @@ import { resolveDeliveryCoords } from "@/lib/reverse-geocode";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { itemCount, store, clearCart } = useCart();
+  const { itemCount, store } = useCart();
   const checkout = useWebCheckout({ active: itemCount > 0 });
   const { customer, refreshCustomer } = useWebsiteAuth();
   const deliveryAddressModeRef = useRef<string | "new">("new");
@@ -34,7 +34,6 @@ export default function CheckoutPage() {
             area: checkout.area,
             landmark: checkout.landmark,
             pincode: checkout.pincode,
-            label: checkout.addressLabel,
             latitude: coords?.lat ?? null,
             longitude: coords?.lng ?? null,
           });
@@ -53,7 +52,6 @@ export default function CheckoutPage() {
         "svs_pending_payment",
         JSON.stringify(result.pending),
       );
-      clearCart();
       router.push(
         `/pay?order=${encodeURIComponent(result.pending.orderId)}&store=${encodeURIComponent(result.pending.storeSlug)}`,
       );

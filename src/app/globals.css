@@ -378,11 +378,22 @@ html {
   will-change: transform;
 }
 
-/* Navbar — solid cream so scrolled menu content cannot show through */
+/* Navbar — always transparent on every page and breakpoint */
+#main-navbar {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-bottom-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+}
+
+#main-navbar[data-navbar-variant="default"],
+#main-navbar[data-navbar-variant="hero"] {
+  background-color: transparent;
+}
+
 #main-navbar[data-navbar-variant="default"] {
-  background-color: #fff4ee !important;
   color: var(--color-svs-ink);
-  isolation: isolate;
 }
 
 #main-navbar[data-navbar-variant="default"] #navbar-icons a,
