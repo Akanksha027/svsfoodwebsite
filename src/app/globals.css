@@ -651,11 +651,11 @@ html {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: clamp(16px, 3.4vw, 20px) clamp(36px, 7vw, 52px);
+  padding: clamp(12px, 2.8vw, 16px) clamp(28px, 5.5vw, 40px);
   border: 3px solid #ffffff;
   border-radius: 100px;
   background-color: #ffffff;
-  font-size: clamp(15px, 3.2vw, 18px);
+  font-size: clamp(14px, 2.8vw, 16px);
   font-weight: 900;
   letter-spacing: 0.14em;
   text-transform: uppercase;
