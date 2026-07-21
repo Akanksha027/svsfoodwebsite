@@ -366,7 +366,7 @@ export default function CartDrawer() {
             closeCart();
           }
         }}
-        className={`fixed inset-0 z-[1100] border-0 cursor-pointer touch-none transition-opacity duration-300 ease-out ${
+        className={`fixed inset-0 z-[1500] border-0 cursor-pointer touch-none transition-opacity duration-300 ease-out ${
           isOpen
             ? "opacity-100 pointer-events-auto bg-black/40"
             : "opacity-0 pointer-events-none bg-black/40"
@@ -377,7 +377,7 @@ export default function CartDrawer() {
         id="menu-cart-drawer"
         aria-label="My cart"
         aria-hidden={!isOpen}
-        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,400px)] xl:w-[420px] bg-white border-l border-gray-200 z-[1110] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
+        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,400px)] xl:w-[420px] bg-white border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
         style={{
