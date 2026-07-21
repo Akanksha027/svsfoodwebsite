@@ -10,6 +10,7 @@ import { type StoreLocation } from "@/data/locations";
 import { SELECTED_STORE_KEY } from "@/lib/config";
 import { cartLineKey, useCart } from "@/context/CartContext";
 import { useMenuCart } from "@/context/MenuCartContext";
+import { useMenuSearch } from "@/context/MenuSearchContext";
 import { formatInr, titleCaseName } from "@/lib/menu-api";
 import { preloadImage, preloadImages } from "@/lib/preload-image";
 import type { MenuCategory, MenuItem, MenuPayload } from "@/lib/menu-types";
@@ -42,10 +43,30 @@ function VegDot({ isVeg }: { isVeg: boolean }) {
   );
 }
 
-function itemMatchesQuery(item: MenuItem, q: string): boolean {
+function itemMatchesQuery(
+  item: MenuItem,
+  categoryName: string,
+  q: string,
+): boolean {
   if (!q) return true;
-  const hay = `${item.name} ${item.description || ""}`.toLowerCase();
-  return hay.includes(q);
+  const hay = `${item.name} ${item.description || ""} ${categoryName}`.toLowerCase();
+  const tokens = q.split(/\s+/).filter(Boolean);
+  return tokens.every((token) => {
+    if (hay.includes(token)) return true;
+    if (token.length > 3 && token.endsWith("s") && hay.includes(token.slice(0, -1))) {
+      return true;
+    }
+    if (token.length > 2 && hay.includes(`${token}s`)) return true;
+    return false;
+  });
+}
+
+function findDessertsCategory(categories: MenuCategory[]): MenuCategory | null {
+  return (
+    categories.find((c) => /dessert/i.test(c.name)) ??
+    categories.find((c) => /sweet/i.test(c.name)) ??
+    null
+  );
 }
 
 export default function MenuBrowser({
@@ -56,10 +77,17 @@ export default function MenuBrowser({
 }: MenuBrowserProps) {
   const { setStoreId } = useCart();
   const { isOpen } = useMenuCart();
+  const { query: searchQuery, setQuery: setSearchQuery } = useMenuSearch();
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const scrollingToRef = useRef(false);
-  const query = initialQuery.trim().toLowerCase();
+
+  useEffect(() => {
+    if (initialQuery.trim()) setSearchQuery(initialQuery.trim());
+  }, [initialQuery, setSearchQuery]);
+
+  const query = searchQuery.trim().toLowerCase();
+  const isSearching = query.length > 0;
 
   useEffect(() => {
     try {
@@ -77,11 +105,48 @@ export default function MenuBrowser({
     );
   }, [menu]);
 
+  const categoryById = useMemo(() => {
+    const map = new Map<string, MenuCategory>();
+    for (const cat of categories) map.set(cat.id, cat);
+    return map;
+  }, [categories]);
+
+  const searchResults = useMemo(() => {
+    if (!isSearching || !menu) return null;
+
+    const matched: { item: MenuItem; category: MenuCategory }[] = [];
+    for (const item of menu.items || []) {
+      const category = categoryById.get(item.category_id);
+      if (!category) continue;
+      if (itemMatchesQuery(item, category.name, query)) {
+        matched.push({ item, category });
+      }
+    }
+
+    matched.sort(
+      (a, b) => (a.item.sort_order || 0) - (b.item.sort_order || 0),
+    );
+
+    if (matched.length > 0) {
+      return { items: matched, isFallback: false };
+    }
+
+    const desserts = findDessertsCategory(categories);
+    if (!desserts) return { items: [], isFallback: false };
+
+    const fallbackItems = (menu.items || [])
+      .filter((item) => item.category_id === desserts.id)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+      .map((item) => ({ item, category: desserts }));
+
+    return { items: fallbackItems, isFallback: true };
+  }, [isSearching, menu, categories, categoryById, query]);
+
   const itemsByCategory = useMemo(() => {
     const map = new Map<string, MenuItem[]>();
     for (const cat of categories) map.set(cat.id, []);
+    if (isSearching) return map;
     for (const item of menu?.items || []) {
-      if (!itemMatchesQuery(item, query)) continue;
       const bucket = map.get(item.category_id);
       if (bucket) bucket.push(item);
     }
@@ -89,7 +154,7 @@ export default function MenuBrowser({
       list.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     }
     return map;
-  }, [menu, categories, query]);
+  }, [menu, categories, isSearching]);
 
   const visibleCategories = useMemo(
     () =>
@@ -153,8 +218,8 @@ export default function MenuBrowser({
 
   return (
     <div className="max-w-[1100px] mx-auto">
-      {visibleCategories.length > 0 && (
-        <div className="sticky top-14 sm:top-16 md:top-20 lg:top-[72px] z-[100] -mx-4 sm:mx-0 px-4 sm:px-0 py-2.5 bg-svs-cream transition-all duration-300">
+      {!isSearching && visibleCategories.length > 0 && (
+        <div className="sticky top-[var(--menu-nav-sticky-top,4.5rem)] z-[100] -mx-4 sm:mx-0 px-4 sm:px-0 py-2.5 bg-svs-cream transition-all duration-300">
           <div className="flex gap-3 sm:gap-4 md:gap-5 overflow-x-auto pb-1 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {visibleCategories.map((cat) => {
               const active = cat.id === activeCategoryId;
@@ -214,14 +279,43 @@ export default function MenuBrowser({
         </div>
       )}
 
-      {!errorMessage && menu && visibleCategories.length === 0 && (
+      {!errorMessage && menu && isSearching && searchResults && (
+        <>
+          {searchResults.isFallback ? (
+            <p className="mt-2 mb-4 text-sm text-svs-ink/55 text-center sm:text-left">
+              No matches for &ldquo;{searchQuery.trim()}&rdquo; — here are our
+              desserts instead
+            </p>
+          ) : null}
+
+          {searchResults.items.length === 0 ? (
+            <div className="mt-8 rounded-2xl border border-dashed border-svs-cream bg-svs-white px-5 py-16 text-center text-svs-ink/50">
+              {`No items match "${searchQuery.trim()}".`}
+            </div>
+          ) : (
+            <ul className="mt-4 sm:mt-6 grid grid-cols-1 min-[360px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-3.5 pb-20">
+              {searchResults.items.map(({ item, category }) => (
+                <li key={item.id}>
+                  <MenuItemCard
+                    item={item}
+                    categoryImageUrl={
+                      category.image_url || category.icon_url || null
+                    }
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
+      )}
+
+      {!errorMessage && menu && !isSearching && visibleCategories.length === 0 && (
         <div className="mt-8 rounded-2xl border border-dashed border-svs-cream bg-svs-white px-5 py-16 text-center text-svs-ink/50">
-          {query
-            ? `No items match "${initialQuery.trim()}".`
-            : "No published items for this outlet yet."}
+          No published items for this outlet yet.
         </div>
       )}
 
+      {!isSearching ? (
       <div className="mt-6 sm:mt-8 space-y-10 sm:space-y-12 pb-20">
         {visibleCategories.map((cat) => (
           <CategorySection
@@ -234,6 +328,7 @@ export default function MenuBrowser({
           />
         ))}
       </div>
+      ) : null}
     </div>
   );
 }
@@ -251,7 +346,7 @@ function CategorySection({
     <section
       id={`cat-${category.id}`}
       ref={sectionRef}
-      className="scroll-mt-[132px] sm:scroll-mt-[148px] md:scroll-mt-[168px] lg:scroll-mt-[188px]"
+      className="scroll-mt-[var(--menu-nav-scroll-mt,11.75rem)]"
     >
       <div className="flex items-center gap-3 mb-4 sm:mb-5">
         {category.image_url || category.icon_url ? (

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { MenuCartProvider } from "@/context/MenuCartContext";
+import { MenuSearchProvider } from "@/context/MenuSearchContext";
 import { WebsiteAuthProvider } from "@/context/WebsiteAuthContext";
 import SiteNavbar from "@/components/SiteNavbar";
 import AccountLoginPopup from "@/components/AccountLoginPopup";
@@ -33,11 +34,13 @@ export default function RootLayout({
         <CartProvider>
           <WebsiteAuthProvider>
             <MenuCartProvider>
-              <SiteNavbar />
-              {children}
-              <AccountLoginPopup />
-              <AccountMenuDropdown />
-              <PoweredBy />
+              <MenuSearchProvider>
+                <SiteNavbar />
+                {children}
+                <AccountLoginPopup />
+                <AccountMenuDropdown />
+                <PoweredBy />
+              </MenuSearchProvider>
             </MenuCartProvider>
           </WebsiteAuthProvider>
         </CartProvider>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { computeTotals, useCart } from "@/context/CartContext";
 import { useMenuCart } from "@/context/MenuCartContext";
 import { storeDisplayName } from "@/data/locations";
@@ -11,6 +11,7 @@ import StoryViewer from "@/components/StoryViewer";
 import ChangeLocationPanel from "@/components/ChangeLocationPanel";
 import { useMenuDeliveryLocationLine } from "@/hooks/useMenuDeliveryLocationLine";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
+import { useMenuSearch } from "@/context/MenuSearchContext";
 
 const SVS_ORANGE = "#f16a34";
 const HANDLING_FEE = 2;
@@ -105,17 +106,18 @@ function MenuCenterBar({
       ref={anchorRef}
       type="button"
       onClick={onOpenLocation}
-      className="flex min-w-0 flex-col justify-center h-12 sm:h-14 ml-1.5 sm:ml-4 md:ml-8 lg:ml-10 xl:ml-12 px-0.5 sm:px-1 border-0 bg-transparent cursor-pointer text-left group shrink max-w-[min(52vw,480px)] sm:max-w-[min(62vw,480px)]"
+      className="menu-nav-delivery flex min-w-0 flex-1 flex-col justify-center h-10 sm:h-12 md:h-14 ml-1 sm:ml-2 md:ml-3 px-0.5 sm:px-1 border-0 bg-transparent cursor-pointer text-left group"
       id="menu-nav-center-bar"
       aria-label="Change delivery location"
       aria-expanded={open}
     >
-      <span className="text-[11px] sm:text-[15px] font-bold leading-tight text-gray-900 group-hover:text-[#f16a34] transition-colors truncate">
-        Delivering in few minutes
+      <span className="text-[10px] min-[400px]:text-[11px] sm:text-[13px] md:text-[15px] font-bold leading-tight text-gray-900 group-hover:text-[#f16a34] transition-colors truncate">
+        <span className="min-[400px]:hidden">Few mins</span>
+        <span className="hidden min-[400px]:inline">Delivering in few minutes</span>
       </span>
-      <span className="mt-0.5 flex min-w-0 max-w-full items-center gap-0.5 text-[10px] sm:text-[13px] text-gray-500">
+      <span className="mt-0.5 flex min-w-0 max-w-full items-center gap-0.5 text-[9px] min-[400px]:text-[10px] sm:text-[12px] md:text-[13px] text-gray-500">
         <svg
-          className="h-3.5 w-3.5 shrink-0 text-gray-400"
+          className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-gray-400"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -127,7 +129,7 @@ function MenuCenterBar({
         </svg>
         <span className="truncate min-w-0">{locationLine}</span>
         <svg
-          className="h-3.5 w-3.5 shrink-0 text-gray-400 group-hover:text-[#f16a34] ml-0.5"
+          className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-gray-400 group-hover:text-[#f16a34] ml-0.5"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -138,6 +140,85 @@ function MenuCenterBar({
         </svg>
       </span>
     </button>
+  );
+}
+
+/** Curved pill search — menu navbar only, centered with smooth entrance. */
+function MenuNavSearch({ docked = false }: { docked?: boolean }) {
+  const { query, setQuery } = useMenuSearch();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [entered, setEntered] = useState(false);
+  const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    const id = window.requestAnimationFrame(() => setEntered(true));
+    return () => window.cancelAnimationFrame(id);
+  }, []);
+
+  return (
+    <form
+      className={`menu-nav-search ${docked ? "menu-nav-search--docked" : ""} ${
+        entered ? "menu-nav-search--visible" : ""
+      } ${focused || query ? "menu-nav-search--active" : ""}`}
+      onSubmit={(e) => e.preventDefault()}
+      id="menu-nav-search"
+    >
+      <span className="menu-nav-search__icon-wrap" aria-hidden>
+        <svg
+          className="menu-nav-search__icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.15"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="M20 20l-3.5-3.5" />
+        </svg>
+      </span>
+
+      <input
+        ref={inputRef}
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        placeholder="Search burgers, pizza, desserts…"
+        autoComplete="off"
+        enterKeyHint="search"
+        className="menu-nav-search__input"
+        aria-label="Search menu items"
+      />
+
+      <span
+        className={`menu-nav-search__clear-wrap ${
+          query ? "menu-nav-search__clear-wrap--visible" : ""
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => {
+            setQuery("");
+            inputRef.current?.focus();
+          }}
+          className="menu-nav-search__clear"
+          aria-label="Clear search"
+          tabIndex={query ? 0 : -1}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            aria-hidden
+          >
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </span>
+    </form>
   );
 }
 
@@ -203,11 +284,13 @@ function NavIcons({
 }) {
   const { itemCount } = useCart();
   const iconBtn = menuMode
-    ? `${iconBtnBase} w-9 h-9 sm:w-10 sm:h-10 text-svs-ink/70 hover:bg-white/60 hover:text-svs-orange`
+    ? `${iconBtnBase} w-8 h-8 min-[400px]:w-9 min-[400px]:h-9 sm:w-10 sm:h-10 text-svs-ink/70 hover:bg-white/60 hover:text-svs-orange`
     : hero
       ? iconBtnHero
       : iconBtnDefault;
-  const svgClass = menuMode ? "w-[18px] h-[18px] sm:w-5 sm:h-5" : iconSvg;
+  const svgClass = menuMode
+    ? "w-4 h-4 min-[400px]:w-[18px] min-[400px]:h-[18px] sm:w-5 sm:h-5"
+    : iconSvg;
   const showCartAndLocation = !menuMode && !homePage;
 
   return (
@@ -289,7 +372,7 @@ function NavIcons({
 
       <Link
         href="/account?tab=gift-cards"
-        className={iconBtn}
+        className={`${iconBtn} ${menuMode ? "hidden sm:flex" : ""}`}
         id="btn-gift-cards"
         aria-label="Gift cards"
         onClick={onNavigate}
@@ -389,44 +472,96 @@ export default function Navbar({
       data-menu-mode={menuMode ? "true" : "false"}
       data-account-page={accountPage ? "true" : "false"}
       style={{ backgroundColor: menuMode ? "#fff4ee" : "transparent" }}
-      className={`fixed left-0 right-0 z-[1400] flex flex-nowrap ${menuMode ? "items-center" : "items-end"} h-14 sm:h-16 md:h-20 lg:h-[72px] px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b border-transparent shadow-none ${
+      className={`fixed left-0 right-0 z-[1400] ${
+        menuMode
+          ? "flex flex-col md:flex-row md:items-center"
+          : "flex flex-nowrap items-end h-14 sm:h-16 md:h-20 lg:h-[72px]"
+      } px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b border-transparent shadow-none ${
         accountPage
-          ? "top-3 sm:top-4 lg:top-5 pb-3 sm:pb-3.5 lg:pb-4"
+          ? "top-3 sm:top-4 lg:top-5 pb-3 sm:pb-3.5 lg:pb-4 items-end"
           : menuMode
             ? "top-0 pb-0"
             : "top-0 pb-1.5 sm:pb-2 lg:pb-2.5"
-      } ${menuMode ? "bg-svs-cream" : "bg-transparent"} ${hero ? "text-white" : "text-gray-500"}`}
+      } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-500"}`}
       id="main-navbar"
     >
-      <Link
-        href="/"
-        className={`flex items-center justify-center no-underline shrink-0 z-[1] ${
-          menuMode ? "self-center pr-0.5" : "pr-2"
-        }`}
-        id="navbar-brand"
-        aria-label="SVS Food home"
-      >
-        <BrandLogo
-          variant={hero ? "on-ink" : "on-mark"}
-          height={menuMode ? 42 : 52}
-          priority
-        />
-      </Link>
-
       {menuMode ? (
-        <MenuCenterBar
-          anchorRef={locationAnchorRef}
-          open={locationOpen}
-          onOpenLocation={openLocationPanel}
-        />
-      ) : null}
+        <>
+          <div className="menu-nav-top-row flex w-full items-center h-14 sm:h-16 md:h-20 lg:h-[72px] min-w-0 relative">
+            <div className="flex min-w-0 flex-1 items-center md:max-w-[42%] lg:max-w-[38%] xl:max-w-[36%]">
+              <Link
+                href="/"
+                className="menu-nav-brand flex items-center justify-center no-underline shrink-0 z-[1] pr-0.5"
+                id="navbar-brand"
+                aria-label="SVS Food home"
+              >
+                <BrandLogo
+                  variant={hero ? "on-ink" : "on-mark"}
+                  height={42}
+                  priority
+                  className="menu-nav-brand-logo"
+                />
+              </Link>
+              <MenuCenterBar
+                anchorRef={locationAnchorRef}
+                open={locationOpen}
+                onOpenLocation={openLocationPanel}
+              />
+            </div>
 
-      {menuMode ? <div className="min-w-2 flex-1" aria-hidden /> : null}
+            <div className="hidden md:block absolute left-1/2 top-1/2 z-[3] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+              <div className="pointer-events-auto">
+                <MenuNavSearch />
+              </div>
+            </div>
 
-      <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2] gap-0 sm:gap-1 lg:gap-2">
-        {menuMode ? <OrangeCartButton /> : null}
+            <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2] gap-0.5 min-[400px]:gap-1 sm:gap-1.5 lg:gap-2.5 pl-1">
+              <OrangeCartButton />
+              <div
+                className="flex flex-nowrap items-center gap-0 sm:gap-0.5"
+                id="navbar-icons"
+              >
+                <NavIcons
+                  hero={hero}
+                  menuMode={menuMode}
+                  homePage={homePage}
+                  accountPage={accountPage}
+                  onNavigate={() => {
+                    if (cartOpen) closeCart();
+                    if (locationOpen) setLocationOpen(false);
+                  }}
+                  onOpenStories={() => setStoriesOpen(true)}
+                  onAccount={handleAccount}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="menu-nav-search-row md:hidden flex w-full justify-center pb-2.5 sm:pb-3 shrink-0">
+            <MenuNavSearch docked />
+          </div>
+        </>
+      ) : (
+        <Link
+          href="/"
+          className="flex items-center justify-center no-underline shrink-0 z-[1] pr-2"
+          id="navbar-brand"
+          aria-label="SVS Food home"
+        >
+          <BrandLogo
+            variant={hero ? "on-ink" : "on-mark"}
+            height={52}
+            priority
+          />
+        </Link>
+      )}
+
+      {!menuMode ? <div className="min-w-2 flex-1" aria-hidden /> : null}
+
+      {!menuMode ? (
+      <div className="flex flex-nowrap items-center shrink-0 relative z-[2] gap-1.5 sm:gap-2 lg:gap-2.5 ml-auto">
         <div
-          className={`flex flex-nowrap items-center ${menuMode ? "gap-0 sm:gap-0.5" : "gap-0.5 sm:gap-1.5 lg:gap-2"}`}
+          className="flex flex-nowrap items-center gap-0.5 sm:gap-1.5 lg:gap-2"
           id="navbar-icons"
         >
           <NavIcons
@@ -443,6 +578,7 @@ export default function Navbar({
           />
         </div>
       </div>
+      ) : null}
 
       <StoryViewer open={storiesOpen} onClose={() => setStoriesOpen(false)} />
       {menuMode ? (
