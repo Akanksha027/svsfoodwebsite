@@ -40,7 +40,7 @@ export default function MenuNavSearch({ docked = false }: { docked?: boolean }) 
 
       <input
         ref={inputRef}
-        type="search"
+        type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => setFocused(true)}
@@ -56,34 +56,34 @@ export default function MenuNavSearch({ docked = false }: { docked?: boolean }) 
         aria-label="Search menu items"
       />
 
-      {!docked ? (
-        <span
-          className={`menu-nav-search__clear-wrap ${
-            query ? "menu-nav-search__clear-wrap--visible" : ""
-          }`}
+      <span
+        className={`menu-nav-search__clear-wrap ${
+          query.trim() ? "menu-nav-search__clear-wrap--visible" : ""
+        }`}
+        aria-hidden={!query.trim()}
+      >
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => {
+            setQuery("");
+            inputRef.current?.focus();
+          }}
+          className="menu-nav-search__clear"
+          aria-label="Clear search"
+          tabIndex={query.trim() ? 0 : -1}
         >
-          <button
-            type="button"
-            onClick={() => {
-              setQuery("");
-              inputRef.current?.focus();
-            }}
-            className="menu-nav-search__clear"
-            aria-label="Clear search"
-            tabIndex={query ? 0 : -1}
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            aria-hidden
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.4"
-              aria-hidden
-            >
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </span>
-      ) : null}
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
+      </span>
     </form>
   );
 }

@@ -359,7 +359,7 @@ export default function MenuBrowser({
         ref={stickyStackRef}
         className="menu-sticky-stack sticky z-[1390] -mx-4 sm:mx-0 px-4 sm:px-0 pt-2 pb-2 sm:pb-3 bg-svs-cream"
       >
-        <div className="menu-sticky-search md:hidden mb-1 w-full mt-0">
+        <div className="menu-sticky-search md:hidden mb-1 w-full mt-0 flex justify-center">
           <MenuNavSearch docked />
         </div>
 
@@ -392,8 +392,8 @@ export default function MenuBrowser({
                           alt=""
                           fill
                           draggable={false}
-                          className="object-contain pointer-events-none select-none p-1"
-                          sizes="72px"
+                          className="object-contain pointer-events-none select-none"
+                          sizes="96px"
                         />
                       </span>
                     ) : (

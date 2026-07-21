@@ -106,18 +106,18 @@ function MenuCenterBar({
       ref={anchorRef}
       type="button"
       onClick={onOpenLocation}
-      className="menu-nav-delivery flex min-w-0 flex-1 flex-col justify-center h-10 sm:h-12 md:h-14 ml-1 sm:ml-2 md:ml-3 px-0.5 sm:px-1 border-0 bg-transparent cursor-pointer text-left group"
+      className="menu-nav-delivery flex min-w-0 flex-1 flex-col justify-center h-10 sm:h-12 md:h-14 ml-0 md:ml-3 px-0 sm:px-1 border-0 bg-transparent cursor-pointer text-left group"
       id="menu-nav-center-bar"
       aria-label="Change delivery location"
       aria-expanded={open}
     >
-      <span className="text-[10px] min-[400px]:text-[11px] sm:text-[13px] md:text-[15px] font-bold leading-tight text-gray-900 group-hover:text-[#f16a34] transition-colors truncate">
-        <span className="min-[400px]:hidden">Few mins</span>
-        <span className="hidden min-[400px]:inline">Delivering in few minutes</span>
+      <span className="text-[11px] min-[400px]:text-[12px] sm:text-[13px] md:text-[15px] font-bold leading-tight text-gray-900 group-hover:text-[#f16a34] transition-colors truncate">
+        <span className="md:hidden">Delivering to</span>
+        <span className="hidden md:inline">Delivering in few minutes</span>
       </span>
-      <span className="mt-0.5 flex min-w-0 max-w-full items-center gap-0.5 text-[9px] min-[400px]:text-[10px] sm:text-[12px] md:text-[13px] text-gray-500">
+      <span className="mt-0.5 flex min-w-0 max-w-full items-center gap-1 text-[10px] min-[400px]:text-[11px] sm:text-[12px] md:text-[13px] text-gray-500">
         <svg
-          className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-gray-400"
+          className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 shrink-0 text-gray-400"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -127,9 +127,9 @@ function MenuCenterBar({
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
           <circle cx="12" cy="10" r="3" />
         </svg>
-        <span className="truncate min-w-0">{locationLine}</span>
+        <span className="truncate min-w-0 flex-1">{locationLine}</span>
         <svg
-          className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-gray-400 group-hover:text-[#f16a34] ml-0.5"
+          className="h-3.5 w-3.5 shrink-0 text-gray-400 group-hover:text-[#f16a34]"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -179,7 +179,7 @@ function MenuNavSearch({ docked = false }: { docked?: boolean }) {
 
       <input
         ref={inputRef}
-        type="search"
+        type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => setFocused(true)}
@@ -192,18 +192,20 @@ function MenuNavSearch({ docked = false }: { docked?: boolean }) {
       />
 
       <span
-        className={`menu-nav-search__clear-wrap ${query ? "menu-nav-search__clear-wrap--visible" : ""
+        className={`menu-nav-search__clear-wrap ${query.trim() ? "menu-nav-search__clear-wrap--visible" : ""
           }`}
+        aria-hidden={!query.trim()}
       >
         <button
           type="button"
+          onMouseDown={(e) => e.preventDefault()}
           onClick={() => {
             setQuery("");
             inputRef.current?.focus();
           }}
           className="menu-nav-search__clear"
           aria-label="Clear search"
-          tabIndex={query ? 0 : -1}
+          tabIndex={query.trim() ? 0 : -1}
         >
           <svg
             viewBox="0 0 24 24"
@@ -487,7 +489,7 @@ export default function Navbar({
             <div className="flex min-w-0 flex-1 items-center md:max-w-[42%] lg:max-w-[38%] xl:max-w-[36%]">
               <Link
                 href="/"
-                className="menu-nav-brand flex items-center justify-center no-underline shrink-0 z-[1] pr-0.5"
+                className="menu-nav-brand hidden md:flex items-center justify-center no-underline shrink-0 z-[1] pr-0.5"
                 id="navbar-brand"
                 aria-label="SVS Food home"
               >
