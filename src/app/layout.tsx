@@ -8,6 +8,7 @@ import { WebsiteAuthProvider } from "@/context/WebsiteAuthContext";
 import SiteNavbar from "@/components/SiteNavbar";
 import AccountLoginPopup from "@/components/AccountLoginPopup";
 import AccountMenuDropdown from "@/components/AccountMenuDropdown";
+import CartDrawer from "@/components/CartDrawer";
 import PoweredBy from "@/components/PoweredBy";
 
 const inter = Inter({
@@ -37,6 +38,7 @@ export default function RootLayout({
               <MenuSearchProvider>
                 <SiteNavbar />
                 {children}
+                <CartDrawer />
                 <AccountLoginPopup />
                 <AccountMenuDropdown />
                 <PoweredBy />

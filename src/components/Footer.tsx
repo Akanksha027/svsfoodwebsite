@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 import MenuStorePicker from "@/components/MenuStorePicker";
 
 const FOOTER_EMAILS = [
@@ -107,21 +108,22 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
   return (
     <footer className="w-full bg-svs-white pt-6 sm:pt-8 md:pt-10 pb-4 sm:pb-6 flex flex-col items-center overflow-hidden font-sans">
       <div className="w-[95%] max-w-[1500px] bg-svs-white rounded-xl sm:rounded-2xl px-4 sm:px-6 md:px-8 py-4 sm:py-5 flex flex-col gap-0 mb-4 sm:mb-6 shadow-sm border border-svs-cream">
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-start gap-4">
           <div className="text-[13px] sm:text-[15px]">
             <p className="font-bold text-svs-ink mb-0 tracking-tight leading-snug">
               Feel the luxury of premium burgers with SVS Food, fast food done
               right in India
             </p>
           </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-2 sm:gap-5 text-[13px] sm:text-[15px] font-semibold text-svs-ink">
-           
-            <Link href="/menu" className="hover:text-svs-orange">
-              Order now
-            </Link>
-            <Link href="/locations" className="hover:text-svs-orange">
-              Store locator
-            </Link>
+          <div className="flex flex-col items-start lg:items-end gap-3">
+            <div className="flex flex-wrap gap-x-4 gap-y-2 sm:gap-5 text-[13px] sm:text-[15px] font-semibold text-svs-ink lg:justify-end">
+              <Link href="/menu" className="hover:text-svs-orange">
+                Order now
+              </Link>
+              <Link href="/locations" className="hover:text-svs-orange">
+                Store locator
+              </Link>
+            </div>
           </div>
         </div>
         {menuStoreId ? <MenuStorePicker currentStoreId={menuStoreId} /> : null}
@@ -129,6 +131,31 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
 
       <div className="w-[95%] max-w-[1500px] bg-svs-white rounded-2xl sm:rounded-[2rem] px-4 sm:px-8 md:px-10 py-8 sm:py-12 md:py-16 flex flex-col gap-10 relative shadow-sm border border-svs-cream">
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-10 lg:gap-8 xl:gap-12 w-full">
+          <div className="flex flex-col items-center justify-center shrink-0 min-w-0 self-center">
+            <Link
+              href="/"
+              className="inline-flex no-underline"
+              aria-label="SVS Food home"
+            >
+              <BrandLogo variant="on-mark" height={64} />
+            </Link>
+            <p className="mt-3 text-[13px] sm:text-[14px] font-semibold text-svs-ink tracking-wide text-center">
+              SVS FOOD Private Limited
+            </p>
+            <div className="flex items-center gap-2 mt-2">
+              <div className="flex flex-col items-center justify-center shrink-0">
+                <div className="h-[2px] w-full bg-[#E3792E]" />
+                <span className="font-serif font-bold italic text-[#25397E] text-[14px] leading-[1.15] tracking-tighter px-0.5">
+                  fssa<span className="text-[#E3792E]">i</span>
+                </span>
+                <div className="h-[2px] w-full bg-[#1F7E41]" />
+              </div>
+              <span className="text-[10px] sm:text-[11px] font-medium text-svs-ink/60 tracking-wide">
+                FSSAI LICENSE NO. 1142145000031
+              </span>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-10 lg:gap-x-10 xl:gap-x-14 w-full lg:w-auto shrink-0">
             <div className="flex flex-col gap-2.5 sm:gap-3 min-w-[140px] sm:min-w-[160px]">
               <h4 className="font-bold text-svs-ink mb-1 sm:mb-2 text-[15px] sm:text-[16px] tracking-wide">
@@ -136,6 +163,7 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
               </h4>
               <FooterLink href="/refund-policy">Refund Policy</FooterLink>
               <FooterLink href="/menu">Order Now</FooterLink>
+              <FooterLink href="/account?tab=svs-cash">SVS Cash</FooterLink>
               <FooterLink href="/shipping-policy">Shipping Policy</FooterLink>
               <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
               <FooterLink href="/terms-and-conditions">
@@ -197,11 +225,7 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-end gap-4 sm:gap-6 lg:gap-12 xl:gap-16 shrink-0 lg:ml-auto lg:pr-2 xl:pr-6 w-full lg:w-auto">
-            <h2 className="font-atma text-[clamp(1.75rem,8vw,3.75rem)] text-svs-orange/70 font-bold tracking-wide leading-none text-center sm:text-left">
-              SVSFOOD
-            </h2>
-
+          <div className="flex items-center justify-center lg:justify-end shrink-0 lg:ml-auto lg:pr-2 xl:pr-6 w-full lg:w-auto">
             <div
               className="w-[90px] h-[115px] sm:w-[150px] sm:h-[190px] md:w-[190px] md:h-[240px] relative mt-0 sm:mt-4 shrink-0"
               style={{ perspective: "900px" }}
@@ -273,7 +297,7 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
           </a>
 
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-[11px] sm:text-[12px] text-svs-ink/40 font-semibold tracking-wide text-center">
-            <span>© Copyright. All Rights Reserved</span>
+            <span>© 2026. All Rights Reserved.</span>
           </div>
         </div>
       </div>

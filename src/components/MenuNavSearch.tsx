@@ -5,15 +5,51 @@ import { useMenuSearch } from "@/context/MenuSearchContext";
 
 /** Menu search pill — docked (mobile sticky stack) or centered (desktop navbar). */
 export default function MenuNavSearch({ docked = false }: { docked?: boolean }) {
-  const { query, setQuery } = useMenuSearch();
+  const { query, setQuery, placeholderHints } = useMenuSearch();
   const inputRef = useRef<HTMLInputElement>(null);
   const [entered, setEntered] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [hintIndex, setHintIndex] = useState(0);
+  const [hintVisible, setHintVisible] = useState(true);
+
+  const hints =
+    placeholderHints.length > 0
+      ? placeholderHints
+      : ["Burgers", "Pizza", "Beverages"];
+  const hintsKey = hints.join("|");
+  const showAnimatedPlaceholder = !query.trim() && !focused;
+  const activeHint = hints[hintIndex % hints.length] ?? "Burgers";
 
   useEffect(() => {
     const id = window.requestAnimationFrame(() => setEntered(true));
     return () => window.cancelAnimationFrame(id);
   }, []);
+
+  useEffect(() => {
+    setHintIndex(0);
+    setHintVisible(true);
+  }, [hintsKey]);
+
+  useEffect(() => {
+    if (!showAnimatedPlaceholder || hints.length < 2) return;
+
+    const HOLD_MS = 2200;
+    const FADE_MS = 280;
+    let fadeTimer: number | undefined;
+
+    const holdTimer = window.setInterval(() => {
+      setHintVisible(false);
+      fadeTimer = window.setTimeout(() => {
+        setHintIndex((i) => (i + 1) % hints.length);
+        setHintVisible(true);
+      }, FADE_MS);
+    }, HOLD_MS);
+
+    return () => {
+      window.clearInterval(holdTimer);
+      if (fadeTimer !== undefined) window.clearTimeout(fadeTimer);
+    };
+  }, [showAnimatedPlaceholder, hints.length, hintsKey]);
 
   return (
     <form
@@ -38,23 +74,35 @@ export default function MenuNavSearch({ docked = false }: { docked?: boolean }) 
         </svg>
       </span>
 
-      <input
-        ref={inputRef}
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        placeholder={
-          docked
-            ? "Search for food, burgers, or pizza…"
-            : "Search burgers, pizza, desserts…"
-        }
-        autoComplete="off"
-        enterKeyHint="search"
-        className="menu-nav-search__input"
-        aria-label="Search menu items"
-      />
+      <span className="menu-nav-search__field">
+        {showAnimatedPlaceholder ? (
+          <span className="menu-nav-search__ph" aria-hidden>
+            Search for &ldquo;
+            <span
+              className={`menu-nav-search__ph-term${
+                hintVisible ? " menu-nav-search__ph-term--in" : ""
+              }`}
+            >
+              {activeHint}
+            </span>
+            &rdquo;
+          </span>
+        ) : null}
+
+        <input
+          ref={inputRef}
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder=""
+          autoComplete="off"
+          enterKeyHint="search"
+          className="menu-nav-search__input"
+          aria-label="Search menu items"
+        />
+      </span>
 
       <span
         className={`menu-nav-search__clear-wrap ${

@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import OtpSixBoxes from "@/components/OtpSixBoxes";
-import { formatIndianMobileInput } from "@/lib/indian-phone";
+import {
+  formatIndianMobileInput,
+  isValidIndianMobile,
+} from "@/lib/indian-phone";
 import type { useInlinePhoneOtp } from "@/hooks/useInlinePhoneOtp";
 
 type Otp = ReturnType<typeof useInlinePhoneOtp>;
@@ -15,6 +18,8 @@ type Props = {
   onPhoneChange: (v: string) => void;
   otp: Otp;
   signedInPhone?: string | null;
+  /** Confirm contact mobile for this order when signed-in user taps Done. */
+  onContactSave?: (mobile: string) => void | Promise<void>;
 };
 
 export default function PhoneWhatsAppAuth({
@@ -22,8 +27,13 @@ export default function PhoneWhatsAppAuth({
   onPhoneChange,
   otp,
   signedInPhone,
+  onContactSave,
 }: Props) {
   const verifyLock = useRef(false);
+  const [editingContact, setEditingContact] = useState(false);
+  const [saveBusy, setSaveBusy] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [draft, setDraft] = useState(phone);
 
   const {
     isVerified,
@@ -47,6 +57,10 @@ export default function PhoneWhatsAppAuth({
     if (!codeSentForCurrent) verifyLock.current = false;
   }, [codeSentForCurrent]);
 
+  useEffect(() => {
+    if (!editingContact) setDraft(phone);
+  }, [phone, editingContact]);
+
   const onSixDone = async (six: string) => {
     if (verifyBusy || verifyLock.current) return;
     verifyLock.current = true;
@@ -59,18 +73,132 @@ export default function PhoneWhatsAppAuth({
   };
 
   if (signedInPhone) {
+    const displayPhone = phone || signedInPhone;
+    const draftValid = isValidIndianMobile(draft);
+
+    const finishEdit = async () => {
+      const next = formatIndianMobileInput(draft);
+      if (!isValidIndianMobile(next)) {
+        setSaveError("Enter a valid 10-digit mobile number");
+        return;
+      }
+      setSaveError(null);
+      setSaveBusy(true);
+      try {
+        onPhoneChange(next);
+        await onContactSave?.(next);
+        setEditingContact(false);
+      } catch (e) {
+        setSaveError(
+          e instanceof Error ? e.message : "Could not save contact number",
+        );
+      } finally {
+        setSaveBusy(false);
+      }
+    };
+
     return (
-      <div className="rounded-xl border border-gray-200 bg-white px-3 py-2.5">
-        <p className="text-[11px] font-semibold text-gray-500 mb-1.5">Mobile</p>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-gray-500">+91</span>
-          <span className="text-[15px] font-semibold tabular-nums text-gray-900">
-            {signedInPhone}
-          </span>
+      <div className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[11px] font-semibold text-gray-500">
+            Contact mobile
+          </p>
+          {!editingContact ? (
+            <button
+              type="button"
+              onClick={() => {
+                setDraft(displayPhone);
+                setSaveError(null);
+                setEditingContact(true);
+              }}
+              className="text-[12px] font-bold text-[#f16a34] border-0 bg-transparent p-0 cursor-pointer"
+            >
+              Edit
+            </button>
+          ) : null}
         </div>
-        <p className="text-[11px] text-emerald-700 font-semibold mt-2">
-          Signed in with this number
-        </p>
+
+        {editingContact ? (
+          <>
+            <div className="flex items-center gap-2">
+              <span className="flex h-11 shrink-0 items-center rounded-lg bg-gray-100 px-3 text-sm font-bold text-gray-600">
+                +91
+              </span>
+              <input
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel-national"
+                placeholder="10-digit number"
+                className={fieldClass}
+                value={draft}
+                autoFocus
+                onChange={(e) => {
+                  setSaveError(null);
+                  setDraft(formatIndianMobileInput(e.target.value));
+                }}
+              />
+            </div>
+            {draft.length === 10 && !draftValid ? (
+              <p className="text-[11px] font-medium text-[#c2410c]">
+                Enter a valid 10-digit mobile number
+              </p>
+            ) : null}
+            {saveError ? (
+              <p className="text-[11px] font-medium text-[#c2410c]">{saveError}</p>
+            ) : null}
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                disabled={!draftValid || saveBusy}
+                onClick={() => void finishEdit()}
+                className="h-9 rounded-lg bg-[#f16a34] text-white text-[12px] font-extrabold px-3.5 border-0 cursor-pointer disabled:opacity-50"
+              >
+                {saveBusy ? "Saving…" : "Done"}
+              </button>
+              <button
+                type="button"
+                disabled={saveBusy}
+                onClick={() => {
+                  setDraft(signedInPhone);
+                  setSaveError(null);
+                }}
+                className="h-9 rounded-lg bg-transparent text-gray-500 text-[12px] font-bold px-2 border-0 cursor-pointer disabled:opacity-50"
+              >
+                Use login number
+              </button>
+              <button
+                type="button"
+                disabled={saveBusy}
+                onClick={() => {
+                  setDraft(phone || signedInPhone);
+                  setSaveError(null);
+                  setEditingContact(false);
+                }}
+                className="h-9 rounded-lg bg-transparent text-gray-400 text-[12px] font-bold px-2 border-0 cursor-pointer disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+            <p className="text-[11px] text-gray-400">
+              Saved to your profile as order contact. Login number stays +91{" "}
+              {signedInPhone}.
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-gray-500">+91</span>
+              <span className="text-[15px] font-semibold tabular-nums text-gray-900">
+                {displayPhone}
+              </span>
+            </div>
+            <p className="text-[11px] text-emerald-700 font-semibold">
+              {displayPhone === signedInPhone
+                ? "Using login number · tap Edit to change"
+                : "Order contact saved · tap Edit to change"}
+            </p>
+          </>
+        )}
       </div>
     );
   }
@@ -142,9 +270,9 @@ export default function PhoneWhatsAppAuth({
             <div className="space-y-3 otp-step-in">
               <p className="text-[12px] text-center text-gray-600">
                 {sendBusy ? (
-                  <>Sending code on WhatsApp for{" "}</>
+                  <>Sending code on WhatsApp for </>
                 ) : (
-                  <>Enter 6-digit code for{" "}</>
+                  <>Enter 6-digit code for </>
                 )}
                 <span className="font-bold tabular-nums text-gray-900">
                   +91 {mobile}

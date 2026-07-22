@@ -397,13 +397,11 @@ html.svs-scroll-locked .cart-bar-shell {
 }
 
 .menu-nav-search__input::placeholder {
-  color: #9ca3af;
-  font-weight: 400;
-  transition: color 0.2s ease;
+  color: transparent;
 }
 
 .menu-nav-search:focus-within .menu-nav-search__input::placeholder {
-  color: #6b7280;
+  color: transparent;
 }
 
 .menu-nav-search__input::-webkit-search-cancel-button,
@@ -621,10 +619,7 @@ html.svs-scroll-locked .cart-bar-shell {
 
 #main-navbar[data-menu-mode="true"] {
   background-color: var(--color-svs-cream) !important;
-  border-bottom: none !important;
   isolation: isolate;
-  /* Cream lip seals sticky overlap — no content peeks under the bar */
-  box-shadow: 0 6px 0 0 var(--color-svs-cream);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -883,9 +878,56 @@ body:has(#main-navbar[data-menu-mode="true"]) {
   }
 }
 
+.menu-nav-search__field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.menu-nav-search__ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: color-mix(in srgb, var(--color-svs-ink) 38%, transparent);
+  font-size: inherit;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.menu-nav-search__ph-term {
+  display: inline-block;
+  max-width: 9.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  color: color-mix(in srgb, var(--color-svs-ink) 55%, transparent);
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(0.35em);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease;
+}
+
+.menu-nav-search__ph-term--in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .menu-nav-search__input {
   flex: 1;
   min-width: 0;
+  width: 100%;
+  height: 100%;
   border: none;
   outline: none;
   background: transparent;
@@ -894,22 +936,30 @@ body:has(#main-navbar[data-menu-mode="true"]) {
   font-weight: 600;
   letter-spacing: -0.01em;
   line-height: 1.2;
+  position: relative;
+  z-index: 1;
 }
 
 @media (min-width: 640px) {
   .menu-nav-search__input {
     font-size: 0.875rem;
   }
+
+  .menu-nav-search__ph {
+    font-size: 0.875rem;
+  }
+
+  .menu-nav-search__ph-term {
+    max-width: 12rem;
+  }
 }
 
 .menu-nav-search__input::placeholder {
-  color: color-mix(in srgb, var(--color-svs-ink) 38%, transparent);
-  font-weight: 500;
-  transition: color 0.35s ease;
+  color: transparent;
 }
 
 .menu-nav-search:focus-within .menu-nav-search__input::placeholder {
-  color: color-mix(in srgb, var(--color-svs-ink) 28%, transparent);
+  color: transparent;
 }
 
 .menu-nav-search__input::-webkit-search-cancel-button,

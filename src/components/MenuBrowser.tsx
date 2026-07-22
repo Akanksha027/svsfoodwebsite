@@ -12,7 +12,7 @@ import { cartLineKey, useCart } from "@/context/CartContext";
 import { useMenuSearch } from "@/context/MenuSearchContext";
 import MenuNavSearch from "@/components/MenuNavSearch";
 import { formatInr, titleCaseName } from "@/lib/menu-api";
-import { preloadImage, preloadImages } from "@/lib/preload-image";
+import { preloadImage, preloadImages, preloadItemSheetImages } from "@/lib/preload-image";
 import type { MenuCategory, MenuItem, MenuPayload } from "@/lib/menu-types";
 import {
   itemHasVariants,
@@ -76,7 +76,8 @@ export default function MenuBrowser({
   errorMessage,
 }: MenuBrowserProps) {
   const { setStoreId } = useCart();
-  const { query: searchQuery, setQuery: setSearchQuery } = useMenuSearch();
+  const { query: searchQuery, setQuery: setSearchQuery, setPlaceholderHints } =
+    useMenuSearch();
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
   const categoryBtnRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -166,6 +167,13 @@ export default function MenuBrowser({
       categories.filter((c) => (itemsByCategory.get(c.id) || []).length > 0),
     [categories, itemsByCategory],
   );
+
+  useEffect(() => {
+    const names = visibleCategories
+      .map((c) => c.name?.trim())
+      .filter((name): name is string => Boolean(name));
+    if (names.length > 0) setPlaceholderHints(names);
+  }, [visibleCategories, setPlaceholderHints]);
 
   // Keep sticky offset locked to real navbar height (no gap for items to peek through).
   useEffect(() => {
@@ -357,7 +365,7 @@ export default function MenuBrowser({
       {/* Search + categories scroll up together, then stick under the logo bar */}
       <div
         ref={stickyStackRef}
-        className="menu-sticky-stack sticky z-[1390] -mx-4 sm:mx-0 px-4 sm:px-0 pt-2 pb-2 sm:pb-3 bg-svs-cream"
+        className="menu-sticky-stack sticky z-[1390] -mx-4 sm:mx-0 px-4 sm:px-0 pt-4 md:pt-5 pb-2 sm:pb-3 bg-svs-cream"
       >
         <div className="menu-sticky-search md:hidden mb-1 w-full mt-0 flex justify-center">
           <MenuNavSearch docked />
@@ -366,7 +374,7 @@ export default function MenuBrowser({
         {!isSearching && visibleCategories.length > 0 ? (
           <div
             ref={categoryScrollRef}
-            className="menu-category-scroll flex gap-2.5 sm:gap-3 md:gap-3.5 overflow-x-auto pb-0.5 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="menu-category-scroll flex gap-2.5 sm:gap-3 md:gap-3.5 overflow-x-auto pt-2 md:pt-4 pb-0.5 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {visibleCategories.map((cat) => {
               const active = cat.id === activeCategoryId;
@@ -511,7 +519,7 @@ function CategorySection({
         </span>
       </div>
 
-      <ul className="grid grid-cols-1 min-[360px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-3.5">
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4 lg:gap-5">
         {items.map((item) => (
           <li key={item.id}>
             <MenuItemCard
@@ -540,6 +548,7 @@ function MenuItemCard({
     decrementLastMatching,
   } = useCart();
   const imageRef = useRef<HTMLDivElement>(null);
+  const articleRef = useRef<HTMLElement>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const displayImage =
     item.image_url ||
@@ -558,7 +567,33 @@ function MenuItemCard({
 
   useEffect(() => {
     void preloadImage(categoryImageUrl);
-  }, [categoryImageUrl]);
+    void preloadImage(displayImage);
+  }, [categoryImageUrl, displayImage]);
+
+  /* Warm customise-sheet CDN URLs before Add is tapped (Next/Image cache ≠ raw URL). */
+  useEffect(() => {
+    if (!customisable || !available) return;
+    const node = articleRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") {
+      void preloadItemSheetImages(item, categoryImageUrl);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        void preloadItemSheetImages(item, categoryImageUrl);
+        io.disconnect();
+      },
+      { rootMargin: "240px 0px", threshold: 0.01 },
+    );
+    io.observe(node);
+    return () => io.disconnect();
+  }, [customisable, available, item, categoryImageUrl]);
+
+  const openPicker = () => {
+    void preloadItemSheetImages(item, categoryImageUrl);
+    setPickerOpen(true);
+  };
 
   const flySource = () => {
     if (typeof window !== "undefined" && window.innerWidth >= 1024) {
@@ -612,7 +647,7 @@ function MenuItemCard({
   const onAdd = () => {
     if (!available) return;
     if (customisable) {
-      setPickerOpen(true);
+      openPicker();
       return;
     }
     void preloadImage(categoryImageUrl).then(() => {
@@ -633,13 +668,13 @@ function MenuItemCard({
 
   const openCard = () => {
     if (!available || !customisable) return;
-    setPickerOpen(true);
+    openPicker();
   };
 
   const onIncrement = () => {
     if (!available) return;
     if (customisable) {
-      setPickerOpen(true);
+      openPicker();
       return;
     }
     onAdd();
@@ -667,6 +702,7 @@ function MenuItemCard({
   return (
     <>
       <article
+        ref={articleRef}
         role={customisable && available ? "button" : undefined}
         tabIndex={customisable && available ? 0 : undefined}
         onClick={openCard}
@@ -677,20 +713,20 @@ function MenuItemCard({
             openCard();
           }
         }}
-        className={`flex flex-col h-full rounded-xl border border-svs-cream bg-svs-white p-2.5 sm:p-3 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ${
+        className={`flex flex-col h-full rounded-xl border border-svs-cream bg-svs-white overflow-hidden ${
           available ? "" : "opacity-60"
         } ${customisable && available ? "cursor-pointer" : ""}`}
       >
         <div
           ref={imageRef}
-          className="relative w-full aspect-[4/3] flex items-center justify-center mb-2"
+          className="relative w-full aspect-[4/3] flex items-center justify-center bg-svs-cream shrink-0"
         >
           {displayImage ? (
             <Image
               src={displayImage}
               alt={item.name}
               fill
-              className="object-contain pointer-events-none select-none p-1"
+              className="object-cover pointer-events-none select-none"
               sizes="(max-width: 640px) 45vw, 200px"
               draggable={false}
             />
@@ -698,7 +734,7 @@ function MenuItemCard({
             <div className="text-xs font-semibold text-svs-orange/40">SVS</div>
           )}
           {!available ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-svs-white/70 rounded-lg">
+            <div className="absolute inset-0 flex items-center justify-center bg-svs-white/70">
               <span className="text-[11px] font-bold text-svs-orange-dark uppercase tracking-wide">
                 Sold out
               </span>
@@ -706,72 +742,58 @@ function MenuItemCard({
           ) : null}
         </div>
 
-        <div className="flex items-center gap-1.5 mb-1 min-h-[18px]">
-          <VegDot isVeg={item.is_veg !== false} />
-          {customisable ? (
-            <span className="text-[10px] font-semibold text-svs-ink/40 uppercase tracking-wide">
-              Options
-            </span>
-          ) : null}
-        </div>
+        <div className="flex flex-col flex-1 p-2 sm:p-2.5">
+          <h3 className="text-[13px] sm:text-sm font-semibold text-svs-ink leading-snug line-clamp-2 min-h-[2.6em] mb-auto">
+            {item.name}
+          </h3>
 
-        <h3 className="text-[13px] sm:text-sm font-semibold text-svs-ink leading-snug line-clamp-2 min-h-[2.6em] mb-0.5">
-          {item.name}
-        </h3>
+          <div className="flex items-end justify-between gap-2 mt-2 pt-1">
+            <div className="min-w-0">
+              <p className="text-[15px] sm:text-base font-bold text-svs-ink leading-none tabular-nums">
+                {formatInr(unitPrice)}
+              </p>
+            </div>
 
-        <p className="text-[11px] sm:text-xs text-svs-ink/40 line-clamp-1 mb-auto">
-          {subtitle}
-        </p>
-
-        <div className="flex items-end justify-between gap-2 mt-3 pt-1">
-          <div className="min-w-0">
-            <p className="text-[15px] sm:text-base font-bold text-svs-ink leading-none tabular-nums">
-              {formatInr(unitPrice)}
-            </p>
-            {customisable ? (
-              <p className="text-[10px] text-svs-ink/40 mt-0.5">onwards</p>
-            ) : null}
-          </div>
-
-          {quantity > 0 ? (
-            <div
-              className="shrink-0 inline-flex items-center h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                type="button"
-                onClick={onDecrement}
-                className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
-                aria-label={`Remove one ${item.name}`}
+            {quantity > 0 ? (
+              <div
+                className="shrink-0 inline-flex items-center h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm"
+                onClick={(e) => e.stopPropagation()}
               >
-                −
-              </button>
-              <span className="min-w-[22px] flex items-center justify-center">
-                <RollingCounter value={quantity} fontSize={14} color="#ffffff" />
-              </span>
+                <button
+                  type="button"
+                  onClick={onDecrement}
+                  className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
+                  aria-label={`Remove one ${item.name}`}
+                >
+                  −
+                </button>
+                <span className="min-w-[22px] flex items-center justify-center">
+                  <RollingCounter value={quantity} fontSize={14} color="#ffffff" />
+                </span>
+                <button
+                  type="button"
+                  disabled={!available}
+                  onClick={onIncrement}
+                  className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
+                  aria-label={`Add one ${item.name}`}
+                >
+                  +
+                </button>
+              </div>
+            ) : (
               <button
                 type="button"
                 disabled={!available}
-                onClick={onIncrement}
-                className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
-                aria-label={`Add one ${item.name}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAdd();
+                }}
+                className="shrink-0 h-8 min-w-[64px] px-3 rounded-lg border-2 border-svs-orange bg-svs-cream text-svs-orange text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
               >
-                +
+                Add
               </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              disabled={!available}
-              onClick={(e) => {
-                e.stopPropagation();
-                onAdd();
-              }}
-              className="shrink-0 h-8 min-w-[64px] px-3 rounded-lg border-2 border-svs-orange bg-svs-cream text-svs-orange text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
-            >
-              Add
-            </button>
-          )}
+            )}
+          </div>
         </div>
       </article>
 

@@ -37,105 +37,61 @@ function OrderTypeIcon({
   const cn = className ?? "h-9 w-9";
 
   if (type === "dine_in") {
-    /* Restaurant plate — dine-in */
+    // Utensils — fork + knife
     return (
-      <svg className={cn} viewBox="0 0 48 48" fill="none" aria-hidden>
-        <circle
-          cx="24"
-          cy="26"
-          r="14"
-          stroke="currentColor"
-          strokeWidth="2.4"
-        />
-        <circle
-          cx="24"
-          cy="26"
-          r="6.5"
-          stroke="currentColor"
-          strokeWidth="2.2"
-        />
-        <path
-          d="M14 8.5v6.5M14 15v4.5M11.5 8.5v4c0 1.4 1.1 2.5 2.5 2.5h0c1.4 0 2.5-1.1 2.5-2.5v-4"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M33 8.5c2.5 0 4.5 2 4.5 4.5S35.5 17.5 33 17.5V19.5"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+      <svg
+        className={cn}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+        <path d="M7 2v20" />
+        <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
       </svg>
     );
   }
 
   if (type === "takeaway") {
-    /* Shopping bag — takeaway / pickup */
+    // Takeout bag with handle
     return (
-      <svg className={cn} viewBox="0 0 48 48" fill="none" aria-hidden>
-        <path
-          d="M12 16h24l-2.2 24.5A3.5 3.5 0 0 1 30.4 44H17.6a3.5 3.5 0 0 1-3.4-3.5L12 16Z"
-          stroke="currentColor"
-          strokeWidth="2.4"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M18 16v-3.5a6 6 0 0 1 12 0V16"
-          stroke="currentColor"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-        />
-        <path
-          d="M20.5 24.5h7M20.5 31h7"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-        />
+      <svg
+        className={cn}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <path d="M6 8h12l-.75 12.2a2 2 0 0 1-2 1.8H8.75a2 2 0 0 1-2-1.8L6 8Z" />
+        <path d="M9.5 8V6.5a2.5 2.5 0 0 1 5 0V8" />
+        <path d="M4.5 8h15" />
       </svg>
     );
   }
 
-  /* Bicycle — delivery (common food-app motif) */
+  // Scooter / delivery bike
   return (
-    <svg className={cn} viewBox="0 0 48 48" fill="none" aria-hidden>
-      <circle
-        cx="12"
-        cy="34"
-        r="7"
-        stroke="currentColor"
-        strokeWidth="2.4"
-      />
-      <circle
-        cx="36"
-        cy="34"
-        r="7"
-        stroke="currentColor"
-        strokeWidth="2.4"
-      />
-      <path
-        d="M12 34h8.5l6-12.5h7"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M20.5 34l5.5-12.5M26.5 21.5l-5-6.5H16"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="28.5" cy="14" r="2.6" fill="currentColor" />
-      <path
-        d="M33.5 21.5h5.5"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
+    <svg
+      className={cn}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <circle cx="18.5" cy="17.5" r="3.5" />
+      <circle cx="5.5" cy="17.5" r="3.5" />
+      <circle cx="15" cy="5" r="1" />
+      <path d="M12 17.5V14l-3-3 4-3 2 3h2" />
     </svg>
   );
 }
@@ -776,13 +732,13 @@ export default function CartDrawer() {
                         if (type === "dine_in") checkout.setPayMethod("online");
                       }}
                       className={[
-                        "aspect-square flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-none text-[10px] sm:text-[11px] font-extrabold border-[3px] cursor-pointer transition-all px-0.5",
+                        "aspect-square flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-2xl text-[10px] sm:text-[11px] font-extrabold border-[3px] cursor-pointer transition-all px-0.5",
                         active
                           ? "bg-orange-50 border-[#f16a34] text-[#f16a34]"
                           : "bg-white border-gray-200 text-gray-500 hover:border-[#f16a34]/40",
                       ].join(" ")}
                     >
-                      <OrderTypeIcon type={type} className="h-10 w-10 sm:h-11 sm:w-11" />
+                      <OrderTypeIcon type={type} className="h-9 w-9 sm:h-10 sm:w-10" />
                       {label}
                     </button>
                   );

@@ -14,7 +14,7 @@ export default function CartPage() {
 
   return (
     <>
-      <main className="min-h-[70svh] pt-[72px] md:pt-[88px] lg:pt-[72px] px-4 sm:px-6 lg:px-8 pb-16 bg-svs-cream">
+      <main className="min-h-[70svh] pt-[84px] md:pt-[104px] lg:pt-[88px] px-4 sm:px-6 lg:px-8 pb-16 bg-white">
         <div className="max-w-[720px] mx-auto py-8 sm:py-10">
           <div className="mb-4">
             <Link

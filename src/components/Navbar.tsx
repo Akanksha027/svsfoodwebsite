@@ -11,7 +11,7 @@ import StoryViewer from "@/components/StoryViewer";
 import ChangeLocationPanel from "@/components/ChangeLocationPanel";
 import { useMenuDeliveryLocationLine } from "@/hooks/useMenuDeliveryLocationLine";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
-import { useMenuSearch } from "@/context/MenuSearchContext";
+import MenuNavSearch from "@/components/MenuNavSearch";
 
 const SVS_ORANGE = "#f16a34";
 const HANDLING_FEE = 2;
@@ -111,136 +111,73 @@ function MenuCenterBar({
       ref={anchorRef}
       type="button"
       onClick={onOpenLocation}
-      className="menu-nav-delivery flex min-w-0 flex-1 flex-col justify-center h-10 sm:h-12 md:h-14 ml-0 md:ml-3 px-0 sm:px-1 border-0 bg-transparent cursor-pointer text-left group"
+      className="menu-nav-delivery flex min-w-0 flex-col justify-center h-10 sm:h-12 md:h-14 ml-0 px-0 sm:px-1 border-0 bg-transparent cursor-pointer text-left group"
       id="menu-nav-center-bar"
       aria-label="Change delivery location"
       aria-expanded={open}
     >
-      <span className="text-[11px] min-[400px]:text-[12px] sm:text-[13px] md:text-[15px] font-bold leading-tight text-gray-900 group-hover:text-[#f16a34] transition-colors truncate">
-        <span className="md:hidden">Delivering to</span>
-        <span className="hidden md:inline">Delivering in few minutes</span>
-      </span>
-      <span className="mt-0.5 flex min-w-0 max-w-full items-center gap-1 text-[10px] min-[400px]:text-[11px] sm:text-[12px] md:text-[13px] text-gray-500">
-        <svg
-          className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 shrink-0 text-gray-400"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          aria-hidden
-        >
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-          <circle cx="12" cy="10" r="3" />
-        </svg>
-        <span className="truncate min-w-0 flex-1">{locationLine}</span>
-        <svg
-          className="h-3.5 w-3.5 shrink-0 text-gray-400 group-hover:text-[#f16a34]"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          aria-hidden
-        >
-          <path d="M6 9l6 6 6-6" />
-        </svg>
-      </span>
+      <div className="relative w-fit flex flex-col">
+        {/* Top Text (Determines Width) */}
+        <span className="text-[11px] min-[400px]:text-[12px] sm:text-[13px] md:text-[15px] font-bold leading-tight text-gray-900 group-hover:text-[#f16a34] transition-colors whitespace-nowrap">
+          <span className="md:hidden">Delivering to</span>
+          <span className="hidden md:inline">Delivering in few minutes</span>
+        </span>
+        
+        {/* Invisible Spacer to give proper height */}
+        <span className="mt-0.5 flex w-full min-w-0 items-center gap-1 text-[10px] min-[400px]:text-[11px] sm:text-[12px] md:text-[13px] opacity-0 pointer-events-none select-none h-[15px] sm:h-[18px]" aria-hidden>
+          &nbsp;
+        </span>
+
+        {/* Absolute Bottom Text (Restricted to Width) */}
+        <span className="absolute bottom-0 left-0 w-full flex min-w-0 items-center gap-1 text-[10px] min-[400px]:text-[11px] sm:text-[12px] md:text-[13px] text-gray-500">
+          <svg
+            className="h-3.5 w-3.5 sm:h-3.5 sm:w-3.5 shrink-0 text-gray-400"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden
+          >
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+          <span className="truncate min-w-0 flex-1">{locationLine}</span>
+          <svg
+            className="h-3.5 w-3.5 shrink-0 text-gray-400 group-hover:text-[#f16a34]"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            aria-hidden
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </span>
+      </div>
     </button>
   );
 }
 
-/** Curved pill search — menu navbar only, centered with smooth entrance. */
-function MenuNavSearch({ docked = false }: { docked?: boolean }) {
-  const { query, setQuery } = useMenuSearch();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [entered, setEntered] = useState(false);
-  const [focused, setFocused] = useState(false);
-
-  useEffect(() => {
-    const id = window.requestAnimationFrame(() => setEntered(true));
-    return () => window.cancelAnimationFrame(id);
-  }, []);
-
-  return (
-    <form
-      className={`menu-nav-search ${docked ? "menu-nav-search--docked" : ""} ${entered ? "menu-nav-search--visible" : ""
-        } ${focused || query ? "menu-nav-search--active" : ""}`}
-      onSubmit={(e) => e.preventDefault()}
-      id="menu-nav-search"
-    >
-      <span className="menu-nav-search__icon-wrap" aria-hidden>
-        <svg
-          className="menu-nav-search__icon"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.15"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="11" cy="11" r="7" />
-          <path d="M20 20l-3.5-3.5" />
-        </svg>
-      </span>
-
-      <input
-        ref={inputRef}
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        placeholder="Search burgers, pizza, desserts…"
-        autoComplete="off"
-        enterKeyHint="search"
-        className="menu-nav-search__input"
-        aria-label="Search menu items"
-      />
-
-      <span
-        className={`menu-nav-search__clear-wrap ${query.trim() ? "menu-nav-search__clear-wrap--visible" : ""
-          }`}
-        aria-hidden={!query.trim()}
-      >
-        <button
-          type="button"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => {
-            setQuery("");
-            inputRef.current?.focus();
-          }}
-          className="menu-nav-search__clear"
-          aria-label="Clear search"
-          tabIndex={query.trim() ? 0 : -1}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.4"
-            aria-hidden
-          >
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
-        </button>
-      </span>
-    </form>
-  );
-}
-
-function OrangeCartButton() {
+function OrangeCartButton({
+  alwaysShow = false,
+}: {
+  /** Show on all breakpoints (account page). Menu keeps desktop-only. */
+  alwaysShow?: boolean;
+}) {
   const { itemCount, subtotal } = useCart();
   const { openCart, toggleCart, isOpen } = useMenuCart();
 
   const grandTotal = useMemo(() => {
+    if (itemCount <= 0) return 0;
     const totals = computeTotals({ subtotal, orderType: "takeaway" });
     return totals.grandTotal + HANDLING_FEE;
-  }, [subtotal]);
+  }, [itemCount, subtotal]);
 
   return (
     <button
       type="button"
       onClick={() => (isOpen ? toggleCart() : openCart())}
-      className="hidden lg:inline-flex shrink-0 items-center gap-2.5 rounded-lg px-3.5 py-2 text-white shadow-sm cursor-pointer border-0 transition-opacity hover:opacity-95 mr-2"
+      className={`${alwaysShow ? "inline-flex" : "hidden lg:inline-flex"} shrink-0 items-center gap-2.5 rounded-lg px-3.5 py-2 text-white shadow-sm cursor-pointer border-0 transition-opacity hover:opacity-95 mr-2`}
       style={{ backgroundColor: SVS_ORANGE }}
       id="menu-nav-cart"
       aria-label={`Open cart, ${itemCount} items, ${formatInr(grandTotal)}`}
@@ -277,6 +214,7 @@ function NavIcons({
   menuMode = false,
   homePage = false,
   accountPage = false,
+  cartPage = false,
   onAccount,
 }: {
   onNavigate?: () => void;
@@ -285,6 +223,7 @@ function NavIcons({
   menuMode?: boolean;
   homePage?: boolean;
   accountPage?: boolean;
+  cartPage?: boolean;
   onAccount: () => void;
 }) {
   const { itemCount } = useCart();
@@ -300,10 +239,13 @@ function NavIcons({
 
   return (
     <>
-      {showCartAndLocation ? (
+      {showCartAndLocation && !cartPage ? (
+        accountPage ? (
+          <OrangeCartButton alwaysShow />
+        ) : (
         <Link
           href="/cart"
-          className={`${iconBtn} relative overflow-hidden w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-16 lg:h-16`}
+          className={`${iconBtn} relative overflow-visible w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-16 lg:h-16`}
           id="btn-cart"
           aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
           onClick={onNavigate}
@@ -339,9 +281,10 @@ function NavIcons({
             </span>
           ) : null}
         </Link>
+        )
       ) : null}
 
-      {!menuMode ? (
+      {!menuMode && !cartPage ? (
         <StoryTriggerButton
           hero={hero}
           onClick={() => {
@@ -351,7 +294,7 @@ function NavIcons({
         />
       ) : null}
 
-      {showCartAndLocation && !accountPage ? (
+      {showCartAndLocation && !accountPage && !cartPage ? (
         <Link
           href="/locations"
           className={iconBtn}
@@ -407,7 +350,7 @@ function NavIcons({
         </svg>
       </button>
 
-      {!menuMode ? (
+      {!menuMode && !accountPage ? (
         <Link
           href="/menu"
           className={hero ? navOrderBtnHero : navOrderBtn}
@@ -454,6 +397,7 @@ export default function Navbar({
   menuMode = false,
   homePage = false,
   accountPage = false,
+  cartPage = false,
 }: {
   variant?: "default" | "hero";
   /** Blinkit-style delivery + cart — menu page only */
@@ -462,6 +406,8 @@ export default function Navbar({
   homePage?: boolean;
   /** Account/profile — sit slightly lower with white page bg */
   accountPage?: boolean;
+  /** Cart page — hide the cart bag icon */
+  cartPage?: boolean;
 }) {
   const [storiesOpen, setStoriesOpen] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
@@ -490,24 +436,22 @@ export default function Navbar({
       style={{ backgroundColor: menuMode ? "#fff4ee" : "transparent" }}
       className={`fixed left-0 right-0 z-[1400] ${menuMode
           ? "flex flex-col md:flex-row md:items-center"
-          : "flex flex-nowrap items-end h-14 sm:h-16 md:h-20 lg:h-[72px]"
-        } px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b border-transparent shadow-none ${accountPage
-          ? "top-3 sm:top-4 lg:top-5 pb-3 sm:pb-3.5 lg:pb-4 items-end"
-          : menuMode
-            ? "top-0 pb-0"
-            : homePage
-              ? "top-3 sm:top-4 lg:top-5 pb-1.5 sm:pb-2 lg:pb-2.5"
-              : "top-0 pb-1.5 sm:pb-2 lg:pb-2.5"
+          : homePage
+            ? "flex flex-nowrap items-end h-14 sm:h-16 md:h-20 lg:h-[72px]"
+            : "flex flex-nowrap items-center"
+        } px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b ${menuMode ? "border-black/10" : "border-transparent"} shadow-none ${homePage
+          ? "top-3 sm:top-4 lg:top-5 pb-1.5 sm:pb-2 lg:pb-2.5"
+          : "top-0 pt-3 md:pt-4 pb-2 sm:pb-3"
         } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-500"}`}
       id="main-navbar"
     >
       {menuMode ? (
         <div className="menu-nav-inner flex w-full flex-col md:contents min-w-0 bg-svs-cream">
-          <div className="menu-nav-top-row flex w-full items-center h-12 sm:h-14 md:h-20 lg:h-[72px] min-w-0 relative">
+          <div className="menu-nav-top-row flex w-full max-w-[1100px] mx-auto items-center h-12 sm:h-14 md:h-20 lg:h-[72px] min-w-0 relative">
             <div className="flex min-w-0 flex-1 items-center md:max-w-[42%] lg:max-w-[38%] xl:max-w-[36%]">
               <Link
                 href="/"
-                className="menu-nav-brand hidden md:flex items-center justify-center no-underline shrink-0 z-[1] pr-0.5"
+                className="menu-nav-brand hidden md:flex items-center justify-center no-underline shrink-0 z-[1] pr-3 lg:pr-4 mr-3 lg:mr-4 border-r-[1.5px] border-[#f16a34]/30"
                 id="navbar-brand"
                 aria-label="SVS Food home"
               >
@@ -584,6 +528,7 @@ export default function Navbar({
               menuMode={menuMode}
               homePage={homePage}
               accountPage={accountPage}
+              cartPage={cartPage}
               onNavigate={() => {
                 if (cartOpen) closeCart();
                 if (locationOpen) setLocationOpen(false);

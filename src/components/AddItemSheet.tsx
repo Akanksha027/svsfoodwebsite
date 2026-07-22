@@ -10,6 +10,7 @@ import {
 import { RollingCounter } from "@/components/RollingCounter";
 import { useBodyScrollLock } from "@/lib/body-scroll-lock";
 import { formatInr } from "@/lib/menu-api";
+import { isImageReady, preloadImages } from "@/lib/preload-image";
 import type {
   MenuAddonGroup,
   MenuAddonOption,
@@ -52,12 +53,32 @@ function SheetImage({
   src,
   alt = "",
   className,
+  priority = false,
 }: {
   src: string;
   alt?: string;
   className?: string;
+  priority?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
+  const [ready, setReady] = useState(() => isImageReady(src));
+
+  useEffect(() => {
+    let cancelled = false;
+    setFailed(false);
+    if (isImageReady(src)) {
+      setReady(true);
+      return;
+    }
+    setReady(false);
+    void preloadImages([src]).then(() => {
+      if (!cancelled) setReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
   if (failed) {
     return (
       <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-svs-orange/40">
@@ -70,8 +91,11 @@ function SheetImage({
     <img
       src={src}
       alt={alt}
-      className={className}
-      decoding="async"
+      className={`${className ?? ""} ${ready ? "opacity-100" : "opacity-0"} transition-opacity duration-150`}
+      decoding={priority ? "sync" : "async"}
+      loading="eager"
+      fetchPriority={priority ? "high" : "auto"}
+      onLoad={() => setReady(true)}
       onError={() => setFailed(true)}
       draggable={false}
     />
@@ -193,6 +217,21 @@ export default function AddItemSheet({
   const heroImage =
     pickImageUrl(selectedVariant?.image_url) || fallbackImage;
 
+  const sheetImageUrls = useMemo(() => {
+    const urls = new Set<string>();
+    if (fallbackImage) urls.add(fallbackImage);
+    if (heroImage) urls.add(heroImage);
+    for (const v of variants) {
+      const u = pickImageUrl(v.image_url, fallbackImage);
+      if (u) urls.add(u);
+    }
+    return [...urls];
+  }, [fallbackImage, heroImage, variants]);
+
+  useEffect(() => {
+    void preloadImages(sheetImageUrls);
+  }, [sheetImageUrls]);
+
   const hasDistinctVariantImages = useMemo(() => {
     const urls = new Set(
       variants
@@ -288,6 +327,7 @@ export default function AddItemSheet({
               <SheetImage
                 src={heroImage}
                 alt={item.name}
+                priority
                 className="absolute inset-0 m-auto max-h-full max-w-full w-full h-full object-contain p-4 sm:p-6"
               />
             ) : (

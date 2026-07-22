@@ -12,7 +12,12 @@ import { useInlinePhoneOtp } from "@/hooks/useInlinePhoneOtp";
 import type { WebsiteCustomerAddress } from "@/lib/website-customer-api";
 import {
   normalizeIndianMobile,
+  isValidIndianMobile,
 } from "@/lib/indian-phone";
+import {
+  resolveOrderContactMobile,
+  setPreferredOrderContact,
+} from "@/lib/order-contact-mobile";
 
 const inputClass =
   "mt-0.5 w-full h-9 rounded-lg border border-gray-200 bg-white px-3 text-[13px] text-gray-900 outline-none transition-[border-color,box-shadow] focus:border-[#f16a34] focus:ring-1 focus:ring-[#f16a34]/15 placeholder:text-gray-400";
@@ -119,7 +124,7 @@ export default function CartCheckoutForm({
 }: Props) {
   const [stepError, setStepError] = useState<string | null>(null);
   const [savedAddressId, setSavedAddressId] = useState<string | "new">("new");
-  const { customer } = useWebsiteAuth();
+  const { customer, refreshCustomer, setCustomer } = useWebsiteAuth();
   const prefillDone = useRef(false);
 
   const {
@@ -185,7 +190,12 @@ export default function CartCheckoutForm({
 
   useEffect(() => {
     if (!customer || prefillDone.current) return;
-    setPhone(customer.phone);
+    const contact = resolveOrderContactMobile({
+      customerId: customer.id,
+      loginPhone: customer.phone,
+      alternatePhone: customer.alternate_phone,
+    });
+    setPhone(contact);
     if (customer.name) setName(customer.name);
     const def =
       customer.addresses.find((a) => a.is_default) || customer.addresses[0];
@@ -228,10 +238,34 @@ export default function CartCheckoutForm({
     onContinue?.();
   };
 
+  const persistContactMobile = async (contact: string) => {
+    if (!customer) return;
+    const login = normalizeIndianMobile(customer.phone);
+    const next = normalizeIndianMobile(contact);
+    if (!isValidIndianMobile(next)) {
+      throw new Error("Enter a valid 10-digit contact mobile number");
+    }
+    // Profile PATCH does not accept alternate_phone — keep for this device + order.
+    const nextAlt = next === login ? "" : next;
+    setPreferredOrderContact(customer.id, nextAlt || null);
+    setCustomer({
+      ...customer,
+      alternate_phone: nextAlt || null,
+    });
+    setPhone(next);
+  };
+
   const handlePlaceOrderClick = async () => {
     resetErrors();
     setStepError(null);
     phoneOtp.setOtpError(null);
+
+    const contact = normalizeIndianMobile(phone);
+    if (!isValidIndianMobile(contact)) {
+      setStepError("Enter a valid 10-digit contact mobile number.");
+      return;
+    }
+
     if (!customer) {
       const verified = await phoneOtp.ensureVerified();
       if (!verified) {
@@ -241,9 +275,18 @@ export default function CartCheckoutForm({
         );
         return;
       }
-    } else if (normalizeIndianMobile(phone) !== customer.phone) {
-      setStepError("Use your account mobile or log out from Account.");
-      return;
+    } else {
+      try {
+        await persistContactMobile(contact);
+      } catch (e) {
+        setStepError(
+          e instanceof Error
+            ? e.message
+            : "Could not save contact mobile. Try again.",
+        );
+        void refreshCustomer();
+        return;
+      }
     }
     await onPlaceOrder();
   };
@@ -254,7 +297,7 @@ export default function CartCheckoutForm({
         <CheckoutProgress page={1} />
         <div className="flex-1 min-h-0 overflow-hidden px-4 pb-2 pt-2.5 bg-white">
           {orderType === "delivery" ? (
-            <section className="space-y-2.5 h-full">
+            <section className="space-y-2.5 h-full min-w-0 overflow-x-hidden">
               {/* Header */}
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
@@ -504,6 +547,13 @@ export default function CartCheckoutForm({
             }}
             otp={phoneOtp}
             signedInPhone={customer?.phone ?? null}
+            onContactSave={
+              customer
+                ? async (mobile) => {
+                    await persistContactMobile(mobile);
+                  }
+                : undefined
+            }
           />
           <label className="block">
             <span className="text-xs font-semibold text-gray-700">Notes for kitchen</span>
