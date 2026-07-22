@@ -219,13 +219,24 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
       {/* Main footer */}
       <div className="w-full max-w-[1280px] bg-svs-white rounded-xl sm:rounded-2xl px-4 sm:px-5 md:px-6 lg:px-8 py-6 sm:py-7 md:py-8 border border-svs-cream/80">
         {/*
-          Mobile: 1 col
-          sm: 2 cols
+          Mobile: 1 col stack
+          Mid (sm–md): 2 cols per row
+            Brand | Links
+            Payments | Contact
+            Bag (centered)
           lg+: 5 cols — Brand | Links | Payments | Contact | Bag
         */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-x-6 gap-y-8 md:gap-x-8 lg:gap-x-6 xl:gap-x-10 items-start">
-          {/* Col 1: Brand + FSSAI + Address */}
-          <div className="sm:col-span-2 lg:col-span-1 min-w-0">
+        <div
+          className="
+            grid items-start gap-x-8 gap-y-8 md:gap-x-10 md:gap-y-9
+            grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)_minmax(0,0.95fr)_minmax(0,1.15fr)_auto]
+            xl:gap-x-12
+          "
+        >
+          {/* Brand */}
+          <div className="min-w-0">
             <Link
               href="/"
               className="inline-flex no-underline"
@@ -236,7 +247,7 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
             <p className="mt-2.5 text-[13px] font-bold text-svs-ink tracking-wide">
               SVS FOOD Private Limited
             </p>
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
               <div className="flex flex-col items-center justify-center shrink-0 w-fit">
                 <div className="h-[2px] w-full bg-[#E3792E]" />
                 <span className="font-serif font-bold italic text-[#25397E] text-[12px] leading-[1.15] tracking-tighter px-0.5">
@@ -248,7 +259,7 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
                 FSSAI LICENSE NO. 1142145000031
               </span>
             </div>
-            <div className="mt-4 pt-3 border-t border-svs-cream">
+            <div className="mt-4 pt-3 border-t border-svs-cream max-w-sm">
               <p className="text-[11px] font-bold uppercase tracking-wider text-svs-ink mb-1.5">
                 Corporate Address
               </p>
@@ -264,9 +275,9 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
             </div>
           </div>
 
-          {/* Col 2: Useful Links */}
-          <FooterSection title="Useful Links">
-            <div className="grid grid-cols-2 sm:grid-cols-1 gap-x-4 gap-y-2">
+          {/* Useful Links */}
+          <FooterSection title="Useful Links" className="min-w-0">
+            <div className="grid grid-cols-2 sm:grid-cols-1 gap-x-3 gap-y-2">
               {USEFUL_LINKS.map((link) => (
                 <FooterLink
                   key={link.href}
@@ -279,8 +290,8 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
             </div>
           </FooterSection>
 
-          {/* Col 3: Payments */}
-          <FooterSection title="Payments">
+          {/* Payments */}
+          <FooterSection title="Payments" className="min-w-0">
             <div className="flex flex-wrap gap-1.5">
               {PAYMENT_METHODS.map((method) => (
                 <span
@@ -293,8 +304,8 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
             </div>
           </FooterSection>
 
-          {/* Col 4: Contact & Connect */}
-          <FooterSection title="Contact &amp; Connect">
+          {/* Contact */}
+          <FooterSection title="Contact &amp; Connect" className="min-w-0">
             <div className="flex flex-col gap-1.5">
               {FOOTER_EMAILS.map((email) => (
                 <a
@@ -328,8 +339,8 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
             </div>
           </FooterSection>
 
-          {/* Col 5: Bag — aligned to top like Contact column */}
-          <div className="flex items-start justify-center sm:col-span-2 lg:col-span-1 pt-0 lg:pt-0">
+          {/* Bag — mid: full-width centered row; desktop: 5th column */}
+          <div className="flex items-start justify-center sm:col-span-2 lg:col-span-1 lg:justify-center pt-1 sm:pt-2 lg:pt-0.5">
             <FooterBag />
           </div>
         </div>
