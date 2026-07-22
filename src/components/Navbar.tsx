@@ -490,7 +490,7 @@ export default function Navbar({
           </div>
 
         </div>
-      ) : (
+      ) : !menuMode && !homePage ? (
         <Link
           href="/"
           className="flex items-center justify-center no-underline shrink-0 z-[1] pr-2"
@@ -503,7 +503,7 @@ export default function Navbar({
             priority
           />
         </Link>
-      )}
+      ) : null}
 
       {!menuMode ? <div className="min-w-2 flex-1" aria-hidden /> : null}
 

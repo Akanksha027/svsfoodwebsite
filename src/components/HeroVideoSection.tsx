@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { useEffect, useRef } from "react";
 import AnimatedOrderButton from "@/components/AnimatedOrderButton";
 
@@ -44,10 +46,22 @@ export default function HeroVideoSection() {
       />
 
       <div className="relative z-[2] flex h-full flex-col items-center justify-center px-5 pb-10 sm:px-8 sm:pb-12 md:px-10 md:pb-14 lg:px-14 lg:pb-16 text-center">
+        {/* Absolute positioned logo so it doesn't push the centered text down */}
+        <div className="absolute top-[15%] sm:top-[20%] left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none">
+          <Image
+            src="/svsherosectionlogo.png"
+            alt="SVS Hero Logo"
+            width={360}
+            height={180}
+            className="w-[160px] sm:w-[220px] md:w-[280px] lg:w-[360px] object-contain drop-shadow-lg"
+            priority
+          />
+        </div>
+        
         <div className="flex w-full flex-col items-center gap-8 sm:gap-10">
-          <div className="flex flex-col items-center gap-3 sm:gap-4">
+          <div className="flex flex-col items-center gap-4 sm:gap-6 mt-16 sm:mt-24">
             <h1
-              className="max-w-[min(96vw,28ch)] text-center text-[clamp(1.45rem,4.6vw,3.75rem)] font-bold leading-[1.2] tracking-[0.02em] text-[#faf3dc] uppercase"
+              className="max-w-[min(96vw,28ch)] text-center text-[clamp(2.25rem,6.5vw,5rem)] font-bold leading-[1.1] tracking-[0.02em] text-[#faf3dc] uppercase drop-shadow-md"
               id="hero-text"
             >
               &lsquo;{HERO_LINES[0]}&rsquo;
