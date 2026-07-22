@@ -387,27 +387,33 @@ export default function MenuBrowser({
                     categoryBtnRefs.current[cat.id] = node;
                   }}
                   onClick={() => scrollToCategory(cat.id)}
-                  className={`menu-category-tile shrink-0 cursor-pointer border-0 p-0 outline-none ${
-                    active ? "menu-category-tile--active" : ""
+                  className={`menu-category-btn shrink-0 cursor-pointer border-0 p-0 outline-none flex flex-col items-center gap-1.5 bg-transparent ${
+                    active ? "menu-category-btn--active" : ""
                   }`}
                   aria-current={active ? "true" : undefined}
                 >
-                  <span className="menu-category-tile__icon-ring" aria-hidden>
-                    {catImage ? (
-                      <span className="menu-category-tile__icon-media">
-                        <Image
-                          src={catImage}
-                          alt=""
-                          fill
-                          draggable={false}
-                          className="object-contain pointer-events-none select-none"
-                          sizes="96px"
-                        />
-                      </span>
-                    ) : (
-                      <span className="menu-category-tile__icon-fallback">SVS</span>
-                    )}
-                  </span>
+                  <div
+                    className={`menu-category-tile ${
+                      active ? "menu-category-tile--active" : ""
+                    }`}
+                  >
+                    <span className="menu-category-tile__icon-ring" aria-hidden>
+                      {catImage ? (
+                        <span className="menu-category-tile__icon-media">
+                          <Image
+                            src={catImage}
+                            alt=""
+                            fill
+                            draggable={false}
+                            className="object-contain pointer-events-none select-none"
+                            sizes="96px"
+                          />
+                        </span>
+                      ) : (
+                        <span className="menu-category-tile__icon-fallback">SVS</span>
+                      )}
+                    </span>
+                  </div>
                   <span className="menu-category-tile__label">
                     {titleCaseName(cat.name)}
                   </span>
@@ -713,20 +719,20 @@ function MenuItemCard({
             openCard();
           }
         }}
-        className={`flex flex-col aspect-square w-full rounded-xl border border-svs-cream bg-svs-white overflow-hidden ${
+        className={`flex flex-col w-full rounded-xl border border-svs-cream bg-svs-white overflow-hidden ${
           available ? "" : "opacity-60"
         } ${customisable && available ? "cursor-pointer" : ""}`}
       >
         <div
           ref={imageRef}
-          className="relative flex-1 min-h-0 w-full flex items-center justify-center bg-svs-cream/60 overflow-hidden"
+          className="relative aspect-square w-full flex items-center justify-center bg-svs-cream/60 overflow-hidden"
         >
           {displayImage ? (
             <Image
               src={displayImage}
               alt={item.name}
               fill
-              className="object-cover pointer-events-none select-none"
+              className="object-contain pointer-events-none select-none"
               sizes="(max-width: 640px) 45vw, 200px"
               draggable={false}
             />

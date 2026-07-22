@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 @import "../styles/bagoss.css";
 @import "../styles/atma.css";
 
@@ -1122,10 +1122,8 @@ html:has(#main-navbar[data-menu-mode="true"]) {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.25rem;
   width: 6.25rem;
   height: 6.25rem;
-  padding: 0.3rem 0.2rem 0.3rem;
   border-radius: 1rem;
   background: var(--color-svs-white);
   border: 1px solid color-mix(in srgb, var(--color-svs-ink) 5%, transparent);
@@ -1205,7 +1203,7 @@ html:has(#main-navbar[data-menu-mode="true"]) {
   }
 }
 
-.menu-category-tile--active .menu-category-tile__label {
+.menu-category-btn--active .menu-category-tile__label {
   color: color-mix(in srgb, var(--color-svs-orange) 82%, var(--color-svs-ink));
 }
 

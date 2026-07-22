@@ -113,15 +113,3 @@ export function findNearestStore(lat: number, lng: number): StoreLocation {
   return best;
 }
 
-/** Rough open window for status badge (IST-ish local time). */
-export function getStoreStatusLabel(now = new Date()): "Open now" | "Closing soon" | "Closed" {
-  const hour = now.getHours();
-  const minute = now.getMinutes();
-  const mins = hour * 60 + minute;
-  const open = 10 * 60; // 10:00
-  const closingSoon = 21 * 60 + 30; // 21:30
-  const close = 22 * 60 + 30; // 22:30
-  if (mins >= open && mins < closingSoon) return "Open now";
-  if (mins >= closingSoon && mins < close) return "Closing soon";
-  return "Closed";
-}

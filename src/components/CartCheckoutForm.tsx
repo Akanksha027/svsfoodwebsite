@@ -483,7 +483,7 @@ export default function CartCheckoutForm({
           <button
             type="button"
             onClick={handleContinue}
-            className="w-full h-10 rounded-2xl bg-[#f16a34] text-white font-bold text-[13.5px] cursor-pointer hover:bg-[#e05a28] transition-colors"
+            className="w-full h-[52px] rounded-2xl bg-[#f16a34] text-white font-bold text-[14px] cursor-pointer hover:bg-[#e05a28] transition-colors shadow-md"
           >
             Continue
           </button>

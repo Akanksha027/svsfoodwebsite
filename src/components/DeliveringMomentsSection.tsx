@@ -1,177 +1,173 @@
+import Link from "next/link";
 import Image from "next/image";
+
+const BOX_ITEMS = [
+  { name: "Classic Smash", qty: "1Pc" },
+  { name: "Loaded Fries", qty: "1Pc" },
+  { name: "Cheese Burst", qty: "1Pc" },
+  { name: "Cold Drink", qty: "1Pc" },
+] as const;
+
+const FEATURES = [
+  {
+    title: "No Artificial Additives",
+    desc: "Pure ingredients, real flavours.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+        <path d="M9 3v3M15 3v3M7 21h10a2 2 0 0 0 2-2v-4.5a6.5 6.5 0 0 0-13 0V19a2 2 0 0 0 2 2z" strokeLinecap="round" />
+        <path d="M9 14h6" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "100% Pure Veg",
+    desc: "Naturally fresh, nothing compromised.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+        <path d="M12 21c4-3.2 7-6.2 7-10a5 5 0 0 0-10 0c0 1.2.3 2.3.8 3.3" strokeLinecap="round" />
+        <path d="M5 14c2.5-1 4.5-3 5.5-5.5" strokeLinecap="round" />
+        <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    title: "Made Fresh Daily",
+    desc: "Grilled to order, never under a lamp.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+        <circle cx="12" cy="12" r="8" />
+        <path d="M12 8v4l2.5 1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M5 5l1.5 1.5M19 5l-1.5 1.5" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    title: "Hot Delivery",
+    desc: "Doorstep delivery that stays piping hot.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+        <path d="M4 14h11l2-5H8L4 14z" strokeLinejoin="round" />
+        <circle cx="8" cy="18" r="1.6" />
+        <circle cx="15" cy="18" r="1.6" />
+        <path d="M17 9h2.5l1.5 4H17" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+] as const;
 
 export default function DeliveringMomentsSection() {
   return (
-    <section className="relative w-full bg-svs-cream px-4 sm:px-6 md:px-12 lg:px-24 pb-12 sm:pb-16 md:pb-20 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto">
-        <div className="pt-12 sm:pt-16 md:pt-24 border-t border-svs-cream">
-          <h2 className="text-[1.75rem] sm:text-[2rem] md:text-[2.5rem] lg:text-[2.5rem] font-bold text-svs-ink mb-10 sm:mb-12 md:mb-16 leading-tight tracking-tight">
-            Delivering{" "}
-            <span className="relative inline-block text-svs-orange">
-              moments
-              <svg
-                className="absolute left-0 -bottom-1 sm:-bottom-2 w-full text-svs-yellow"
-                viewBox="0 0 120 12"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+    <section
+      className="relative w-full overflow-hidden bg-svs-cream px-4 sm:px-6 md:px-10 lg:px-16 xl:px-24 py-14 sm:py-16 md:py-20 lg:py-24"
+      id="delivering-moments"
+      aria-labelledby="flavour-delivered-heading"
+    >
+      <div className="mx-auto max-w-[1280px]">
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.35fr)_minmax(0,0.95fr)] lg:gap-4 xl:gap-8">
+          {/* Quote bubble */}
+          <aside className="relative order-2 mx-auto w-full max-w-sm lg:order-1 lg:mx-0 lg:max-w-none lg:self-center">
+            <div className="relative rounded-[1.35rem] bg-svs-orange px-6 py-7 text-white shadow-[0_18px_40px_rgba(241,106,52,0.28)] sm:px-7 sm:py-8">
+              <span
+                className="mb-3 block font-serif text-5xl leading-none text-white/90"
+                aria-hidden
               >
-                <path
-                  d="M2 8 Q 30 2 60 5 T 118 6"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-8 mb-14 sm:mb-20 md:mb-24">
-            <div className="flex flex-col items-start text-left">
-              <img
-                src="https://d1i1r9ggjmyhzs.cloudfront.net/uploads/ic_imperfect_favorites_31a3c72077.svg"
-                alt="Fresh burgers"
-                className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6"
-              />
-              <h3 className="text-[1.15rem] sm:text-[1.35rem] font-extrabold text-svs-ink mb-2 sm:mb-4">
-                Made Fresh
-              </h3>
-              <p className="text-[0.95rem] sm:text-[1rem] text-svs-ink/75 leading-relaxed">
-                Burgers grilled to order, never sitting under a lamp
+                &ldquo;
+              </span>
+              <p className="text-[0.98rem] sm:text-[1.05rem] font-medium leading-relaxed tracking-tight">
+                Absolutely love SVS Food! Everything is always fresh, delicious,
+                and made with care. The perfect spot for a smash-burger craving!
               </p>
-            </div>
-
-            <div className="flex flex-col items-start text-left">
-              <img
-                src="https://d1i1r9ggjmyhzs.cloudfront.net/uploads/ic_imperfect_forward_2a84eca16e.svg"
-                alt="Local kitchens"
-                className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6"
+              <span
+                className="absolute -right-2 top-1/2 hidden h-5 w-5 -translate-y-1/2 rotate-45 bg-svs-orange lg:block"
+                aria-hidden
               />
-              <h3 className="text-[1.15rem] sm:text-[1.35rem] font-extrabold text-svs-ink mb-2 sm:mb-4">
-                Local Kitchens
-              </h3>
-              <p className="text-[0.95rem] sm:text-[1rem] text-svs-ink/75 leading-relaxed">
-                Neighbourhood outlets built for dine-in, takeaway &amp; delivery
-              </p>
             </div>
+          </aside>
 
-            <div className="flex flex-col items-start text-left">
-              <img
-                src="https://d1i1r9ggjmyhzs.cloudfront.net/uploads/ic_imperfect_scooter_4252e3ccf0.svg"
-                alt="Fast delivery"
-                className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6"
-              />
-              <h3 className="text-[1.15rem] sm:text-[1.35rem] font-extrabold text-svs-ink mb-2 sm:mb-4">
-                Hot Delivery
-              </h3>
-              <p className="text-[0.95rem] sm:text-[1rem] text-svs-ink/75 leading-relaxed">
-                Doorstep delivery that keeps every bite piping hot
-              </p>
-            </div>
-
-            <div className="flex flex-col items-start text-left">
-              <img
-                src="https://d1i1r9ggjmyhzs.cloudfront.net/uploads/ic_imperfect_scooter_4252e3ccf0.svg"
-                alt="Easy ordering"
-                className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mb-4 sm:mb-6"
-              />
-              <h3 className="text-[1.15rem] sm:text-[1.35rem] font-extrabold text-svs-ink mb-2 sm:mb-4">
-                Easy Ordering
-              </h3>
-              <p className="text-[0.95rem] sm:text-[1rem] text-svs-ink/75 leading-relaxed">
-                Order online, at the kiosk, or walk in. Same great menu.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-20 items-start">
-          <div className="relative w-full aspect-[4/5] sm:aspect-[3/4] max-h-[min(70vw,420px)] sm:max-h-[500px] lg:max-h-none rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden shadow-lg">
+          {/* Center: bag + food only, transparent background */}
+          <div className="relative order-1 mx-auto flex w-full max-w-[520px] items-center justify-center sm:max-w-[580px] lg:order-2 lg:max-w-none">
             <Image
-              src="/images/svs.jpg"
-              alt="SVS Food burgers ready to serve"
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 92vw, 50vw"
+              src="/images/order-types/takeaway-open-nobg.png"
+              alt="SVS Food bag with burger and fries"
+              width={900}
+              height={900}
+              className="h-auto w-full max-w-[420px] object-contain drop-shadow-[0_22px_32px_rgba(26,26,26,0.2)] sm:max-w-[480px] lg:max-w-[520px]"
+              priority={false}
             />
           </div>
 
-          <div className="flex flex-col gap-8 sm:gap-10 md:gap-12 pt-0 lg:pt-4">
-            <h2 className="text-[1.5rem] sm:text-[1.85rem] md:text-[2rem] lg:text-[2rem] font-bold text-svs-ink leading-tight tracking-tight">
-              India&apos;s favourite smash-burger kitchen
+          {/* Headline + menu list + CTA */}
+          <div className="order-3 flex flex-col items-start lg:pl-2">
+            <h2
+              id="flavour-delivered-heading"
+              className="max-w-[18ch] text-[1.55rem] sm:text-[1.85rem] md:text-[2.05rem] font-black uppercase leading-[1.12] tracking-tight text-svs-ink"
+            >
+              Flavour delivered in every bag,{" "}
+              <span className="relative inline text-svs-orange">
+                always fresh!
+                <span
+                  className="absolute -bottom-1 left-0 right-0 h-[3px] rounded-full bg-svs-orange/70"
+                  aria-hidden
+                />
+              </span>
             </h2>
 
-            <div className="flex flex-col gap-6 sm:gap-7">
-              <div className="flex flex-col items-start gap-1">
-                <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
-                  Freshly Baked Buns
-                </h3>
-                <div className="bg-svs-ink text-white px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
-                  <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
-                    We bake our own
+            <ul className="mt-7 w-full max-w-sm space-y-3.5 sm:mt-8 sm:space-y-4">
+              {BOX_ITEMS.map((item) => (
+                <li
+                  key={item.name}
+                  className="flex items-baseline gap-3 text-[0.95rem] sm:text-[1.02rem] font-semibold text-svs-ink"
+                >
+                  <span className="shrink-0">{item.name}</span>
+                  <span
+                    className="mb-1 min-w-0 flex-1 border-b border-dotted border-svs-ink/25"
+                    aria-hidden
+                  />
+                  <span className="shrink-0 tabular-nums text-svs-ink/70">
+                    {item.qty}
                   </span>
-                </div>
-                <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
-                  Ensuring the softest, freshest bite with every single burger
-                </p>
-              </div>
+                </li>
+              ))}
+            </ul>
 
-              <div className="flex flex-col items-start gap-1">
-                <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
-                  Tech-Driven Experience
-                </h3>
-                <div className="bg-svs-ink text-white px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
-                  <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
-                    Fully automated
-                  </span>
-                </div>
-                <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
-                  Complete technological adaptation for seamless, rapid service
-                </p>
-              </div>
-
-              <div className="flex flex-col items-start gap-1">
-                <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
-                  World-Level Standards
-                </h3>
-                <div className="bg-svs-ink text-white px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
-                  <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
-                    Global expansion
-                  </span>
-                </div>
-                <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
-                  Scaling up our kitchens to bring our flavours to the world
-                </p>
-              </div>
-
-              <div className="flex flex-col items-start gap-1">
-                <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
-                  Seamless & Fast
-                </h3>
-                <div className="bg-svs-ink text-white px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
-                  <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
-                    Less human interaction
-                  </span>
-                </div>
-                <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
-                  Designed for maximum efficiency and a zero-fuss ordering experience
-                </p>
-              </div>
-
-              <div className="flex flex-col items-start gap-1">
-                <h3 className="text-[1.25rem] sm:text-[1.5rem] font-extrabold text-svs-orange mb-0.5">
-                  100% Pure Veg
-                </h3>
-                <div className="bg-svs-ink text-white px-3.5 sm:px-4 py-1 skew-x-[-12deg] inline-block shadow-sm">
-                  <span className="block skew-x-[12deg] font-bold text-[0.95rem] sm:text-[1.05rem] tracking-wide">
-                    Pure & Authentic
-                  </span>
-                </div>
-                <p className="text-[0.85rem] sm:text-[0.9rem] text-svs-ink/75 mt-1.5 font-medium">
-                  Authentic, purely vegetarian recipes honoring deep-rooted traditions
-                </p>
-              </div>
-            </div>
+            <Link
+              href="/menu"
+              className="mt-8 inline-flex items-center gap-3 rounded-full bg-svs-ink px-6 py-3.5 text-[0.95rem] font-bold text-white transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-svs-orange focus-visible:ring-offset-2 sm:mt-9 sm:px-7 sm:text-[1rem]"
+            >
+              Order Your Bag Today
+              <span
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15"
+                aria-hidden
+              >
+                <svg
+                  className="h-3.5 w-3.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                >
+                  <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            </Link>
           </div>
+        </div>
+
+        {/* Feature row */}
+        <div className="mt-14 grid grid-cols-1 gap-8 border-t border-svs-ink/8 pt-10 sm:mt-16 sm:grid-cols-2 sm:gap-10 lg:mt-20 lg:grid-cols-4 lg:gap-6 lg:pt-12">
+          {FEATURES.map((feature) => (
+            <div key={feature.title} className="flex items-start gap-3.5">
+              <span className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-svs-orange/12 text-svs-orange [&_svg]:h-5 [&_svg]:w-5">
+                {feature.icon}
+              </span>
+              <p className="text-[0.9rem] sm:text-[0.95rem] leading-snug text-svs-ink/75">
+                <span className="font-extrabold text-svs-orange">
+                  {feature.title}:
+                </span>{" "}
+                {feature.desc}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
