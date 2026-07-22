@@ -123,6 +123,22 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
               <Link href="/locations" className="hover:text-svs-orange">
                 Store locator
               </Link>
+              <a
+                href="https://connect.svsfood.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-svs-orange"
+              >
+                Partner
+              </a>
+              <a
+                href="https://careers.svsfood.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-svs-orange"
+              >
+                Career
+              </a>
             </div>
           </div>
         </div>
@@ -168,6 +184,12 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
               <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
               <FooterLink href="/terms-and-conditions">
                 Terms &amp; Conditions
+              </FooterLink>
+              <FooterLink href="https://connect.svsfood.com" external>
+                Partner
+              </FooterLink>
+              <FooterLink href="https://careers.svsfood.com" external>
+                Career
               </FooterLink>
             </div>
 

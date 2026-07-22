@@ -100,20 +100,20 @@ function StoreBadge({
 
 function LoginMarketingPanel() {
   return (
-    <div className="relative hidden md:flex w-[46%] shrink-0 flex-col overflow-hidden bg-[#fff1e8] px-8 pt-9 pb-0">
-      <div className="relative z-[1]">
+    <div className="relative hidden md:flex w-[46%] shrink-0 flex-col overflow-hidden bg-[#FEE9DA] pt-9">
+      <div className="relative z-[1] px-8">
         <BrandLogo variant="on-mark" height={40} priority />
-        <h2 className="mt-6 text-[32px] leading-[1.15] font-extrabold tracking-tight text-gray-900 max-w-[15ch]">
-          Everything Delivered in{" "}
-          <span className="text-[#f16a34]">minutes</span>
+        <h2 className="mt-6 text-[32px] leading-[1.15] font-extrabold tracking-tight text-gray-900 max-w-[14ch]">
+          Fresh food, delivered{" "}
+          <span className="text-[#f16a34]">fast</span>
         </h2>
       </div>
-      <div className="relative mt-auto flex-1 min-h-[220px] w-full">
+      <div className="relative mt-auto flex-1 min-h-[260px] w-full">
         <Image
           src="/images/login-delivery.png"
           alt=""
           fill
-          className="object-contain object-bottom pointer-events-none select-none"
+          className="object-cover object-bottom pointer-events-none select-none"
           sizes="420px"
           priority
         />
