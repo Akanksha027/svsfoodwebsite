@@ -96,12 +96,6 @@ export default function HeroVideoSection() {
                 >
                   &lsquo;{HERO_LINES[0]}&rsquo;
                 </span>
-                <span
-                  className="invisible col-start-1 row-start-1 whitespace-nowrap"
-                  aria-hidden
-                >
-                  &lsquo;{HERO_LINES[1]}&rsquo;
-                </span>
                 <span className="col-start-1 row-start-1 whitespace-nowrap">
                   {display ? (
                     <>

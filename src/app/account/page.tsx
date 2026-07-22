@@ -854,7 +854,7 @@ function AccountInner() {
           </p>
           <button
             type="button"
-            onClick={openLogin}
+            onClick={() => openLogin()}
             className="h-11 w-full rounded-xl bg-[#f16a34] text-white text-sm font-extrabold cursor-pointer border-0"
           >
             Continue with mobile
