@@ -367,7 +367,7 @@ export default function MenuBrowser({
         ref={stickyStackRef}
         className="menu-sticky-stack sticky z-[1390] -mx-4 sm:mx-0 px-4 sm:px-0 pt-4 md:pt-5 pb-2 sm:pb-3 bg-svs-cream"
       >
-        <div className="menu-sticky-search md:hidden mb-1 w-full mt-0 flex justify-center">
+        <div className="menu-sticky-search lg:hidden mb-1 w-full mt-0 flex justify-center">
           <MenuNavSearch docked />
         </div>
 

@@ -122,7 +122,7 @@ function MenuCenterBar({
           <span className="md:hidden">Delivering to</span>
           <span className="hidden md:inline">Delivering in few minutes</span>
         </span>
-        
+
         {/* Invisible Spacer to give proper height */}
         <span className="mt-0.5 flex w-full min-w-0 items-center gap-1 text-[10px] min-[400px]:text-[11px] sm:text-[12px] md:text-[13px] opacity-0 pointer-events-none select-none h-[15px] sm:h-[18px]" aria-hidden>
           &nbsp;
@@ -243,44 +243,44 @@ function NavIcons({
         accountPage ? (
           <OrangeCartButton alwaysShow />
         ) : (
-        <Link
-          href="/cart"
-          className={`${iconBtn} relative overflow-visible w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-16 lg:h-16`}
-          id="btn-cart"
-          aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
-          onClick={onNavigate}
-        >
-          <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-            <span className="scale-[0.17] sm:scale-[0.19] lg:scale-[0.23]">
-              <span
-                className="block w-[120px] h-[150px] relative nav-revolving-bag"
-                style={{ perspective: "800px" }}
-              >
-                <span className="block w-full h-full relative revolving-bag">
-                  <span className="bag-top-handle bag-front-handle" />
-                  <span className="bag-top-handle bag-back-handle" />
-                  <span className="bag-face bag-front">
-                    <span className="text-[14px] font-black tracking-widest text-svs-ink">
-                      SVS
+          <Link
+            href="/cart"
+            className={`${iconBtn} relative overflow-visible w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-16 lg:h-16`}
+            id="btn-cart"
+            aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
+            onClick={onNavigate}
+          >
+            <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
+              <span className="scale-[0.17] sm:scale-[0.19] lg:scale-[0.23]">
+                <span
+                  className="block w-[120px] h-[150px] relative nav-revolving-bag"
+                  style={{ perspective: "800px" }}
+                >
+                  <span className="block w-full h-full relative revolving-bag">
+                    <span className="bag-top-handle bag-front-handle" />
+                    <span className="bag-top-handle bag-back-handle" />
+                    <span className="bag-face bag-front">
+                      <span className="text-[14px] font-black tracking-widest text-svs-ink">
+                        SVS
+                      </span>
                     </span>
-                  </span>
-                  <span className="bag-face bag-back">
-                    <span className="text-[14px] font-black tracking-widest text-svs-ink transform rotate-y-180">
-                      SVS
+                    <span className="bag-face bag-back">
+                      <span className="text-[14px] font-black tracking-widest text-svs-ink transform rotate-y-180">
+                        SVS
+                      </span>
                     </span>
+                    <span className="bag-face bag-left" />
+                    <span className="bag-face bag-right" />
                   </span>
-                  <span className="bag-face bag-left" />
-                  <span className="bag-face bag-right" />
                 </span>
               </span>
             </span>
-          </span>
-          {itemCount > 0 ? (
-            <span className="absolute top-0 right-0 min-w-[16px] h-4 px-1 rounded-full bg-svs-orange text-white text-[9px] sm:text-[10px] font-bold flex items-center justify-center z-10">
-              {itemCount > 99 ? "99+" : itemCount}
-            </span>
-          ) : null}
-        </Link>
+            {itemCount > 0 ? (
+              <span className="absolute top-0 right-0 min-w-[16px] h-4 px-1 rounded-full bg-svs-orange text-white text-[9px] sm:text-[10px] font-bold flex items-center justify-center z-10">
+                {itemCount > 99 ? "99+" : itemCount}
+              </span>
+            ) : null}
+          </Link>
         )
       ) : null}
 
@@ -435,10 +435,10 @@ export default function Navbar({
       data-account-page={accountPage ? "true" : "false"}
       style={{ backgroundColor: menuMode ? "#fff4ee" : "transparent" }}
       className={`fixed left-0 right-0 z-[1400] ${menuMode
-          ? "flex flex-col md:flex-row md:items-center"
-          : homePage
-            ? "flex flex-nowrap items-end h-14 sm:h-16 md:h-20 lg:h-[72px]"
-            : "flex flex-nowrap items-center"
+        ? "flex flex-col md:flex-row md:items-center"
+        : homePage
+          ? "flex flex-nowrap items-end h-14 sm:h-16 md:h-20 lg:h-[72px]"
+          : "flex flex-nowrap items-center"
         } px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b ${menuMode ? "border-black/10" : "border-transparent"} shadow-none ${homePage
           ? "top-3 sm:top-4 lg:top-5 pb-1.5 sm:pb-2 lg:pb-2.5"
           : "top-0 pt-3 md:pt-4 pb-2 sm:pb-3"
@@ -469,14 +469,14 @@ export default function Navbar({
               />
             </div>
 
-            <div className="hidden md:block absolute left-1/2 top-1/2 z-[3] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+            <div className="hidden lg:block absolute left-1/2 top-1/2 z-[3] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
               <div className="pointer-events-auto">
                 <MenuNavSearch />
               </div>
             </div>
 
             <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2] gap-0.5 min-[400px]:gap-1 sm:gap-1.5 lg:gap-2.5 pl-1">
-              <div className="hidden md:block">
+              <div className="hidden lg:block">
                 <OrangeCartButton />
               </div>
               <div
