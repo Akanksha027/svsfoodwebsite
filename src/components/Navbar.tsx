@@ -354,7 +354,11 @@ function NavIcons({
       {!menuMode && !accountPage ? (
         <Link
           href="/menu"
-          className={`${iconBtn} relative flex items-center justify-center`}
+          className={
+            homePage
+              ? `${hero ? navOrderBtnHero : navOrderBtn} w-14 h-14 sm:w-16 sm:h-16 md:w-[4.5rem] md:h-[4.5rem] lg:w-20 lg:h-20`
+              : `${iconBtn} relative flex items-center justify-center`
+          }
           id="btn-menu"
           aria-label="Order now"
           onClick={onNavigate}
@@ -362,7 +366,11 @@ function NavIcons({
           <img
             src="/Package.png"
             alt="Order now"
-            className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 object-contain hover:scale-110 transition-transform duration-200"
+            className={
+              homePage
+                ? "w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-[4.5rem] lg:h-[4.5rem] object-contain hover:scale-110 transition-transform duration-200"
+                : "w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 object-contain hover:scale-110 transition-transform duration-200"
+            }
           />
         </Link>
       ) : null}

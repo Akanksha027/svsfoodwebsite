@@ -53,8 +53,8 @@ export const STAGE_LABELS: Record<OrderStageId, { title: string; hint: string }>
     hint: "Enjoy your meal!",
   },
   cancelled: {
-    title: "Cancelled",
-    hint: "This order is no longer active",
+    title: "Order cancelled",
+    hint: "We’d love to cook for you again — order from SVS Food",
   },
 };
 
@@ -648,18 +648,67 @@ function SceneDelivered() {
   );
 }
 
+/** Cancelled — invite them to order from SVS again */
 function SceneCancelled() {
   return (
-    <svg viewBox="0 0 280 200" className="h-full w-full" aria-hidden>
-      <ellipse cx="140" cy="168" rx="60" ry="9" fill="#1a1a1a" opacity="0.06" />
-      <circle cx="140" cy="100" r="40" fill="#fff4ee" stroke="#e8d4c4" strokeWidth="3" />
-      <path
-        d="M124 84l32 32M156 84l-32 32"
-        stroke="#f16a34"
-        strokeWidth="5"
-        strokeLinecap="round"
-      />
-    </svg>
+    <div className="oss-cancel relative flex h-full w-full flex-col items-center justify-center px-4 pb-3 pt-2" aria-hidden>
+      <div className="pointer-events-none absolute bottom-4 left-1/2 h-2.5 w-[55%] -translate-x-1/2 rounded-[100%] bg-svs-ink/[0.05]" />
+
+      {/* Soft rings */}
+      <div className="oss-cancel-ring pointer-events-none absolute left-1/2 top-[42%] h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full border border-svs-orange/20" />
+      <div className="oss-cancel-ring pointer-events-none absolute left-1/2 top-[42%] h-36 w-36 -translate-x-1/2 -translate-y-1/2 rounded-full border border-svs-orange/10" style={{ animationDelay: "0.6s" }} />
+
+      <div className="relative z-[1] flex w-full max-w-[260px] flex-col items-center">
+        {/* Soft cancel mark */}
+        <div className="oss-cancel-mark relative mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-svs-cream ring-1 ring-svs-orange/20">
+          <svg className="h-6 w-6 text-svs-orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden>
+            <path d="M8 8l8 8M16 8l-8 8" />
+          </svg>
+        </div>
+
+        {/* Friendly SVS bag inviting back */}
+        <div className="oss-cancel-bag relative mb-3">
+          <div
+            className="relative h-[72px] w-[56px] bg-[#c4a078]"
+            style={{
+              clipPath:
+                "polygon(0% 7%, 4% 0%, 8% 7%, 12% 0%, 16% 7%, 20% 0%, 24% 7%, 28% 0%, 32% 7%, 36% 0%, 40% 7%, 44% 0%, 48% 7%, 52% 0%, 56% 7%, 60% 0%, 64% 7%, 68% 0%, 72% 7%, 76% 0%, 80% 7%, 84% 0%, 88% 7%, 92% 0%, 96% 7%, 100% 0%, 100% 100%, 0% 100%)",
+            }}
+          >
+            <div className="absolute inset-x-0 bottom-0 top-[18%] flex flex-col items-center justify-center text-white">
+              <span className="relative text-[15px] font-black leading-none tracking-wide">
+                SVS
+                <span className="absolute -right-2.5 -top-0.5 text-[7px]">★</span>
+              </span>
+              <span className="mt-0.5 text-[9px] font-bold tracking-[0.12em]">FOOD</span>
+            </div>
+            <div className="absolute bottom-0 right-0 top-[7%] w-[18%] bg-[#b89268]/90" />
+          </div>
+          {/* little wave hand */}
+          <span className="oss-cancel-wave absolute -right-6 top-1 flex h-7 w-7 items-center justify-center rounded-full bg-svs-cream text-svs-orange ring-1 ring-svs-orange/15" aria-hidden>
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 11v4a5 5 0 0010 0v-1" />
+              <path d="M7 11V8a1.5 1.5 0 013 0v3" />
+              <path d="M10 11V6a1.5 1.5 0 013 0v5" />
+              <path d="M13 11V7a1.5 1.5 0 013 0v4" />
+              <path d="M16 11v-1a1.5 1.5 0 013 0v5a2 2 0 01-.5 1.3" />
+            </svg>
+          </span>
+        </div>
+
+        <p className="oss-cancel-copy text-center text-[13px] font-extrabold leading-snug text-svs-ink">
+          Still craving something good?
+        </p>
+        <p className="oss-cancel-copy mt-1 text-center text-[11px] font-semibold text-svs-orange" style={{ animationDelay: "0.15s" }}>
+          Order again from SVS Food
+        </p>
+
+        {/* soft sparkles */}
+        <span className="oss-cancel-spark absolute left-[18%] top-[28%] h-1.5 w-1.5 rounded-full bg-svs-orange/70" />
+        <span className="oss-cancel-spark absolute right-[20%] top-[34%] h-1 w-1 rounded-full bg-svs-orange/50" style={{ animationDelay: "0.4s" }} />
+        <span className="oss-cancel-spark absolute right-[28%] top-[52%] h-1.5 w-1.5 rounded-full bg-[#ffd166]" style={{ animationDelay: "0.8s" }} />
+      </div>
+    </div>
   );
 }
 

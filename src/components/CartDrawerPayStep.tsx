@@ -248,11 +248,11 @@ export default function CartDrawerPayStep({
         ) : null}
       </div>
 
-      <div className="shrink-0 border-t border-gray-100 px-4 py-3 bg-white">
+      <div className="shrink-0 border-t border-gray-100 px-4 py-3 bg-white rounded-bl-[2rem]">
         <button
           type="button"
           onClick={onCancel}
-          className="h-11 w-full rounded-xl border border-gray-200 bg-white text-sm font-bold text-gray-700 cursor-pointer hover:bg-gray-50"
+          className="h-11 w-full rounded-2xl border border-gray-200 bg-white text-sm font-bold text-gray-700 cursor-pointer hover:bg-gray-50"
         >
           Cancel payment
         </button>

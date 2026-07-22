@@ -335,6 +335,77 @@
   }
 }
 
+@keyframes oss-cancel-bag {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(2deg);
+  }
+}
+
+@keyframes oss-cancel-wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(18deg);
+  }
+  50% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(14deg);
+  }
+}
+
+@keyframes oss-cancel-mark {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes oss-cancel-copy {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes oss-cancel-ring {
+  0% {
+    opacity: 0.55;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.25);
+  }
+}
+
+@keyframes oss-cancel-spark {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
 .oss-root {
   animation: oss-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -489,6 +560,33 @@
   animation: oss-cod-phone 3s ease-in-out infinite;
 }
 
+.oss-cancel-bag {
+  animation: oss-cancel-bag 2.6s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.oss-cancel-wave {
+  display: inline-block;
+  transform-origin: bottom left;
+  animation: oss-cancel-wave 1.6s ease-in-out infinite;
+}
+
+.oss-cancel-mark {
+  animation: oss-cancel-mark 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.oss-cancel-copy {
+  animation: oss-cancel-copy 0.6s ease-out both;
+}
+
+.oss-cancel-ring {
+  animation: oss-cancel-ring 2.4s ease-out infinite;
+}
+
+.oss-cancel-spark {
+  animation: oss-cancel-spark 1.6s ease-in-out infinite;
+}
+
 .oss-confetti {
   animation: oss-confetti 2s ease-out infinite;
 }
@@ -521,6 +619,12 @@
   .oss-arrived-rider,
   .oss-cod-cash,
   .oss-cod-phone,
+  .oss-cancel-bag,
+  .oss-cancel-wave,
+  .oss-cancel-mark,
+  .oss-cancel-copy,
+  .oss-cancel-ring,
+  .oss-cancel-spark,
   .oss-confetti,
   .oss-pulse-ring,
   .oss-packer-arm,

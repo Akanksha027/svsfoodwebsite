@@ -471,7 +471,7 @@ export default function CartCheckoutForm({
 
         </div>
 
-        <div className="shrink-0 border-t border-gray-100 px-4 py-2.5 bg-white flex flex-col gap-2.5">
+        <div className="shrink-0 border-t border-gray-100 px-4 py-2.5 bg-white flex flex-col gap-2.5 rounded-bl-[2rem]">
           {stepError && !stepError.startsWith("Enter") && !stepError.startsWith("Please complete") ? (
             <div className="flex items-start gap-1.5 px-3 py-2 bg-[#f16a34]/5 border border-[#f16a34]/20 rounded-lg">
               <svg className="w-4 h-4 text-[#f16a34] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
@@ -483,7 +483,7 @@ export default function CartCheckoutForm({
           <button
             type="button"
             onClick={handleContinue}
-            className="w-full h-10 rounded-xl bg-[#f16a34] text-white font-bold text-[13.5px] cursor-pointer hover:bg-[#e05a28] transition-colors"
+            className="w-full h-10 rounded-2xl bg-[#f16a34] text-white font-bold text-[13.5px] cursor-pointer hover:bg-[#e05a28] transition-colors"
           >
             Continue
           </button>
@@ -627,12 +627,12 @@ export default function CartCheckoutForm({
         ) : null}
       </div>
 
-      <div className="shrink-0 border-t border-gray-100 px-5 py-4 bg-white">
+      <div className="shrink-0 border-t border-gray-100 px-5 py-4 bg-white rounded-bl-[2rem]">
         <button
           type="button"
           disabled={busy}
           onClick={() => void handlePlaceOrderClick()}
-          className="w-full h-14 rounded-xl bg-[#f16a34] text-white font-extrabold text-sm cursor-pointer disabled:opacity-50 shadow-md"
+          className="w-full h-14 rounded-2xl bg-[#f16a34] text-white font-extrabold text-sm cursor-pointer disabled:opacity-50 shadow-md"
         >
           {busy
             ? "Placing order…"

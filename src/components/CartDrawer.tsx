@@ -449,7 +449,7 @@ export default function CartDrawer() {
         data-scroll-lock-allow
         aria-label="My cart"
         aria-hidden={!isOpen}
-        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,450px)] xl:w-[480px] bg-white sm:rounded-l-[2rem] border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
+        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,450px)] xl:w-[480px] overflow-hidden bg-white rounded-tl-[2rem] rounded-bl-[2rem] border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
         style={{
@@ -729,7 +729,7 @@ export default function CartDrawer() {
               </div>
             </div>
 
-            <div className="shrink-0 border-t border-gray-200 bg-white px-4 py-3">
+            <div className="shrink-0 border-t border-gray-200 bg-white px-4 py-3 rounded-bl-[2rem]">
               <button
                 type="button"
                 onClick={() => {
@@ -740,7 +740,7 @@ export default function CartDrawer() {
                     advanceCheckout("checkout2");
                   }
                 }}
-                className="flex items-center justify-between w-full h-[52px] rounded-lg px-4 text-white border-0 cursor-pointer shadow-md"
+                className="flex items-center justify-between w-full h-[52px] rounded-2xl px-4 text-white border-0 cursor-pointer shadow-md"
                 style={{ backgroundColor: SVS_ORANGE }}
               >
                 <span className="text-sm font-bold uppercase tracking-wide opacity-95">
