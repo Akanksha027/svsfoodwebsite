@@ -123,8 +123,9 @@ export default function CartCheckoutForm({
   onAddressSelectionChange,
 }: Props) {
   const [stepError, setStepError] = useState<string | null>(null);
+  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
   const [savedAddressId, setSavedAddressId] = useState<string | "new">("new");
-  const { customer, refreshCustomer, setCustomer } = useWebsiteAuth();
+  const { customer, refreshCustomer, setCustomer, openLogin } = useWebsiteAuth();
   const prefillDone = useRef(false);
 
   const {
@@ -229,6 +230,7 @@ export default function CartCheckoutForm({
 
   const handleContinue = () => {
     resetErrors();
+    setAttemptedSubmit(true);
     const msg = validateOrderStep();
     if (msg) {
       setStepError(msg);
@@ -260,33 +262,28 @@ export default function CartCheckoutForm({
     setStepError(null);
     phoneOtp.setOtpError(null);
 
+    if (!customer) {
+      setStepError("Please log in to place your order.");
+      openLogin();
+      return;
+    }
+
     const contact = normalizeIndianMobile(phone);
     if (!isValidIndianMobile(contact)) {
       setStepError("Enter a valid 10-digit contact mobile number.");
       return;
     }
 
-    if (!customer) {
-      const verified = await phoneOtp.ensureVerified();
-      if (!verified) {
-        setStepError(
-          phoneOtp.otpError ||
-            "Enter the WhatsApp code to confirm your number.",
-        );
-        return;
-      }
-    } else {
-      try {
-        await persistContactMobile(contact);
-      } catch (e) {
-        setStepError(
-          e instanceof Error
-            ? e.message
-            : "Could not save contact mobile. Try again.",
-        );
-        void refreshCustomer();
-        return;
-      }
+    try {
+      await persistContactMobile(contact);
+    } catch (e) {
+      setStepError(
+        e instanceof Error
+          ? e.message
+          : "Could not save contact mobile. Try again.",
+      );
+      void refreshCustomer();
+      return;
     }
     await onPlaceOrder();
   };
@@ -295,9 +292,9 @@ export default function CartCheckoutForm({
     return (
       <div className="flex flex-col min-h-0 flex-1 bg-white overflow-hidden">
         <CheckoutProgress page={1} />
-        <div className="flex-1 min-h-0 overflow-hidden px-4 pb-2 pt-2.5 bg-white">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 pb-4 pt-2.5 bg-white">
           {orderType === "delivery" ? (
-            <section className="space-y-2.5 h-full min-w-0 overflow-x-hidden">
+            <section className="space-y-3 min-w-0">
               {/* Header */}
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
@@ -375,9 +372,12 @@ export default function CartCheckoutForm({
                         markNewIfEdited();
                         setFlat(e.target.value);
                       }}
-                      className={inputClass}
+                      className={`${inputClass} ${attemptedSubmit && flat.trim().length < 2 ? "border-[#f16a34] focus:border-[#f16a34] focus:ring-[#f16a34]/15" : ""}`}
                       placeholder="402, Tower B"
                     />
+                    {attemptedSubmit && flat.trim().length < 2 && (
+                      <p className="mt-1 text-[10px] text-[#f16a34] font-medium leading-tight">Enter flat / house</p>
+                    )}
                   </label>
                   <label className="block">
                     <span className="text-[11px] font-semibold text-gray-700">
@@ -389,9 +389,12 @@ export default function CartCheckoutForm({
                         markNewIfEdited();
                         setStreet(e.target.value);
                       }}
-                      className={inputClass}
+                      className={`${inputClass} ${attemptedSubmit && street.trim().length < 3 ? "border-[#f16a34] focus:border-[#f16a34] focus:ring-[#f16a34]/15" : ""}`}
                       placeholder="Society, road"
                     />
+                    {attemptedSubmit && street.trim().length < 3 && (
+                      <p className="mt-1 text-[10px] text-[#f16a34] font-medium leading-tight">Enter street name</p>
+                    )}
                   </label>
                 </div>
                 <label className="block">
@@ -404,9 +407,12 @@ export default function CartCheckoutForm({
                       markNewIfEdited();
                       setArea(e.target.value);
                     }}
-                    className={inputClass}
+                    className={`${inputClass} ${attemptedSubmit && area.trim().length < 6 ? "border-[#f16a34] focus:border-[#f16a34] focus:ring-[#f16a34]/15" : ""}`}
                     placeholder="Neighbourhood, city"
                   />
+                  {attemptedSubmit && area.trim().length < 6 && (
+                    <p className="mt-1 text-[10px] text-[#f16a34] font-medium leading-tight">Enter area / locality</p>
+                  )}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <label className="block">
@@ -463,14 +469,17 @@ export default function CartCheckoutForm({
             </div>
           )}
 
-          {stepError ? (
-            <p className="mt-2 text-[11px] font-medium text-gray-800 border border-gray-200 rounded-lg px-2.5 py-2 bg-white">
-              {stepError}
-            </p>
-          ) : null}
         </div>
 
-        <div className="shrink-0 border-t border-gray-100 px-4 py-2.5 bg-white">
+        <div className="shrink-0 border-t border-gray-100 px-4 py-2.5 bg-white flex flex-col gap-2.5">
+          {stepError && !stepError.startsWith("Enter") && !stepError.startsWith("Please complete") ? (
+            <div className="flex items-start gap-1.5 px-3 py-2 bg-[#f16a34]/5 border border-[#f16a34]/20 rounded-lg">
+              <svg className="w-4 h-4 text-[#f16a34] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+              <p className="text-[12px] font-medium text-[#f16a34] leading-snug">
+                {stepError}
+              </p>
+            </div>
+          ) : null}
           <button
             type="button"
             onClick={handleContinue}
@@ -483,6 +492,30 @@ export default function CartCheckoutForm({
     );
   }
 
+
+  if (page === 2 && !customer) {
+    return (
+      <div className="flex flex-col min-h-0 flex-1 bg-white overflow-hidden">
+        <CheckoutProgress page={2} />
+        <div className="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
+          <p className="text-base font-bold text-gray-900 mb-2">
+            Log in to continue
+          </p>
+          <p className="text-sm text-gray-500 mb-6 max-w-[280px] leading-relaxed">
+            Sign in with your mobile number to review payment options and place
+            your order.
+          </p>
+          <button
+            type="button"
+            onClick={() => openLogin()}
+            className="h-11 px-6 rounded-xl bg-[#f16a34] text-white font-bold text-sm cursor-pointer hover:bg-[#e05a28]"
+          >
+            Log in
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-0 flex-1">
@@ -597,11 +630,11 @@ export default function CartCheckoutForm({
       <div className="shrink-0 border-t border-gray-100 px-5 py-4 bg-white">
         <button
           type="button"
-          disabled={busy || (!customer && phoneOtp.verifyBusy)}
+          disabled={busy}
           onClick={() => void handlePlaceOrderClick()}
           className="w-full h-14 rounded-xl bg-[#f16a34] text-white font-extrabold text-sm cursor-pointer disabled:opacity-50 shadow-md"
         >
-          {busy || (!customer && phoneOtp.verifyBusy)
+          {busy
             ? "Placing order…"
             : effectivePay === "cod"
               ? `Confirm order · ${formatInr(totals.grandTotal)}`
@@ -619,11 +652,21 @@ export function CartCheckoutFormPaged(props: {
   onAddressSelectionChange?: (id: string | "new") => void;
 }) {
   const [page, setPage] = useState<1 | 2>(1);
+  const { customer, openLogin } = useWebsiteAuth();
+
+  const goToPayment = () => {
+    if (customer) {
+      setPage(2);
+      return;
+    }
+    openLogin({ onSuccess: () => setPage(2) });
+  };
+
   return (
     <CartCheckoutForm
       {...props}
       page={page}
-      onContinue={() => setPage(2)}
+      onContinue={goToPayment}
       onBack={page === 2 ? () => setPage(1) : undefined}
     />
   );

@@ -247,6 +247,7 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
             <p className="mt-2.5 text-[13px] font-bold text-svs-ink tracking-wide">
               SVS FOOD Private Limited
             </p>
+            {/* 
             <div className="flex items-center gap-2 mt-2 flex-wrap">
               <div className="flex flex-col items-center justify-center shrink-0 w-fit">
                 <div className="h-[2px] w-full bg-[#E3792E]" />
@@ -259,6 +260,7 @@ export default function Footer({ menuStoreId }: FooterProps = {}) {
                 FSSAI LICENSE NO. 1142145000031
               </span>
             </div>
+            */}
             <div className="mt-4 pt-3 border-t border-svs-cream max-w-sm">
               <p className="text-[11px] font-bold uppercase tracking-wider text-svs-ink mb-1.5">
                 Corporate Address

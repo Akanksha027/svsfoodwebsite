@@ -9,7 +9,6 @@ import { useEffect } from "react";
  */
 let lockCount = 0;
 let lockedScrollY = 0;
-let scrollbarComp = 0;
 
 function preventScroll(e: Event) {
   // Allow scrolling inside modal/dialog panels
@@ -20,24 +19,16 @@ function preventScroll(e: Event) {
   e.preventDefault();
 }
 
-function scrollbarWidth() {
-  return Math.max(0, window.innerWidth - document.documentElement.clientWidth);
-}
-
 function applyLock() {
   lockedScrollY = window.scrollY || window.pageYOffset || 0;
-  scrollbarComp = scrollbarWidth();
   const html = document.documentElement;
 
   html.classList.add("svs-scroll-locked");
   html.style.overflow = "hidden";
   html.style.overflowY = "hidden";
   html.style.overscrollBehavior = "none";
-  html.style.scrollbarGutter = "auto";
-  if (scrollbarComp > 0) {
-    html.style.paddingRight = `${scrollbarComp}px`;
-    html.style.setProperty("--svs-scrollbar-comp", `${scrollbarComp}px`);
-  }
+  // Keep scrollbar-gutter: stable (set in globals.css) so fixed chrome
+  // does not jump when the scrollbar is hidden.
 
   document.body.style.overflow = "hidden";
   document.body.style.overscrollBehavior = "none";
@@ -53,9 +44,6 @@ function clearLock() {
   html.style.overflow = "";
   html.style.overflowY = "";
   html.style.overscrollBehavior = "";
-  html.style.scrollbarGutter = "";
-  html.style.paddingRight = "";
-  html.style.removeProperty("--svs-scrollbar-comp");
 
   document.body.style.overflow = "";
   document.body.style.overscrollBehavior = "";
@@ -66,7 +54,6 @@ function clearLock() {
 
   // Restore exact scroll if anything drifted
   window.scrollTo(0, lockedScrollY);
-  scrollbarComp = 0;
 }
 
 export function lockBodyScroll() {

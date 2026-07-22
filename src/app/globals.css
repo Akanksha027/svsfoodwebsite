@@ -46,21 +46,15 @@ html {
   scrollbar-gutter: stable;
 }
 
-/* When cart / modal locks scroll — hide page scrollbar completely */
+/* When cart / modal locks scroll — hide page scrollbar, keep gutter stable */
 html.svs-scroll-locked {
   overflow: hidden !important;
   overflow-y: hidden !important;
-  scrollbar-gutter: auto !important;
+  scrollbar-gutter: stable !important;
 }
 
 html.svs-scroll-locked body {
   overflow: hidden !important;
-}
-
-/* Keep fixed chrome aligned when scrollbar disappears */
-html.svs-scroll-locked #main-navbar,
-html.svs-scroll-locked .cart-bar-shell {
-  padding-right: var(--svs-scrollbar-comp, 0px);
 }
 
 .font-bagoss {

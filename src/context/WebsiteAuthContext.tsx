@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -19,12 +20,17 @@ import {
 } from "@/lib/website-customer-api";
 import { WEBSITE_CUSTOMER_TOKEN_KEY } from "@/lib/config";
 
+type OpenLoginOptions = {
+  /** Runs once after OTP login succeeds (e.g. resume checkout). */
+  onSuccess?: () => void;
+};
+
 type WebsiteAuthContextValue = {
   customer: WebsiteCustomer | null;
   token: string | null;
   loading: boolean;
   loginOpen: boolean;
-  openLogin: () => void;
+  openLogin: (options?: OpenLoginOptions) => void;
   closeLogin: () => void;
   accountMenuOpen: boolean;
   openAccountMenu: () => void;
@@ -47,6 +53,23 @@ export function WebsiteAuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [loginOpen, setLoginOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const postLoginSuccessRef = useRef<(() => void) | null>(null);
+
+  const runPostLoginSuccess = useCallback(() => {
+    const cb = postLoginSuccessRef.current;
+    postLoginSuccessRef.current = null;
+    cb?.();
+  }, []);
+
+  const openLogin = useCallback((options?: OpenLoginOptions) => {
+    postLoginSuccessRef.current = options?.onSuccess ?? null;
+    setLoginOpen(true);
+  }, []);
+
+  const closeLogin = useCallback(() => {
+    postLoginSuccessRef.current = null;
+    setLoginOpen(false);
+  }, []);
 
   const refreshCustomer = useCallback(async () => {
     const t =
@@ -111,8 +134,9 @@ export function WebsiteAuthProvider({ children }: { children: ReactNode }) {
       setToken(result.token);
       setCustomer(result.customer);
       setLoginOpen(false);
+      runPostLoginSuccess();
     },
-    [],
+    [runPostLoginSuccess],
   );
 
   const openAccountMenu = useCallback(() => setAccountMenuOpen(true), []);
@@ -130,8 +154,8 @@ export function WebsiteAuthProvider({ children }: { children: ReactNode }) {
       token,
       loading,
       loginOpen,
-      openLogin: () => setLoginOpen(true),
-      closeLogin: () => setLoginOpen(false),
+      openLogin,
+      closeLogin,
       accountMenuOpen,
       openAccountMenu,
       closeAccountMenu,
@@ -149,6 +173,8 @@ export function WebsiteAuthProvider({ children }: { children: ReactNode }) {
       refreshCustomer,
       completeLogin,
       logout,
+      openLogin,
+      closeLogin,
       openAccountMenu,
       closeAccountMenu,
     ],

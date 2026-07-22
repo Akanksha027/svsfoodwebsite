@@ -713,13 +713,14 @@ function MenuItemCard({
             openCard();
           }
         }}
-        className={`flex flex-col h-full rounded-xl border border-svs-cream bg-svs-white overflow-hidden ${
+        className={`flex flex-col rounded-xl border border-svs-cream bg-svs-white overflow-hidden ${
           available ? "" : "opacity-60"
         } ${customisable && available ? "cursor-pointer" : ""}`}
       >
+        {/* Square image area — 60% of card height */}
         <div
           ref={imageRef}
-          className="relative w-full aspect-[4/3] flex items-center justify-center bg-svs-cream shrink-0"
+          className="relative w-full aspect-square flex items-center justify-center bg-svs-cream/60 shrink-0 overflow-hidden"
         >
           {displayImage ? (
             <Image
@@ -733,6 +734,7 @@ function MenuItemCard({
           ) : (
             <div className="text-xs font-semibold text-svs-orange/40">SVS</div>
           )}
+          {/* Veg/Non-veg dot removed */}
           {!available ? (
             <div className="absolute inset-0 flex items-center justify-center bg-svs-white/70">
               <span className="text-[11px] font-bold text-svs-orange-dark uppercase tracking-wide">
@@ -742,39 +744,40 @@ function MenuItemCard({
           ) : null}
         </div>
 
-        <div className="flex flex-col flex-1 p-2 sm:p-2.5">
-          <h3 className="text-[13px] sm:text-sm font-semibold text-svs-ink leading-snug line-clamp-2 min-h-[2.6em] mb-auto">
+        {/* Info + action section */}
+        <div className="flex flex-col flex-1 px-2.5 pt-2 pb-2.5 gap-1.5">
+          {/* Item name */}
+          <h3 className="text-[12px] sm:text-[13px] font-semibold text-svs-ink leading-snug line-clamp-2 flex-1">
             {item.name}
           </h3>
 
-          <div className="flex items-end justify-between gap-2 mt-2 pt-1">
-            <div className="min-w-0">
-              <p className="text-[15px] sm:text-base font-bold text-svs-ink leading-none tabular-nums">
-                {formatInr(unitPrice)}
-              </p>
-            </div>
+          {/* Price row + Add button */}
+          <div className="flex items-center justify-between gap-1 mt-auto">
+            <p className="text-[14px] sm:text-[15px] font-bold text-svs-ink leading-none tabular-nums">
+              {formatInr(unitPrice)}
+            </p>
 
             {quantity > 0 ? (
               <div
-                className="shrink-0 inline-flex items-center h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm"
+                className="shrink-0 inline-flex items-center h-7 sm:h-8 rounded-lg bg-svs-orange text-white overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
                   type="button"
                   onClick={onDecrement}
-                  className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
+                  className="w-7 sm:w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
                   aria-label={`Remove one ${item.name}`}
                 >
                   −
                 </button>
-                <span className="min-w-[22px] flex items-center justify-center">
-                  <RollingCounter value={quantity} fontSize={14} color="#ffffff" />
+                <span className="min-w-[20px] flex items-center justify-center text-[13px] font-bold">
+                  <RollingCounter value={quantity} fontSize={13} color="#ffffff" />
                 </span>
                 <button
                   type="button"
                   disabled={!available}
                   onClick={onIncrement}
-                  className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
+                  className="w-7 sm:w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
                   aria-label={`Add one ${item.name}`}
                 >
                   +
@@ -788,9 +791,9 @@ function MenuItemCard({
                   e.stopPropagation();
                   onAdd();
                 }}
-                className="shrink-0 h-8 min-w-[64px] px-3 rounded-lg border-2 border-svs-orange bg-svs-cream text-svs-orange text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
+                className="shrink-0 h-7 sm:h-8 min-w-[52px] px-2.5 sm:px-3 rounded-lg border-2 border-svs-orange bg-svs-white text-svs-orange text-[11px] sm:text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-orange hover:text-white disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:cursor-not-allowed transition-all duration-150"
               >
-                Add
+                ADD
               </button>
             )}
           </div>

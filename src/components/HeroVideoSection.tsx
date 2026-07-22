@@ -3,11 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import AnimatedOrderButton from "@/components/AnimatedOrderButton";
 
-const HERO_VIDEO_SRC = "/bg1.mp4";
+const HERO_VIDEO_SRC = "/bg.mp4";
 
 const HERO_LINES = [
   "We make our own buns",
-  "हम खुद बनाते हैं अपने बन",
 ] as const;
 
 const TYPE_MS = 70;
@@ -59,8 +58,6 @@ export default function HeroVideoSection() {
     return () => clearTimeout(timer);
   }, [display, phase, lineIndex]);
 
-  const isHindi = lineIndex === 1;
-
   return (
     <section
       className="relative w-full h-[100svh] min-h-[480px] max-h-[1200px] overflow-hidden bg-svs-ink"
@@ -88,9 +85,7 @@ export default function HeroVideoSection() {
         <div className="flex w-full flex-col items-center gap-8 sm:gap-10">
           <div className="flex flex-col items-center gap-3 sm:gap-4">
             <h1
-              className={`max-w-[min(96vw,28ch)] text-center text-[clamp(1.45rem,4.6vw,3.75rem)] font-bold leading-[1.2] tracking-[0.02em] text-[#faf3dc] ${
-                isHindi ? "normal-case" : "uppercase"
-              }`}
+              className="max-w-[min(96vw,28ch)] text-center text-[clamp(1.45rem,4.6vw,3.75rem)] font-bold leading-[1.2] tracking-[0.02em] text-[#faf3dc] uppercase"
               id="hero-text"
               aria-live="polite"
             >

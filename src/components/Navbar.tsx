@@ -353,39 +353,16 @@ function NavIcons({
       {!menuMode && !accountPage ? (
         <Link
           href="/menu"
-          className={hero ? navOrderBtnHero : navOrderBtn}
+          className={`${iconBtn} relative flex items-center justify-center`}
           id="btn-menu"
           aria-label="Order now"
           onClick={onNavigate}
         >
-          <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-visible">
-            <span className="nav-order-bag-scale">
-              <span
-                className="block w-[96px] h-[128px] relative"
-                style={{ perspective: "900px" }}
-              >
-                <span className="block w-full h-full relative revolving-bag revolving-bag--slow footer-envelope-bag nav-order-bag">
-                  <span className="bag-face bag-back footer-bag-front">
-                    <span className="nav-order-bag__label" aria-hidden>
-                      ORDER
-                      <br />
-                      NOW
-                    </span>
-                  </span>
-                  <span className="bag-face bag-left" />
-                  <span className="bag-face bag-right" />
-                  <span className="bag-face footer-bag-bottom" aria-hidden />
-                  <span className="bag-face bag-front footer-bag-front">
-                    <span className="nav-order-bag__label" aria-hidden>
-                      ORDER
-                      <br />
-                      NOW
-                    </span>
-                  </span>
-                </span>
-              </span>
-            </span>
-          </span>
+          <img
+            src="/Package.png"
+            alt="Order now"
+            className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 object-contain hover:scale-110 transition-transform duration-200"
+          />
         </Link>
       ) : null}
     </>
