@@ -51,9 +51,9 @@ export default function HeroVideoSection() {
           <Image
             src="/svsherosectionlogo.png"
             alt="SVS Hero Logo"
-            width={360}
-            height={180}
-            className="w-[160px] sm:w-[220px] md:w-[280px] lg:w-[360px] object-contain drop-shadow-lg"
+            width={480}
+            height={240}
+            className="w-[200px] sm:w-[280px] md:w-[360px] lg:w-[440px] object-contain drop-shadow-lg"
             priority
           />
         </div>

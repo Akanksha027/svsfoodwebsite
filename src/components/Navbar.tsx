@@ -429,7 +429,7 @@ export default function Navbar({
         : homePage
           ? "flex flex-nowrap items-end h-14 sm:h-16 md:h-20 lg:h-[72px]"
           : "flex flex-nowrap items-center"
-        } px-3 sm:px-4 md:px-6 lg:px-8 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b ${menuMode ? "border-black/10" : "border-transparent"} shadow-none ${homePage
+        } pl-3 sm:pl-4 md:pl-6 lg:pl-8 pr-1 sm:pr-2 md:pr-3 lg:pr-4 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b ${menuMode ? "border-black/10" : "border-transparent"} shadow-none ${homePage
           ? "top-3 sm:top-4 lg:top-5 pb-1.5 sm:pb-2 lg:pb-2.5"
           : "top-0 pt-3 md:pt-4 pb-2 sm:pb-3"
         } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-500"}`}

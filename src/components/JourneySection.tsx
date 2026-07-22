@@ -43,9 +43,6 @@ function JourneyCard({ stop }: { stop: JourneyStop }) {
           {stop.title}
         </p>
 
-        <p className="mb-3 text-[0.85rem] md:text-[0.95rem] leading-relaxed italic text-svs-ink/70">
-          &ldquo;{stop.tagline}&rdquo;
-        </p>
 
         <p className="text-[0.85rem] md:text-[0.95rem] leading-[25px] text-svs-ink/75">
           {stop.description}
