@@ -47,7 +47,7 @@ export default function HeroVideoSection() {
 
       <div className="relative z-[2] flex h-full flex-col items-center justify-center px-5 pb-10 sm:px-8 sm:pb-12 md:px-10 md:pb-14 lg:px-14 lg:pb-16 text-center">
         {/* Absolute positioned logo so it doesn't push the centered text down */}
-        <div className="absolute top-[15%] sm:top-[20%] left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none">
+        <div className="absolute top-[5%] sm:top-[8%] md:top-[10%] left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none">
           <Image
             src="/svsherosectionlogo.png"
             alt="SVS Hero Logo"
