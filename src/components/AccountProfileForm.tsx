@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   updateCustomerProfile,
   uploadCustomerPhoto,
@@ -15,6 +15,15 @@ import {
   getPreferredOrderContact,
   setPreferredOrderContact,
 } from "@/lib/order-contact-mobile";
+
+function resolveSavedOrderContact(customer: WebsiteCustomer): string {
+  const login = normalizeIndianMobile(customer.phone);
+  const preferred = getPreferredOrderContact(customer.id);
+  const fromProfile = normalizeIndianMobile(customer.alternate_phone || "");
+  const alt = preferred || fromProfile;
+  if (!alt || alt === login || !isValidIndianMobile(alt)) return "";
+  return alt;
+}
 
 const GENDER_OPTIONS = [
   { value: "", label: "Select gender" },
@@ -71,17 +80,23 @@ export default function AccountProfileForm({
   const [email, setEmail] = useState(customer.email || "");
   const [gender, setGender] = useState(customer.gender || "");
   const [dob, setDob] = useState(customer.date_of_birth || "");
-  const [alternatePhone, setAlternatePhone] = useState(() => {
-    const preferred = getPreferredOrderContact(customer.id);
-    return (
-      preferred || normalizeIndianMobile(customer.alternate_phone || "")
-    );
-  });
+  const [alternatePhone, setAlternatePhone] = useState(() =>
+    resolveSavedOrderContact(customer),
+  );
+  const [showOrderContact, setShowOrderContact] = useState(
+    () => Boolean(resolveSavedOrderContact(customer)),
+  );
   const [saving, setSaving] = useState(false);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState(customer.photo_url || null);
+
+  useEffect(() => {
+    const alt = resolveSavedOrderContact(customer);
+    setAlternatePhone(alt);
+    setShowOrderContact(Boolean(alt));
+  }, [customer]);
 
   const initial = (customer.name || customer.phone || "U").charAt(0).toUpperCase();
   const completion = useMemo(() => profileCompletion({ ...customer, name, email, gender, date_of_birth: dob, photo_url: previewUrl }), [customer, name, email, gender, dob, previewUrl]);
@@ -91,12 +106,18 @@ export default function AccountProfileForm({
     setError(null);
     setOk(null);
     try {
-      const alt = normalizeIndianMobile(alternatePhone);
-      if (alt && !isValidIndianMobile(alt)) {
-        throw new Error("Enter a valid 10-digit order contact mobile");
-      }
-      if (alt && alt === customer.phone) {
-        throw new Error("Order contact should be different from login number");
+      let nextAlt: string | null = null;
+      if (showOrderContact) {
+        const alt = normalizeIndianMobile(alternatePhone);
+        if (alt && !isValidIndianMobile(alt)) {
+          throw new Error("Enter a valid 10-digit order contact mobile");
+        }
+        if (alt && alt === normalizeIndianMobile(customer.phone)) {
+          throw new Error("Order contact should be different from login number");
+        }
+        nextAlt = alt || null;
+      } else {
+        nextAlt = resolveSavedOrderContact(customer) || null;
       }
       const { customer: next } = await updateCustomerProfile({
         name: name.trim(),
@@ -104,14 +125,16 @@ export default function AccountProfileForm({
         gender: gender || "",
         date_of_birth: dob || "",
       });
-      // Backend profile PATCH does not accept alternate_phone.
-      setPreferredOrderContact(customer.id, alt || null);
+      if (showOrderContact) {
+        setPreferredOrderContact(customer.id, nextAlt);
+      }
       const withContact = {
         ...next,
-        alternate_phone: alt || null,
+        alternate_phone: nextAlt,
       };
       onSaved(withContact);
-      setAlternatePhone(alt);
+      setAlternatePhone(nextAlt || "");
+      setShowOrderContact(Boolean(nextAlt));
       setOk("Profile saved successfully");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not save profile");
@@ -288,6 +311,7 @@ export default function AccountProfileForm({
                 </p>
               </div>
 
+              {showOrderContact ? (
               <div className="md:col-span-2">
                 <label className={labelClass} htmlFor="profile-alt-phone">
                   Order contact mobile
@@ -305,16 +329,17 @@ export default function AccountProfileForm({
                     onChange={(e) =>
                       setAlternatePhone(formatIndianMobileInput(e.target.value))
                     }
-                    placeholder="Optional — for deliveries &amp; rider calls"
+                    placeholder="For deliveries &amp; rider calls"
                     maxLength={10}
                     autoComplete="tel-national"
                   />
                 </div>
                 <p className="text-[11px] text-gray-400 mt-2">
-                  Used on orders when different from login. You can also set this
-                  at checkout.
+                  Set when you use a different number at checkout. Clear and save
+                  to remove.
                 </p>
               </div>
+              ) : null}
             </div>
           </div>
 
