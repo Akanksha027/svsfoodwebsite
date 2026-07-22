@@ -322,13 +322,13 @@ export default function AddItemSheet({
           className="flex-1 min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] bg-white"
           data-scroll-lock-allow
         >
-          <div className="relative w-full bg-white aspect-[4/3] sm:aspect-[16/10] max-h-[min(42vh,320px)] sm:max-h-[340px] md:max-h-[380px] overflow-hidden">
+          <div className="relative w-full bg-white aspect-[4/3] sm:aspect-[16/10] max-h-[min(42vh,320px)] sm:max-h-[340px] md:max-h-[380px]">
             {heroImage ? (
               <SheetImage
                 src={heroImage}
                 alt={item.name}
                 priority
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 m-auto max-h-full max-w-full w-full h-full object-contain p-4 sm:p-6"
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-svs-orange/40">
@@ -541,12 +541,12 @@ function VariantImageCard({
         selected ? "border-svs-orange" : "border-gray-200"
       }`}
     >
-      <div className="relative aspect-square w-full max-h-[150px] bg-white overflow-hidden">
+      <div className="relative aspect-square w-full max-h-[150px] bg-white">
         {src ? (
           <SheetImage
             src={src}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-contain p-2"
           />
         ) : null}
       </div>
