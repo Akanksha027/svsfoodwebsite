@@ -4,8 +4,10 @@ import { type ReactNode, useState } from "react";
 import Link from "next/link";
 import OrderStatusRail from "@/components/OrderStatusRail";
 import OrderContactPhone from "@/components/OrderContactPhone";
-
-// ─── Icons ────────────────────────────────────────────────────────────────────
+import OrderStageScene, {
+  STAGE_LABELS,
+  stageFromOrder,
+} from "@/components/OrderStageScene";
 
 const ic = "w-3.5 h-3.5 shrink-0";
 
@@ -104,8 +106,6 @@ function IcBag() {
   );
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type MockOrder = {
   order_id: string;
   order_number: string | number;
@@ -120,6 +120,7 @@ type MockOrder = {
   can_change_customer_mobile?: boolean;
   customer_name?: string | null;
   customer_address?: string | null;
+  address_label?: string | null;
   customer_latitude?: number | null;
   customer_longitude?: number | null;
   petpooja_status?: string | null;
@@ -138,11 +139,9 @@ type MockState = {
   order: MockOrder;
 };
 
-// ─── Store & base order ────────────────────────────────────────────────────────
-
+const STORE_NAME = "SVS Food · Satna";
 const STORE_LAT = 24.5754;
 const STORE_LNG = 80.8322;
-const STORE_NAME = "SVS Food · Satna";
 
 const BASE_DELIVERY: MockOrder = {
   order_id: "mock_001",
@@ -158,6 +157,7 @@ const BASE_DELIVERY: MockOrder = {
   can_change_customer_mobile: true,
   customer_name: "Rahul Sharma",
   customer_address: "42, Green Park Colony, Behind City Mall, Satna 485001",
+  address_label: "Home",
   customer_latitude: 24.582,
   customer_longitude: 80.838,
   rider_name: null,
@@ -176,7 +176,14 @@ const MOCK_STATES: MockState[] = [
     id: "placed_cod",
     label: "COD Placed",
     icon: <IcBanknote />,
-    order: { ...BASE_DELIVERY, status: "cod_pending", is_cod: true, cod_unpaid: false, rider_status: null, petpooja_status: null },
+    order: {
+      ...BASE_DELIVERY,
+      status: "cod_pending",
+      is_cod: true,
+      cod_unpaid: false,
+      rider_status: null,
+      petpooja_status: null,
+    },
   },
   {
     id: "placed_paid",
@@ -200,79 +207,161 @@ const MOCK_STATES: MockState[] = [
     id: "rider_assigned",
     label: "Rider Assigned",
     icon: <IcPerson />,
-    order: { ...BASE_DELIVERY, petpooja_status: "food_ready", rider_name: "Vikram Singh", rider_phone: "9812345678", rider_status: "assigned" },
+    order: {
+      ...BASE_DELIVERY,
+      petpooja_status: "food_ready",
+      rider_name: "Vikram Singh",
+      rider_phone: "9812345678",
+      rider_status: "assigned",
+    },
   },
   {
     id: "rider_at_store",
     label: "Rider at Store",
     icon: <IcStore />,
-    order: { ...BASE_DELIVERY, petpooja_status: "food_ready", rider_name: "Vikram Singh", rider_phone: "9812345678", rider_status: "arrived_at_store" },
+    order: {
+      ...BASE_DELIVERY,
+      petpooja_status: "food_ready",
+      rider_name: "Vikram Singh",
+      rider_phone: "9812345678",
+      rider_status: "arrived_at_store",
+    },
   },
   {
     id: "out_for_delivery",
     label: "Out for Delivery",
     icon: <IcMotorbike />,
-    order: { ...BASE_DELIVERY, petpooja_status: "dispatched", rider_name: "Vikram Singh", rider_phone: "9812345678", rider_status: "out_for_delivery" },
+    order: {
+      ...BASE_DELIVERY,
+      petpooja_status: "dispatched",
+      rider_name: "Vikram Singh",
+      rider_phone: "9812345678",
+      rider_status: "out_for_delivery",
+    },
   },
   {
     id: "arrived",
     label: "Rider Arrived",
     icon: <IcMapPin />,
-    order: { ...BASE_DELIVERY, petpooja_status: "dispatched", rider_name: "Vikram Singh", rider_phone: "9812345678", rider_status: "arrived_at_customer" },
+    order: {
+      ...BASE_DELIVERY,
+      petpooja_status: "dispatched",
+      rider_name: "Vikram Singh",
+      rider_phone: "9812345678",
+      rider_status: "arrived_at_customer",
+    },
   },
   {
     id: "delivered",
     label: "Delivered",
     icon: <IcGift />,
-    order: { ...BASE_DELIVERY, status: "completed", petpooja_status: "delivered", rider_name: "Vikram Singh", rider_phone: "9812345678", rider_status: "delivered" },
+    order: {
+      ...BASE_DELIVERY,
+      status: "completed",
+      petpooja_status: "delivered",
+      rider_name: "Vikram Singh",
+      rider_phone: "9812345678",
+      rider_status: "delivered",
+    },
   },
   {
     id: "cancelled",
     label: "Cancelled",
     icon: <IcXCircle />,
-    order: { ...BASE_DELIVERY, status: "cancelled", rider_status: null, petpooja_status: "cancelled" },
+    order: {
+      ...BASE_DELIVERY,
+      status: "cancelled",
+      rider_status: null,
+      petpooja_status: "cancelled",
+    },
   },
   {
     id: "takeaway",
     label: "Takeaway - Ready",
     icon: <IcBag />,
-    order: { ...BASE_DELIVERY, order_type: "takeaway", delivery_charges: 0, customer_address: null, petpooja_status: "food_ready", rider_name: null, rider_phone: null, rider_status: null },
+    order: {
+      ...BASE_DELIVERY,
+      order_type: "takeaway",
+      delivery_charges: 0,
+      customer_address: null,
+      petpooja_status: "food_ready",
+      rider_name: null,
+      rider_phone: null,
+      rider_status: null,
+    },
   },
 ];
-
-// ─── Logic ─────────────────────────────────────────────────────────────────────
 
 function isCancelled(o: MockOrder) {
   return o.status === "cancelled" || o.petpooja_status === "cancelled";
 }
 function isDelivered(o: MockOrder) {
-  return o.rider_status === "delivered" || o.petpooja_status === "delivered" || o.status === "completed";
+  return (
+    o.rider_status === "delivered" ||
+    o.petpooja_status === "delivered" ||
+    o.status === "completed"
+  );
 }
 function progressIndex(o: MockOrder, isCod: boolean): number {
   if (isCancelled(o)) return -1;
   if (isDelivered(o)) return 4;
   const rs = o.rider_status;
   if (rs === "out_for_delivery" || rs === "arrived_at_customer") return 3;
-  if (rs === "picked_up" || rs === "arrived_at_store" || o.petpooja_status === "food_ready") return 2;
+  if (rs === "picked_up" || rs === "arrived_at_store" || o.petpooja_status === "food_ready")
+    return 2;
   if (o.petpooja_status === "accepted") return 1;
-  if (rs === "accepted" || rs === "assigned") return o.petpooja_status === "food_ready" ? 2 : 1;
+  if (rs === "accepted" || rs === "assigned")
+    return o.petpooja_status === "food_ready" ? 2 : 1;
   if (o.petpooja_status === "dispatched") return 2;
-  if (o.status === "paid" || o.status === "cod_pending" || (isCod && o.status === "pending_payment")) return 0;
+  if (
+    o.status === "paid" ||
+    o.status === "cod_pending" ||
+    (isCod && o.status === "pending_payment")
+  )
+    return 0;
   return 0;
 }
 function headline(o: MockOrder, isCod: boolean): { title: string; sub: string } {
   if (isCancelled(o)) return { title: "Order cancelled", sub: "This order is no longer active." };
   if (isDelivered(o)) return { title: "Order delivered", sub: "Hope you enjoy your meal!" };
   const rs = o.rider_status;
-  if (rs === "arrived_at_customer") return { title: "Rider has arrived", sub: "Your rider is at your location." };
-  if (rs === "out_for_delivery") return { title: "Out for delivery", sub: "Your rider is on the way to you." };
-  if (rs === "picked_up") return { title: "Rider picked up your order", sub: "Leaving for your address shortly." };
-  if (rs === "arrived_at_store") return { title: "Rider at the restaurant", sub: o.rider_name ? `${o.rider_name} is at the store collecting your order.` : "Your rider is at the store." };
-  if (rs === "accepted" || rs === "assigned") return { title: "Rider assigned", sub: o.rider_name ? `${o.rider_name} will deliver your order.` : "A rider will deliver your order soon." };
-  if (o.petpooja_status === "food_ready") return { title: "Order is ready", sub: o.order_type === "delivery" ? "Waiting for a rider to pick it up." : "You can collect it from the counter." };
-  if (o.petpooja_status === "dispatched") return { title: "Order is ready", sub: "Your rider will start the trip next." };
-  if (o.petpooja_status === "accepted") return { title: "Preparing your order", sub: "The kitchen has started cooking." };
-  if (isCod) return { title: "Order placed", sub: "Pay cash on delivery. We'll keep you updated here." };
+  if (rs === "arrived_at_customer")
+    return { title: "Rider has arrived", sub: "Your rider is at your location." };
+  if (rs === "out_for_delivery")
+    return { title: "Out for delivery", sub: "Your rider is on the way to you." };
+  if (rs === "picked_up")
+    return { title: "Rider picked up your order", sub: "Leaving for your address shortly." };
+  if (rs === "arrived_at_store")
+    return {
+      title: "Rider at the restaurant",
+      sub: o.rider_name
+        ? `${o.rider_name} is at the store collecting your order.`
+        : "Your rider is at the store.",
+    };
+  if (rs === "accepted" || rs === "assigned")
+    return {
+      title: "Rider assigned",
+      sub: o.rider_name
+        ? `${o.rider_name} will deliver your order.`
+        : "A rider will deliver your order soon.",
+    };
+  if (o.petpooja_status === "food_ready")
+    return {
+      title: "Order is ready",
+      sub:
+        o.order_type === "delivery"
+          ? "Waiting for a rider to pick it up."
+          : "You can collect it from the counter.",
+    };
+  if (o.petpooja_status === "dispatched")
+    return { title: "Order is ready", sub: "Your rider will start the trip next." };
+  if (o.petpooja_status === "accepted")
+    return { title: "Preparing your order", sub: "The kitchen has started cooking." };
+  if (isCod)
+    return {
+      title: "Order placed",
+      sub: "Pay cash on delivery. We'll keep you updated here.",
+    };
   return { title: "Order confirmed", sub: "We've sent it to the kitchen." };
 }
 
@@ -297,48 +386,65 @@ function stepsFor(o: MockOrder): TrackStep[] {
 }
 
 function formatInr(n: number) {
-  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(n);
 }
-
-// ─── Mock COD Pay Panel (static — mirrors CodOnlinePayPanel idle state, no API) ───────
 
 function MockCodPayPanel({ amount, orderLabel }: { amount: number; orderLabel?: string }) {
   const [showQr, setShowQr] = useState(false);
 
   if (showQr) {
     return (
-      <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
-        <div className="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="overflow-hidden rounded-2xl border border-svs-cream bg-white">
+        <div className="flex items-center justify-between border-b border-svs-cream px-4 py-4">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-[#f16a34]">Scan &amp; Pay</p>
-            <p className="text-xl font-extrabold text-gray-900 tabular-nums mt-0.5">{formatInr(amount)}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-svs-orange">
+              Scan &amp; Pay
+            </p>
+            <p className="mt-0.5 text-xl font-extrabold tabular-nums text-svs-ink">
+              {formatInr(amount)}
+            </p>
           </div>
-          {orderLabel && <p className="text-xs font-semibold text-gray-400">{orderLabel}</p>}
+          {orderLabel ? (
+            <p className="text-xs font-semibold text-svs-ink/40">{orderLabel}</p>
+          ) : null}
         </div>
-        <div className="px-4 py-5 flex flex-col items-center gap-4">
-          {/* Static placeholder QR */}
-          <div className="w-[192px] h-[192px] rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center">
-            <svg className="w-16 h-16 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-              <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
+        <div className="flex flex-col items-center gap-4 px-4 py-5">
+          <div className="flex h-[192px] w-[192px] items-center justify-center rounded-xl border border-svs-cream bg-svs-cream/40">
+            <svg
+              className="h-16 w-16 text-svs-ink/20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden
+            >
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
               <rect x="3" y="14" width="7" height="7" />
               <path d="M14 14h.01M14 18h.01M18 14h.01M18 18h.01" />
             </svg>
           </div>
-          <p className="text-xs text-gray-400 text-center">PhonePe · Google Pay · Paytm · any UPI app</p>
+          <p className="text-center text-xs text-svs-ink/40">
+            PhonePe · Google Pay · Paytm · any UPI app
+          </p>
           <button
             type="button"
-            className="flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-gray-900 text-white font-bold text-sm border-0 cursor-pointer"
+            className="flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-0 bg-svs-ink text-sm font-bold text-white"
           >
             Open UPI app
           </button>
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#f16a34] animate-pulse" />
-            <p className="text-sm font-semibold text-[#f16a34]">Waiting for payment…</p>
+            <span className="h-2 w-2 animate-pulse rounded-full bg-svs-orange" />
+            <p className="text-sm font-semibold text-svs-orange">Waiting for payment…</p>
           </div>
           <button
             type="button"
             onClick={() => setShowQr(false)}
-            className="text-xs text-gray-400 border-0 bg-transparent cursor-pointer underline"
+            className="cursor-pointer border-0 bg-transparent text-xs text-svs-ink/40 underline"
           >
             ← back
           </button>
@@ -348,225 +454,434 @@ function MockCodPayPanel({ amount, orderLabel }: { amount: number; orderLabel?: 
   }
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
-      <div className="px-4 pt-4 pb-3 flex items-start gap-3">
-        <div className="h-9 w-9 shrink-0 rounded-full bg-[#fff4ee] flex items-center justify-center text-[#f16a34]">
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <div className="overflow-hidden rounded-2xl border border-svs-cream bg-white">
+      <div className="flex items-start gap-3 px-4 pb-3 pt-4">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-svs-cream text-svs-orange">
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
           </svg>
         </div>
         <div className="min-w-0">
-          <p className="text-[13px] font-extrabold text-gray-900">Pay now, ride smooth</p>
-          <p className="text-xs text-gray-400 mt-0.5 leading-relaxed">
-            Skip the cash hand-off. PhonePe, GPay, or any UPI - done in seconds.
+          <p className="text-[13px] font-extrabold text-svs-ink">Pay now, ride smooth</p>
+          <p className="mt-0.5 text-xs leading-relaxed text-svs-ink/45">
+            Skip the cash hand-off. PhonePe, GPay, or any UPI — done in seconds.
           </p>
         </div>
       </div>
-      <div className="mx-4 border-t border-gray-100" />
-      <div className="px-4 py-3 space-y-2">
+      <div className="mx-4 border-t border-svs-cream" />
+      <div className="space-y-2 px-4 py-3">
         <button
           type="button"
           onClick={() => setShowQr(true)}
-          className="w-full h-[48px] rounded-xl bg-[#f16a34] text-white font-extrabold text-[15px] border-0 cursor-pointer flex items-center justify-center gap-2.5 active:scale-[0.98] transition-transform"
+          className="flex h-[48px] w-full cursor-pointer items-center justify-center gap-2.5 rounded-xl border-0 bg-svs-orange text-[15px] font-extrabold text-white transition-transform active:scale-[0.98]"
         >
-          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
             <path d="M14 14h.01M14 18h.01M18 14h.01M18 18h.01" />
           </svg>
           Pay {formatInr(amount)} now
         </button>
-        <p className="text-[11px] text-gray-400 text-center">PhonePe · Google Pay · Paytm · any UPI</p>
+        <p className="text-center text-[11px] text-svs-ink/40">
+          PhonePe · Google Pay · Paytm · any UPI
+        </p>
       </div>
     </div>
   );
 }
 
-// ─── Step Rail ─────────────────────────────────────────────────────────────────
+function StageSidebar({
+  activeId,
+  activeLabel,
+  onSelect,
+}: {
+  activeId: string;
+  activeLabel: string;
+  onSelect: (id: string) => void;
+}) {
+  const activeIdx = MOCK_STATES.findIndex((s) => s.id === activeId);
+  const progress =
+    MOCK_STATES.length <= 1
+      ? 100
+      : Math.round((Math.max(activeIdx, 0) / (MOCK_STATES.length - 1)) * 100);
 
-// ─── Mock Order View (mirrors real /order/[id] page exactly) ──────────────────
+  return (
+    <aside className="flex w-full flex-col border-b border-black/[0.06] bg-white lg:w-[22rem] lg:shrink-0 lg:self-stretch lg:border-b-0 lg:border-r lg:border-black/[0.06] xl:w-[24rem]">
+      <div className="shrink-0 px-6 pb-3 pt-5 lg:px-7 lg:pt-6">
+        <Link
+          href="/"
+          className="mb-4 inline-flex h-9 items-center gap-1.5 rounded-full bg-svs-cream px-3.5 text-[12px] font-bold text-svs-ink no-underline transition-colors hover:bg-[#ffe8dc]"
+        >
+          <svg
+            className="h-3.5 w-3.5 shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          Back
+        </Link>
 
-function MockOrderView({ order: initial }: { order: MockOrder }) {
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-svs-ink/35">
+          Order stage preview
+        </p>
+        <p className="mt-1.5 text-[1.05rem] font-extrabold tracking-tight text-svs-ink">
+          {activeLabel}
+        </p>
+
+        {/* Progressive track */}
+        <div className="mt-4">
+          <div className="mb-1.5 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.12em] text-svs-ink/35">
+            <span>
+              Stage {Math.max(activeIdx, 0) + 1} / {MOCK_STATES.length}
+            </span>
+            <span className="text-svs-orange">{progress}%</span>
+          </div>
+          <div className="h-1.5 overflow-hidden rounded-full bg-svs-cream">
+            <div
+              className="h-full rounded-full bg-svs-orange transition-[width] duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <nav
+        className="flex flex-1 flex-col gap-1.5 overflow-x-auto px-4 py-3 lg:overflow-visible lg:px-5 lg:pb-8 lg:pt-2"
+        style={{ scrollbarWidth: "none" }}
+        aria-label="Order stage preview"
+      >
+        {MOCK_STATES.map((s, i) => {
+          const on = activeId === s.id;
+          const done = i < activeIdx;
+          return (
+            <button
+              key={s.id}
+              type="button"
+              title={s.label}
+              aria-label={s.label}
+              aria-current={on ? "true" : undefined}
+              onClick={() => onSelect(s.id)}
+              className={[
+                "flex w-full shrink-0 cursor-pointer items-center gap-3 rounded-2xl border px-3.5 py-3.5 text-left transition-colors duration-300",
+                on
+                  ? "border-svs-orange/25 bg-svs-cream text-svs-ink"
+                  : done
+                    ? "border-transparent bg-white text-svs-ink/70 hover:bg-svs-cream/60"
+                    : "border-transparent bg-white text-svs-ink/40 hover:bg-svs-cream/50 hover:text-svs-ink",
+              ].join(" ")}
+            >
+              <span
+                className={[
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
+                  on
+                    ? "bg-svs-orange/20 text-svs-orange"
+                    : done
+                      ? "bg-svs-orange/10 text-svs-orange/80"
+                      : "bg-svs-cream text-svs-ink/35",
+                ].join(" ")}
+              >
+                {done && !on ? (
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  s.icon
+                )}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[14px] font-bold leading-snug">
+                  {s.label}
+                </span>
+                <span
+                  className={[
+                    "mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.1em]",
+                    on ? "text-svs-orange" : done ? "text-svs-orange/60" : "text-svs-ink/25",
+                  ].join(" ")}
+                >
+                  {on ? "Current" : done ? "Done" : `Stage ${i + 1}`}
+                </span>
+              </span>
+              {on ? (
+                <span className="ml-auto hidden h-2 w-2 shrink-0 rounded-full bg-svs-orange lg:block" />
+              ) : null}
+            </button>
+          );
+        })}
+      </nav>
+    </aside>
+  );
+}
+
+function MockOrderView({
+  order: initial,
+  activeId,
+  activeLabel,
+  onSelectStage,
+}: {
+  order: MockOrder;
+  activeId: string;
+  activeLabel: string;
+  onSelectStage: (id: string) => void;
+}) {
   const [order, setOrder] = useState(initial);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const isCod = !!(order.is_cod || order.cod_unpaid);
   const cancelled = isCancelled(order);
   const active = progressIndex(order, isCod);
   const { title, sub } = headline(order, isCod);
-  const steps = order.order_type === "delivery"
-    ? stepsFor(order)
-    : stepsFor(order).filter(s => s.id !== "onway");
-  const railIndex = order.order_type === "delivery"
-    ? active
-    : active >= 4 ? 3 : active >= 2 ? 2 : active;
+  const steps =
+    order.order_type === "delivery"
+      ? stepsFor(order)
+      : stepsFor(order).filter((s) => s.id !== "onway");
+  const railIndex =
+    order.order_type === "delivery" ? active : active >= 4 ? 3 : active >= 2 ? 2 : active;
   const showRider =
     order.order_type === "delivery" &&
     !cancelled &&
     !!(order.rider_name || order.rider_phone || order.rider_status);
+  const stage = stageFromOrder(order);
 
   const mapUrl =
-    order.customer_latitude && order.customer_longitude && order.order_type === "delivery"
+    order.customer_latitude &&
+      order.customer_longitude &&
+      order.order_type === "delivery"
       ? `https://maps.google.com/maps?saddr=${STORE_LAT},${STORE_LNG}&daddr=${order.customer_latitude},${order.customer_longitude}&hl=en&z=14&output=embed`
       : `https://maps.google.com/maps?q=${STORE_LAT},${STORE_LNG}&z=15&hl=en&output=embed`;
 
   return (
-    <main className="relative min-h-[100svh] bg-[#eef1f4] overflow-hidden">
-      {/* Map */}
-      <div className="absolute inset-x-0 top-0 h-[48svh] sm:h-[52svh]">
+    <main className="relative min-h-[100svh] overflow-x-hidden bg-white">
+      {/* Map only on top — full width */}
+      <div className="absolute inset-x-0 top-0 h-[38svh] sm:h-[42svh] lg:h-[44svh]">
         <iframe
           title="Delivery map"
           src={mapUrl}
-          className="h-full w-full border-0 grayscale-[0.15] contrast-[1.05]"
+          className="h-full w-full border-0 grayscale-[0.1] contrast-[1.04]"
           loading="eager"
           referrerPolicy="no-referrer-when-downgrade"
           allowFullScreen
         />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#eef1f4] to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/75 to-transparent" />
 
-        <div className="absolute top-[max(0.75rem,env(safe-area-inset-top))] left-3 z-10 inline-flex h-10 items-center gap-1.5 rounded-full bg-amber-400 px-4 text-sm font-extrabold text-amber-900 shadow-md">
-          🧪 MOCK
-        </div>
-
-        <div className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3 z-10 rounded-full bg-white/95 px-3 py-2 text-[11px] font-bold text-[#1a1a1a]/60 shadow-md backdrop-blur">
-          Live · updates every few sec
+        <div className="absolute right-4 top-[max(0.75rem,env(safe-area-inset-top))] z-10 inline-flex h-9 items-center gap-2 rounded-full bg-amber-400/95 px-3.5 text-[11px] font-extrabold uppercase tracking-[0.12em] text-amber-950 backdrop-blur-sm">
+          Preview
         </div>
       </div>
 
-      {/* Bottom sheet */}
-      <div className="relative z-10 mt-[42svh] sm:mt-[46svh] px-3 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-        <div className="mx-auto max-w-[480px] rounded-t-[1.75rem] rounded-b-[1.5rem] bg-white shadow-[0_-8px_40px_rgba(15,23,42,0.12)] overflow-hidden">
-          <div className="flex justify-center pt-3 pb-1">
-            <span className="h-1 w-10 rounded-full bg-[#1a1a1a]/15" />
-          </div>
+      {/* White panel below map: sidebar + order */}
+      <div className="relative z-10 mt-[32svh] sm:mt-[36svh] lg:mt-[38svh]">
+        <div className="flex w-full min-h-[calc(100svh-32svh)] flex-col overflow-hidden rounded-t-[2rem] bg-white sm:min-h-[calc(100svh-36svh)] lg:min-h-[calc(100svh-38svh)] lg:flex-row lg:items-stretch lg:rounded-t-[2.5rem]">
+          <StageSidebar
+            activeId={activeId}
+            activeLabel={activeLabel}
+            onSelect={onSelectStage}
+          />
 
-          <div className="px-5 pt-2 pb-5 space-y-5">
-            {/* Headline */}
-            <div>
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#f16a34] mb-1">
-                #{order.order_number} · {STORE_NAME}
-              </p>
-              <h1 className="text-[1.65rem] sm:text-[1.85rem] font-extrabold text-[#1a1a1a] leading-[1.15] tracking-tight">
-                {title}
-              </h1>
-              <p className="mt-1.5 text-sm text-[#1a1a1a]/55 leading-relaxed">{sub}</p>
-            </div>
-
-            {/* COD Pay Panel — static mock (no API calls in test) */}
-            {isCod && !isDelivered(order) && !cancelled && (
-              <MockCodPayPanel
-                amount={order.grand_total}
-                orderLabel={`#${order.order_number}`}
-              />
-            )}
-
-            {/* Customer phone + address */}
-            {(order.customer_mobile ||
-              (order.order_type === "delivery" && order.customer_address)) ? (
-              <div className="rounded-2xl border border-[#fff4ee] px-4 py-3 space-y-3">
-                <OrderContactPhone
-                  phone={order.customer_mobile}
-                  canChange={
-                    !cancelled &&
-                    order.can_change_customer_mobile !== false &&
-                    !order.customer_mobile_changed
-                  }
-                  tone="test"
-                  onChanged={(mobile) =>
-                    setOrder((prev) => ({
-                      ...prev,
-                      customer_mobile: mobile,
-                      customer_mobile_changed: true,
-                      can_change_customer_mobile: false,
-                    }))
-                  }
-                />
-                {order.order_type === "delivery" && order.customer_address ? (
-                  <div>
-                    <p className="text-[11px] font-extrabold uppercase tracking-wide text-[#1a1a1a]/35 mb-1">
-                      Delivering to
-                    </p>
-                    <p className="text-sm font-semibold text-[#1a1a1a] leading-snug">
-                      {order.customer_address}
-                    </p>
+          <div className="min-w-0 flex-1 bg-white">
+            <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-5 pb-8 pt-6 sm:px-8 sm:pb-10 lg:flex-row lg:items-start lg:gap-10 lg:px-10 lg:pb-12 lg:pt-9 xl:px-12">
+              {/* Main order content */}
+              <div className="min-w-0 flex-1 space-y-6">
+                <header>
+                  <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center rounded-full bg-svs-cream px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-svs-orange">
+                      #{order.order_number}
+                    </span>
+                    <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-svs-ink/35">
+                      {STORE_NAME}
+                    </span>
                   </div>
-                ) : null}
-              </div>
-            ) : null}
+                  <h1 className="text-[1.75rem] font-extrabold leading-[1.12] tracking-tight text-svs-ink sm:text-[2rem]">
+                    {title}
+                  </h1>
+                  <p className="mt-2 max-w-md text-[15px] leading-relaxed text-svs-ink/55">
+                    {sub}
+                  </p>
+                </header>
 
-            {/* Status boxes */}
-            <div>
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.06em] text-[#1a1a1a]/35 mb-3">
-                Order status
-              </p>
-              <OrderStatusRail
-                steps={steps}
-                activeIndex={cancelled ? -1 : railIndex}
-                cancelled={cancelled}
-                rider={
-                  showRider
-                    ? {
+                {/* Mobile: compact progress card */}
+                <div className="lg:hidden">
+                  <div className="overflow-hidden rounded-2xl bg-[#fff8f3] shadow-[0_8px_28px_rgba(15,23,42,0.08)] ring-1 ring-svs-cream">
+                    <div className="relative aspect-[16/11] w-full px-2 pt-2">
+                      <OrderStageScene stage={stage} className="h-full" />
+                    </div>
+                    <div className="border-t border-svs-cream/80 px-4 py-3">
+                      <p className="text-sm font-extrabold text-svs-ink">
+                        {STAGE_LABELS[stage].title}
+                      </p>
+                      <p className="mt-0.5 text-xs text-svs-ink/50">
+                        {STAGE_LABELS[stage].hint}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {isCod && !isDelivered(order) && !cancelled ? (
+                  <MockCodPayPanel
+                    amount={order.grand_total}
+                    orderLabel={`#${order.order_number}`}
+                  />
+                ) : null}
+
+              {order.customer_mobile ||
+                (order.order_type === "delivery" && order.customer_address) ? (
+                <div className="space-y-3.5 rounded-2xl bg-[#faf7f4] px-4 py-4 ring-1 ring-svs-cream sm:px-5">
+                  <OrderContactPhone
+                    phone={order.customer_mobile}
+                    canChange={
+                      !cancelled &&
+                      order.can_change_customer_mobile !== false &&
+                      !order.customer_mobile_changed
+                    }
+                    tone="test"
+                    onChanged={(mobile) =>
+                      setOrder((prev) => ({
+                        ...prev,
+                        customer_mobile: mobile,
+                        customer_mobile_changed: true,
+                        can_change_customer_mobile: false,
+                      }))
+                    }
+                  />
+                  {order.order_type === "delivery" && order.customer_address ? (
+                    <div className="border-t border-svs-cream/80 pt-3.5">
+                      <p className="mb-2 text-[10px] font-extrabold uppercase tracking-[0.14em] text-svs-ink/35">
+                        Delivering to
+                      </p>
+                      <p className="text-sm font-semibold leading-snug text-svs-ink">
+                        {order.customer_address}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+
+              <section>
+                <p className="mb-3.5 text-[10px] font-extrabold uppercase tracking-[0.14em] text-svs-ink/35">
+                  Order status
+                </p>
+                <OrderStatusRail
+                  steps={steps}
+                  activeIndex={cancelled ? -1 : railIndex}
+                  cancelled={cancelled}
+                  rider={
+                    showRider
+                      ? {
                         name: order.rider_name,
                         phone: order.rider_phone,
                         status: order.rider_status,
                       }
-                    : null
-                }
-              />
-            </div>
+                      : null
+                  }
+                />
+              </section>
 
-            {/* Order details accordion */}
-            <div className="rounded-2xl border border-[#fff4ee] overflow-hidden">
-              <button
-                type="button"
-                className="flex w-full items-center justify-between px-4 py-3.5 text-left"
-                onClick={() => setDetailsOpen(v => !v)}
+              <div className="overflow-hidden rounded-2xl ring-1 ring-svs-cream">
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between bg-white px-4 py-4 text-left transition-colors hover:bg-[#faf7f4]"
+                  onClick={() => setDetailsOpen((v) => !v)}
+                >
+                  <span className="text-sm font-extrabold text-svs-ink">
+                    Order details · {formatInr(order.grand_total)}
+                  </span>
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-svs-cream text-sm font-bold text-svs-ink/50">
+                    {detailsOpen ? "−" : "+"}
+                  </span>
+                </button>
+                {detailsOpen ? (
+                  <div className="space-y-2.5 border-t border-svs-cream bg-[#faf7f4]/60 px-4 py-4 text-sm text-svs-ink/70">
+                    <div className="flex justify-between gap-3">
+                      <span className="text-svs-ink/45">Type</span>
+                      <span className="font-semibold capitalize">
+                        {order.order_type.replace(/_/g, " ")}
+                      </span>
+                    </div>
+                    {isCod ? (
+                      <div className="flex justify-between gap-3">
+                        <span className="text-svs-ink/45">Payment</span>
+                        <span className="font-semibold">Cash on delivery</span>
+                      </div>
+                    ) : null}
+                    {order.delivery_charges ? (
+                      <div className="flex justify-between gap-3">
+                        <span className="text-svs-ink/45">Delivery</span>
+                        <span className="font-semibold">
+                          {formatInr(order.delivery_charges)}
+                        </span>
+                      </div>
+                    ) : null}
+                    <div className="flex justify-between gap-3">
+                      <span className="text-svs-ink/45">Total</span>
+                      <span className="font-extrabold text-svs-ink">
+                        {formatInr(order.grand_total)}
+                      </span>
+                    </div>
+                    <ul className="mt-2 space-y-2 border-t border-svs-cream pt-3">
+                      {order.items.map((line, i) => (
+                        <li key={i} className="flex justify-between gap-3">
+                          <span className="min-w-0 truncate">{line.name}</span>
+                          <span className="shrink-0 font-semibold">×{line.quantity}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </div>
+
+              <Link
+                href="/menu"
+                className="flex h-12 w-full max-w-md items-center justify-center rounded-2xl bg-svs-orange text-[15px] font-extrabold text-white no-underline shadow-[0_8px_24px_rgba(241,106,52,0.28)] transition-transform active:scale-[0.99]"
               >
-                <span className="text-sm font-extrabold text-[#1a1a1a]">
-                  Order details · {formatInr(order.grand_total)}
-                </span>
-                <span className="text-[#1a1a1a]/40 font-bold text-lg leading-none">
-                  {detailsOpen ? "−" : "+"}
-                </span>
-              </button>
-              {detailsOpen ? (
-                <div className="border-t border-[#fff4ee] px-4 py-3 space-y-2 text-sm text-[#1a1a1a]/70">
-                  <div className="flex justify-between gap-3">
-                    <span className="text-[#1a1a1a]/45">Type</span>
-                    <span className="font-semibold capitalize">{order.order_type.replace(/_/g, " ")}</span>
-                  </div>
-                  {isCod ? (
-                    <div className="flex justify-between gap-3">
-                      <span className="text-[#1a1a1a]/45">Payment</span>
-                      <span className="font-semibold">Cash on delivery</span>
-                    </div>
-                  ) : null}
-                  {order.delivery_charges ? (
-                    <div className="flex justify-between gap-3">
-                      <span className="text-[#1a1a1a]/45">Delivery</span>
-                      <span className="font-semibold">{formatInr(order.delivery_charges)}</span>
-                    </div>
-                  ) : null}
-                  <div className="flex justify-between gap-3">
-                    <span className="text-[#1a1a1a]/45">Total</span>
-                    <span className="font-extrabold text-[#1a1a1a]">{formatInr(order.grand_total)}</span>
-                  </div>
-                  <ul className="mt-2 space-y-1.5 border-t border-[#fff4ee] pt-2">
-                    {order.items.map((line, i) => (
-                      <li key={i} className="flex justify-between gap-3">
-                        <span className="min-w-0 truncate">{line.name}</span>
-                        <span className="shrink-0 font-semibold">×{line.quantity}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
+                Order more
+              </Link>
             </div>
 
-            <Link
-              href="/menu"
-              className="flex h-12 w-full items-center justify-center rounded-2xl bg-[#f16a34] text-white font-extrabold no-underline active:scale-[0.99] transition-transform"
-            >
-              Order more
-            </Link>
+            {/* Desktop: compact progress animation card on the right */}
+            <aside className="hidden w-[280px] shrink-0 lg:block xl:w-[300px]">
+              <div className="sticky top-6">
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-svs-ink/40">
+                  Live progress
+                </p>
+                <div className="overflow-hidden rounded-[1.5rem] bg-white ring-1 ring-svs-ink/8">
+                  <div className="relative aspect-[4/3] w-full px-1 pt-1">
+                    <OrderStageScene stage={stage} className="h-full" />
+                  </div>
+                  <div className="px-5 py-4">
+                    <p className="text-sm font-semibold text-svs-ink">
+                      {STAGE_LABELS[stage].title}
+                    </p>
+                    <p className="mt-1 text-xs leading-relaxed text-svs-ink/45">
+                      {STAGE_LABELS[stage].hint}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </aside>
+            </div>
           </div>
         </div>
       </div>
@@ -574,46 +889,17 @@ function MockOrderView({ order: initial }: { order: MockOrder }) {
   );
 }
 
-// ─── Test Page Shell ──────────────────────────────────────────────────────────
-
 export default function TestPage() {
-  const [activeId, setActiveId] = useState(MOCK_STATES[0]!.id);
-  const activeState = MOCK_STATES.find(s => s.id === activeId)!;
+  const [activeId, setActiveId] = useState("preparing");
+  const activeState = MOCK_STATES.find((s) => s.id === activeId)!;
 
   return (
-    <div className="relative">
-      {/* The actual tracking UI */}
-      <div className="pb-28">
-        <MockOrderView key={activeId} order={activeState.order} />
-      </div>
-
-      {/* Fixed bottom state switcher */}
-      <div
-        className="fixed bottom-0 inset-x-0 z-[9999] bg-gray-950/97 backdrop-blur-md border-t border-white/10 px-4 pt-3"
-        style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
-      >
-        <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-2">
-          Mock states - tap to switch
-        </p>
-        <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-          {MOCK_STATES.map(s => (
-            <button
-              key={s.id}
-              type="button"
-              onClick={() => setActiveId(s.id)}
-              className={[
-                "shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-bold border-0 cursor-pointer transition-all whitespace-nowrap",
-                activeId === s.id
-                  ? "bg-[#f16a34] text-white shadow-[0_0_16px_rgba(241,106,52,0.4)]"
-                  : "bg-white/10 text-white/70 hover:bg-white/20",
-              ].join(" ")}
-            >
-              {s.icon}
-              {s.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
+    <MockOrderView
+      key={activeId}
+      order={activeState.order}
+      activeId={activeId}
+      activeLabel={activeState.label}
+      onSelectStage={setActiveId}
+    />
   );
 }

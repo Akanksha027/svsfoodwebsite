@@ -17,8 +17,11 @@ export default function SiteNavbar() {
   const isAccount =
     pathname === "/account" || pathname.startsWith("/account/");
   const isCart = pathname === "/cart";
+  const isTest = pathname === "/test" || pathname.startsWith("/test/");
   const { closeCart, isOpen } = useMenuCart();
   const [overHero, setOverHero] = useState(isHome);
+
+  if (isTest) return null;
 
   useEffect(() => {
     if (!isMenu && !isAccount && isOpen) closeCart();

@@ -713,14 +713,13 @@ function MenuItemCard({
             openCard();
           }
         }}
-        className={`flex flex-col rounded-xl border border-svs-cream bg-svs-white overflow-hidden ${
+        className={`flex flex-col aspect-square w-full rounded-xl border border-svs-cream bg-svs-white overflow-hidden ${
           available ? "" : "opacity-60"
         } ${customisable && available ? "cursor-pointer" : ""}`}
       >
-        {/* Square image area — 60% of card height */}
         <div
           ref={imageRef}
-          className="relative w-full aspect-square flex items-center justify-center bg-svs-cream/60 shrink-0 overflow-hidden"
+          className="relative flex-1 min-h-0 w-full flex items-center justify-center bg-svs-cream/60 overflow-hidden"
         >
           {displayImage ? (
             <Image
@@ -744,15 +743,13 @@ function MenuItemCard({
           ) : null}
         </div>
 
-        {/* Info + action section */}
-        <div className="flex flex-col flex-1 px-2.5 pt-2 pb-2.5 gap-1.5">
-          {/* Item name */}
-          <h3 className="text-[12px] sm:text-[13px] font-semibold text-svs-ink leading-snug line-clamp-2 flex-1">
+        {/* Info + action — fixed footer inside the square */}
+        <div className="flex flex-col shrink-0 px-2 pt-1.5 pb-2 gap-1">
+          <h3 className="text-[11px] sm:text-[12px] font-semibold text-svs-ink leading-snug line-clamp-2">
             {item.name}
           </h3>
 
-          {/* Price row + Add button */}
-          <div className="flex items-center justify-between gap-1 mt-auto">
+          <div className="flex items-center justify-between gap-1">
             <p className="text-[14px] sm:text-[15px] font-bold text-svs-ink leading-none tabular-nums">
               {formatInr(unitPrice)}
             </p>

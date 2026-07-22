@@ -46,7 +46,7 @@ html {
   scrollbar-gutter: stable;
 }
 
-/* When cart / modal locks scroll — hide page scrollbar, keep gutter stable */
+/* When cart / modal locks scroll ? hide page scrollbar, keep gutter stable */
 html.svs-scroll-locked {
   overflow: hidden !important;
   overflow-y: hidden !important;
@@ -178,7 +178,7 @@ html.svs-scroll-locked body {
   animation: float4 20s ease-in-out infinite;
 }
 
-/* Festive drops — fall+bounce on body, slide on inner, pipe on track */
+/* Festive drops ? fall+bounce on body, slide on inner, pipe on track */
 @keyframes festive-fall-y {
   0% {
     transform: translate3d(0, var(--festive-start-y, -40vh), 0);
@@ -451,7 +451,7 @@ html.svs-scroll-locked body {
   transform: translateX(-50%) translateZ(-20px);
 }
 
-/* Footer kraft paper envelope bag — matches SVS takeout bag artwork */
+/* Footer kraft paper envelope bag ? matches SVS takeout bag artwork */
 .footer-envelope-bag .bag-face {
   background: #c4a078;
   border: none;
@@ -498,7 +498,7 @@ html.svs-scroll-locked body {
   width: 42px;
   height: 128px;
   background-color: #b89268;
-  /* Inner bottom gusset — shaded kraft fold, not white lines */
+  /* Inner bottom gusset ? shaded kraft fold, not white lines */
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 128' preserveAspectRatio='none'%3E%3Cpath d='M0 72 L21 98 L0 128 Z' fill='%23886644'/%3E%3Cpath d='M42 72 L21 98 L42 128 Z' fill='%23a07a52'/%3E%3Cpath d='M0 128 L21 98 L42 128 Z' fill='%237a5a38'/%3E%3Cpath d='M19 98 L21 98 L21 128 L19 128 Z' fill='%236a4e30'/%3E%3Cpath d='M21 98 L23 98 L23 128 L21 128 Z' fill='%239a7a52'/%3E%3C/svg%3E");
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -539,7 +539,7 @@ html.svs-scroll-locked body {
   transform: translate(-50%, -50%) rotateY(90deg) translateZ(48px);
 }
 
-/* Bottom panel — folded kraft base */
+/* Bottom panel ? folded kraft base */
 .footer-envelope-bag .footer-bag-bottom {
   width: 96px;
   height: 42px;
@@ -602,7 +602,7 @@ html.svs-scroll-locked body {
   will-change: transform;
 }
 
-/* Navbar — transparent everywhere except menu page where scrollable content sits below */
+/* Navbar ? transparent everywhere except menu page where scrollable content sits below */
 #main-navbar:not([data-menu-mode="true"]) {
   background: transparent !important;
   background-color: transparent !important;
@@ -683,7 +683,7 @@ body:has(#main-navbar[data-menu-mode="true"]) {
 }
 
 .menu-nav-delivery {
-  /* Phone: no logo — use most of the bar; leave room for profile icon */
+  /* Phone: no logo ? use most of the bar; leave room for profile icon */
   max-width: min(78vw, 17.5rem);
 }
 
@@ -1027,7 +1027,7 @@ body:has(#main-navbar[data-menu-mode="true"]) {
   }
 }
 
-/* Search + category chrome — scrolls up with menu, then sticks under navbar */
+/* Search + category chrome ? scrolls up with menu, then sticks under navbar */
 .menu-sticky-stack,
 .menu-category-strip {
   position: sticky;
@@ -1130,7 +1130,7 @@ html:has(#main-navbar[data-menu-mode="true"]) {
   background: var(--color-svs-white);
   border: 1px solid color-mix(in srgb, var(--color-svs-ink) 5%, transparent);
   box-shadow: 0 1px 3px rgba(26, 26, 26, 0.04);
-  /* Color only — no size/shadow layout shifts that vibrate while scrolling */
+  /* Color only ? no size/shadow layout shifts that vibrate while scrolling */
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
@@ -1323,8 +1323,8 @@ html:has(#main-navbar[data-menu-mode="true"]) {
   animation: hero-caret-blink 0.9s step-end infinite;
 }
 
-/* Hero animated CTA — SVS orange theme */
-/* Hero Order Now — bold white CTA */
+/* Hero animated CTA ? SVS orange theme */
+/* Hero Order Now ? bold white CTA */
 .hero-animated-btn {
   --hero-btn-accent: var(--color-svs-orange);
   --hero-btn-hover-text: #ffffff;

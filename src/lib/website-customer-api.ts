@@ -109,15 +109,16 @@ async function customerRequest<T>(
     ? `?${new URLSearchParams(options.query).toString()}`
     : "";
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     Accept: "application/json",
   };
+  const hasBody = options.body !== undefined && options.body !== null;
+  if (hasBody) headers["Content-Type"] = "application/json";
   if (token) headers["x-customer-token"] = token;
 
   const res = await fetch(`${BACKEND_URL}${path}${qs}`, {
     method: options.method || "GET",
     headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
+    body: hasBody ? JSON.stringify(options.body) : undefined,
     cache: "no-store",
   });
 

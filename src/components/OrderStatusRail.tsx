@@ -249,23 +249,31 @@ export default function OrderStatusRail({
               className={[
                 "rounded-2xl border px-3.5 py-3 transition-all duration-300",
                 box,
+                current ? "scale-[1.01]" : "",
                 muted && !showRiderHere ? "opacity-45" : "",
               ].join(" ")}
             >
               <div className="flex items-start gap-3">
                 <span
                   className={[
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
+                    "relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
                     iconWrap,
-                    current ? "animate-pulse" : "",
                   ].join(" ")}
                   aria-hidden
                 >
-                  {done ? (
-                    <CheckIcon className="h-5 w-5" />
-                  ) : (
-                    <StepIcon id={step.id} className="h-5 w-5" />
-                  )}
+                  {current ? (
+                    <span
+                      className="absolute inset-0 animate-ping rounded-xl bg-[#f16a34]/35"
+                      aria-hidden
+                    />
+                  ) : null}
+                  <span className="relative z-[1]">
+                    {done ? (
+                      <CheckIcon className="h-5 w-5" />
+                    ) : (
+                      <StepIcon id={step.id} className="h-5 w-5" />
+                    )}
+                  </span>
                 </span>
                 <div className="min-w-0 flex-1 pt-0.5">
                   <p className={["text-sm font-extrabold leading-tight", title].join(" ")}>

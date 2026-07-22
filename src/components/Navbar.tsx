@@ -12,6 +12,7 @@ import ChangeLocationPanel from "@/components/ChangeLocationPanel";
 import { useMenuDeliveryLocationLine } from "@/hooks/useMenuDeliveryLocationLine";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import MenuNavSearch from "@/components/MenuNavSearch";
+import { useRouter } from "next/navigation";
 
 const SVS_ORANGE = "#f16a34";
 const HANDLING_FEE = 2;
@@ -392,12 +393,16 @@ export default function Navbar({
   const hero = variant === "hero";
   const { customer, openLogin, openAccountMenu } = useWebsiteAuth();
   const { closeCart, isOpen: cartOpen } = useMenuCart();
+  const router = useRouter();
 
   const handleAccount = () => {
     if (cartOpen) closeCart();
     if (locationOpen) setLocationOpen(false);
-    if (customer) openAccountMenu();
-    else openLogin();
+    if (customer) {
+      router.push("/account?tab=profile");
+    } else {
+      openLogin();
+    }
   };
 
   const openLocationPanel = () => {
