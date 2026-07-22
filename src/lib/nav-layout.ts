@@ -10,18 +10,17 @@ export function accountOverlayBackdropClass(
   isHome: boolean,
   variant: "login" | "menu" = "menu",
 ) {
+  if (variant === "login") {
+    return "pointer-events-auto absolute inset-0 bg-black/45 backdrop-blur-[2px] cursor-default touch-none border-0";
+  }
   if (isHome) {
     return "pointer-events-auto absolute inset-0 bg-transparent cursor-default touch-none border-0";
   }
-  const tint =
-    variant === "login" ? "bg-svs-ink/45 backdrop-blur-md" : "bg-black/25";
-  return `pointer-events-auto absolute inset-0 ${tint} cursor-default touch-none border-0`;
+  return "pointer-events-auto absolute inset-0 bg-black/25 cursor-default touch-none border-0";
 }
 
-export function accountLoginPanelWrapClass(isHome: boolean) {
-  return isHome
-    ? "pointer-events-none fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6"
-    : `pointer-events-none fixed inset-x-0 bottom-0 ${NAV_TOP_CLASS} flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6`;
+export function accountLoginPanelWrapClass(_isHome: boolean) {
+  return "pointer-events-none fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-5 md:p-8";
 }
 
 export function accountMenuPanelClass(_isHome: boolean) {
