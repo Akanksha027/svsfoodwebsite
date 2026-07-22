@@ -725,17 +725,19 @@ function MenuItemCard({
       >
         <div
           ref={imageRef}
-          className="relative aspect-square w-full flex items-center justify-center bg-svs-cream/60 overflow-hidden"
+          className="relative aspect-square w-full flex items-center justify-center bg-white overflow-hidden p-3.5 sm:p-4"
         >
           {displayImage ? (
-            <Image
-              src={displayImage}
-              alt={item.name}
-              fill
-              className="object-contain pointer-events-none select-none"
-              sizes="(max-width: 640px) 45vw, 200px"
-              draggable={false}
-            />
+            <div className="relative h-full w-full">
+              <Image
+                src={displayImage}
+                alt={item.name}
+                fill
+                className="object-contain pointer-events-none select-none"
+                sizes="(max-width: 640px) 45vw, 200px"
+                draggable={false}
+              />
+            </div>
           ) : (
             <div className="text-xs font-semibold text-svs-orange/40">SVS</div>
           )}
@@ -750,12 +752,12 @@ function MenuItemCard({
         </div>
 
         {/* Info + action — fixed footer inside the square */}
-        <div className="flex flex-col shrink-0 px-2 pt-1.5 pb-2 gap-1">
-          <h3 className="text-[11px] sm:text-[12px] font-semibold text-svs-ink leading-snug line-clamp-2">
+        <div className="flex flex-col shrink-0 px-3.5 sm:px-4 pt-1.5 pb-2.5 gap-1">
+          <h3 className="text-[15px] font-semibold text-svs-ink leading-snug line-clamp-2">
             {item.name}
           </h3>
 
-          <div className="flex items-center justify-between gap-1">
+          <div className="flex items-center justify-between gap-1.5">
             <p className="text-[14px] sm:text-[15px] font-bold text-svs-ink leading-none tabular-nums">
               {formatInr(unitPrice)}
             </p>
