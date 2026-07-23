@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import MenuLoader from "@/components/MenuLoader";
+import MenuSeoFooter from "@/components/MenuSeoFooter";
 import NearestStoreGate from "@/components/NearestStoreGate";
 import CartBar from "@/components/CartBar";
 import MenuCartShell from "@/components/MenuCartShell";
@@ -61,6 +62,7 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
       <div className="lg:hidden">
         <CartBar />
       </div>
+      <MenuSeoFooter menu={menu} storeId={store.id} />
       <Footer menuStoreId={store.id} />
     </MenuCartShell>
   );

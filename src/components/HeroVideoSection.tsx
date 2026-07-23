@@ -140,7 +140,7 @@ export default function HeroVideoSection() {
   const scale = 1 - t * 0.38;
   const xPct = 50 - t * 32; // 50% → ~18%
   const yPct = 28 - t * 16; // 28% → ~12% (starts higher)
-  const gap = 1.15;
+  const gap = 1.35;
 
   return (
     <section
@@ -175,13 +175,13 @@ export default function HeroVideoSection() {
             transformOrigin: "center center",
           }}
         >
-          <h1 className="font-bagoss text-left text-[clamp(2.35rem,7.5vw,4.5rem)] font-bold leading-[0.92] tracking-[-0.03em] text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.5)]">
+          <h1 className="font-bagoss text-left text-[clamp(3rem,10.5vw,6.25rem)] font-bold leading-[0.92] tracking-[-0.03em] text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.5)]">
             <span className="block whitespace-nowrap">We make our</span>
             <span className="block whitespace-nowrap text-[#f16a34]">own buns</span>
           </h1>
           <Link
             href="/menu"
-            className="pointer-events-auto inline-flex items-center justify-center rounded-full bg-[#f16a34] px-6 py-2.5 text-[0.95rem] font-semibold text-white shadow-lg shadow-black/25 transition hover:brightness-110 active:scale-[0.98] sm:px-7 sm:py-3 sm:text-base"
+            className="pointer-events-auto inline-flex items-center justify-center rounded-full bg-[#f16a34] px-8 py-3.5 text-[1.05rem] font-semibold text-white shadow-lg shadow-black/25 transition hover:brightness-110 active:scale-[0.98] sm:px-10 sm:py-4 sm:text-lg"
           >
             Order now
           </Link>
