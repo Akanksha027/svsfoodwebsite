@@ -517,7 +517,7 @@ function CategorySection({
             />
           </div>
         ) : null}
-        <h2 className="text-xl sm:text-2xl font-extrabold text-svs-ink tracking-tight">
+        <h2 className="text-[17px] font-extrabold text-svs-ink tracking-tight">
           {titleCaseName(category.name)}
         </h2>
         <span className="text-sm font-medium text-svs-ink/40">
@@ -758,7 +758,7 @@ function MenuItemCard({
           </h3>
 
           <div className="flex items-center justify-between gap-1.5">
-            <p className="text-[14px] sm:text-[15px] font-bold text-svs-ink leading-none tabular-nums">
+            <p className="text-[15px] font-bold text-svs-ink leading-none tabular-nums">
               {formatInr(unitPrice)}
             </p>
 
