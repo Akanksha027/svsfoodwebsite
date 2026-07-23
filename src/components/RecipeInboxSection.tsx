@@ -33,7 +33,6 @@ const BOTTOM_ROW: IconItem[] = [
   { src: "/images/cheese.png", alt: "Cheese", delay: 0.12, rotate: 12 },
   { src: "/nobg/vegies/im8.png", alt: "Mint", delay: 0.16, rotate: 8 },
   { src: "/nobg/vegies/im7.png", alt: "Bun", delay: 0.2, rotate: -4 },
-  // { src: "/nobg/vegies/im3.png", alt: "Chili", delay: 0.24, rotate: 22 },
 ];
 
 /**
@@ -77,19 +76,21 @@ function IconRail({
 }) {
   const edgeClass =
     edge === "top"
-      ? "top-3 sm:top-5 lg:top-7"
-      : "bottom-3 sm:bottom-5 lg:bottom-7";
+      ? "top-0 items-start"
+      : "bottom-0 items-end sm:bottom-2 lg:bottom-4";
 
   const cols =
     items.length === 6
       ? "grid-cols-6"
       : items.length === 5
         ? "grid-cols-5"
-        : "grid-cols-6";
+        : items.length === 4
+          ? "grid-cols-4"
+          : "grid-cols-6";
 
   return (
     <div
-      className={`pointer-events-none absolute inset-x-0 z-[2] grid ${cols} items-center px-2 sm:px-6 md:px-10 lg:px-12 xl:px-16 ${edgeClass}`}
+      className={`pointer-events-none absolute inset-x-0 z-[2] grid ${cols} px-2 sm:px-6 md:px-10 lg:px-12 xl:px-16 ${edgeClass}`}
       aria-hidden
     >
       {items.map((item) => (
@@ -107,7 +108,7 @@ function IconRail({
 export default function RecipeInboxSection() {
   return (
     <section
-      className="relative flex min-h-[52svh] w-full items-center justify-center overflow-hidden py-20 sm:min-h-[58svh] sm:py-24 lg:min-h-[60svh] lg:py-28"
+      className="relative flex min-h-[340px] w-full items-center justify-center overflow-hidden py-8 pb-12 sm:min-h-[380px] sm:py-10 sm:pb-14 lg:min-h-[400px] lg:py-11 lg:pb-16"
       data-theory-snap
       style={{
         backgroundImage: `
@@ -131,11 +132,11 @@ export default function RecipeInboxSection() {
       <IconRail items={TOP_ROW} edge="top" />
       <IconRail items={BOTTOM_ROW} edge="bottom" />
 
-      {/* Pan — bottom right (no screen blend — dark pan vanishes on light bg) */}
+      {/* Pan — mobile: bottom-right; sm+: right edge, vertically centered */}
       <motion.div
-        className="pointer-events-none absolute -bottom-2 -right-2 z-[4] h-[220px] w-[140px] sm:-bottom-4 sm:-right-3 sm:h-[280px] sm:w-[175px] md:h-[340px] md:w-[210px] lg:-bottom-6 lg:-right-4 lg:h-[420px] lg:w-[260px] xl:h-[480px] xl:w-[300px]"
-        initial={{ opacity: 0, x: 28, y: 20 }}
-        whileInView={{ opacity: 1, x: 0, y: 0 }}
+        className="pointer-events-none absolute right-[-8%] bottom-1 z-[3] h-[120px] w-[88px] sm:top-1/2 sm:right-0 sm:bottom-auto sm:h-[220px] sm:w-[135px] sm:-translate-y-1/2 md:h-[280px] md:w-[170px] lg:right-[-1%] lg:h-[360px] lg:w-[220px] xl:h-[420px] xl:w-[255px]"
+        initial={{ opacity: 0, x: 24 }}
+        whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true, amount: 0.15 }}
         transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         aria-hidden
@@ -144,13 +145,13 @@ export default function RecipeInboxSection() {
           src="/nobg/vegies/pan.png"
           alt=""
           fill
-          className="object-contain object-right-bottom drop-shadow-[0_16px_32px_rgba(26,26,26,0.22)]"
-          sizes="(min-width: 1280px) 300px, (min-width: 1024px) 260px, 180px"
+          className="object-contain object-right-bottom sm:object-right-center drop-shadow-[0_16px_32px_rgba(26,26,26,0.22)]"
+          sizes="(min-width: 1280px) 255px, (min-width: 1024px) 220px, 88px"
           priority
         />
       </motion.div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[520px] flex-col items-center px-6 text-center sm:px-8">
+      <div className="relative z-10 mx-auto flex w-full max-w-[520px] flex-col items-center px-5 text-center sm:px-8">
         <motion.h2
           className={`${playfair.className} text-[clamp(1.55rem,6vw,3.15rem)] font-bold leading-[1.15] tracking-tight text-svs-ink`}
           initial={{ opacity: 0, y: 16 }}
@@ -162,7 +163,7 @@ export default function RecipeInboxSection() {
         </motion.h2>
 
         <motion.p
-          className="mt-3 max-w-md text-[14px] font-medium leading-relaxed text-svs-ink/70 sm:mt-5 sm:text-base"
+          className="mt-2 max-w-md text-[14px] font-medium leading-relaxed text-svs-ink/70 sm:mt-3 sm:text-base"
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -172,7 +173,7 @@ export default function RecipeInboxSection() {
         </motion.p>
 
         <motion.div
-          className="relative z-[6] mt-7 sm:mt-10"
+          className="relative z-[6] mt-5 sm:mt-6"
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

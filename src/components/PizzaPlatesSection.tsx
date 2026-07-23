@@ -165,17 +165,17 @@ function PizzaCard({
   const cardRef = useRef<HTMLDivElement>(null);
 
   /*
-    Spin starts as the pizza enters the bottom of the viewport,
-    and is fully finished once ~20% of the pizza is on screen.
+    Spin while the pizza rises into view; finishes when its top
+    hits 30% of the viewport, then stays locked at 0° (static).
   */
   const { scrollYProgress } = useScroll({
     target: cardRef,
-    offset: ["start end", "20% end"],
+    offset: ["start end", "start 30%"],
   });
 
   const rotate = useTransform(scrollYProgress, [0, 1], [-360, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [0.9, 1]);
-  const imgOpacity = useTransform(scrollYProgress, [0, 0.15, 1], [0, 0.85, 1]);
+  const scale = useTransform(scrollYProgress, [0, 1], [0.88, 1]);
+  const imgOpacity = useTransform(scrollYProgress, [0, 0.12, 1], [0, 0.9, 1]);
   const copyOpacity = useTransform(scrollYProgress, [0.55, 1], [0, 1]);
   const copyY = useTransform(scrollYProgress, [0.55, 1], [12, 0]);
 

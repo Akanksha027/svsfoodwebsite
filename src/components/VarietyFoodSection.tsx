@@ -2,7 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { useRef } from "react";
 
 /** Sides, drinks, dessert & rolls — everything beyond burgers & pizza */
@@ -38,44 +43,42 @@ const VARIETIES = [
 ] as const;
 
 const softEase = [0.25, 0.1, 0.25, 1] as const;
-const spinEase = [0.22, 0.61, 0.36, 1] as const;
 
 function VarietyCard({
   item,
-  index,
-  inView,
 }: {
   item: (typeof VARIETIES)[number];
   index: number;
-  inView: boolean;
 }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  /*
+    Same as pizzas: spin from bottom entry until the item reaches
+    30% of the viewport, then hold static at 0°.
+  */
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "start 30%"],
+  });
+
+  const rotate = useTransform(scrollYProgress, [0, 1], [-360, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [0.88, 1]);
+  const imgOpacity = useTransform(scrollYProgress, [0, 0.12, 1], [0, 0.9, 1]);
+  const copyOpacity = useTransform(scrollYProgress, [0.55, 1], [0, 1]);
+  const copyY = useTransform(scrollYProgress, [0.55, 1], [12, 0]);
+
   return (
     <article className="flex w-full flex-col items-center text-center">
-      <div className="relative mx-auto aspect-square w-full max-w-[180px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[300px]">
+      <div
+        ref={cardRef}
+        className="relative mx-auto aspect-square w-full max-w-[180px] sm:max-w-[240px] md:max-w-[280px] lg:max-w-[300px]"
+      >
         <motion.div
           className="relative h-full w-full will-change-transform"
-          initial={{ rotate: -360, scale: 0.9, opacity: 0 }}
-          animate={
-            inView
-              ? { rotate: 0, scale: 1, opacity: 1 }
-              : { rotate: -360, scale: 0.9, opacity: 0 }
-          }
-          transition={{
-            rotate: {
-              duration: 3.8,
-              delay: inView ? 0.08 + index * 0.14 : 0,
-              ease: spinEase,
-            },
-            scale: {
-              duration: 3.2,
-              delay: inView ? 0.08 + index * 0.14 : 0,
-              ease: spinEase,
-            },
-            opacity: {
-              duration: 1.6,
-              delay: inView ? 0.08 + index * 0.14 : 0,
-              ease: "easeOut",
-            },
+          style={{
+            rotate,
+            scale,
+            opacity: imgOpacity,
           }}
         >
           <Image
@@ -90,13 +93,7 @@ function VarietyCard({
 
       <motion.div
         className="mt-3 sm:mt-4"
-        initial={{ opacity: 0, y: 12 }}
-        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-        transition={{
-          duration: 0.7,
-          delay: inView ? 0.9 + index * 0.1 : 0,
-          ease: softEase,
-        }}
+        style={{ opacity: copyOpacity, y: copyY }}
       >
         <h3 className="font-serif text-xl font-semibold tracking-tight text-svs-ink sm:text-[1.35rem]">
           {item.name}
@@ -146,7 +143,7 @@ export default function VarietyFoodSection() {
               key={item.id}
               className="relative flex justify-center px-2 py-1 sm:px-3"
             >
-              <VarietyCard item={item} index={index} inView={inView} />
+              <VarietyCard item={item} index={index} />
             </div>
           ))}
         </div>
