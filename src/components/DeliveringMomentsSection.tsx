@@ -8,52 +8,7 @@ const BOX_ITEMS = [
   { name: "Cold Drink", qty: "1Pc" },
 ] as const;
 
-const FEATURES = [
-  {
-    title: "No Artificial Additives",
-    desc: "Pure ingredients, real flavours.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-        <path d="M9 3v3M15 3v3M7 21h10a2 2 0 0 0 2-2v-4.5a6.5 6.5 0 0 0-13 0V19a2 2 0 0 0 2 2z" strokeLinecap="round" />
-        <path d="M9 14h6" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: "100% Pure Veg",
-    desc: "Naturally fresh, nothing compromised.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-        <path d="M12 21c4-3.2 7-6.2 7-10a5 5 0 0 0-10 0c0 1.2.3 2.3.8 3.3" strokeLinecap="round" />
-        <path d="M5 14c2.5-1 4.5-3 5.5-5.5" strokeLinecap="round" />
-        <circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" stroke="none" />
-      </svg>
-    ),
-  },
-  {
-    title: "Made Fresh Daily",
-    desc: "Grilled to order, never under a lamp.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-        <circle cx="12" cy="12" r="8" />
-        <path d="M12 8v4l2.5 1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M5 5l1.5 1.5M19 5l-1.5 1.5" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    title: "Hot Delivery",
-    desc: "Doorstep delivery that stays piping hot.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-        <path d="M4 14h11l2-5H8L4 14z" strokeLinejoin="round" />
-        <circle cx="8" cy="18" r="1.6" />
-        <circle cx="15" cy="18" r="1.6" />
-        <path d="M17 9h2.5l1.5 4H17" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-] as const;
+
 
 export default function DeliveringMomentsSection() {
   return (
@@ -153,22 +108,7 @@ export default function DeliveringMomentsSection() {
           </div>
         </div>
 
-        {/* Feature row */}
-        <div className="mt-14 grid grid-cols-1 gap-8 border-t border-svs-ink/8 pt-10 sm:mt-16 sm:grid-cols-2 sm:gap-10 lg:mt-20 lg:grid-cols-4 lg:gap-6 lg:pt-12">
-          {FEATURES.map((feature) => (
-            <div key={feature.title} className="flex items-start gap-3.5">
-              <span className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-svs-orange/12 text-svs-orange [&_svg]:h-5 [&_svg]:w-5">
-                {feature.icon}
-              </span>
-              <p className="text-[0.9rem] sm:text-[0.95rem] leading-snug text-svs-ink/75">
-                <span className="font-extrabold text-svs-orange">
-                  {feature.title}:
-                </span>{" "}
-                {feature.desc}
-              </p>
-            </div>
-          ))}
-        </div>
+
       </div>
     </section>
   );

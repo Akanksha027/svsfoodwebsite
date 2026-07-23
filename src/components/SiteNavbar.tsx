@@ -18,6 +18,8 @@ export default function SiteNavbar() {
     pathname === "/account" || pathname.startsWith("/account/");
   const isCart = pathname === "/cart";
   const isTest = pathname === "/test" || pathname.startsWith("/test/");
+  const isTheoryMenu =
+    pathname === "/theorymenu" || pathname.startsWith("/theorymenu/");
   const { closeCart, isOpen } = useMenuCart();
   const [overHero, setOverHero] = useState(isHome);
 
@@ -59,7 +61,7 @@ export default function SiteNavbar() {
     <Navbar
       variant={variant}
       menuMode={isMenu}
-      homePage={isHome}
+      homePage={isHome || isTheoryMenu}
       accountPage={isAccount}
       cartPage={isCart}
     />
