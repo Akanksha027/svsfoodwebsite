@@ -4,14 +4,13 @@ import { useEffect } from "react";
 
 /**
  * Ref-counted body scroll lock so nested popups don't unlock early.
- * Hides the page scrollbar while open and pads the layout so fixed UI
- * (navbar, etc.) does not shift sideways.
+ * `soft` mode only blocks wheel/touch — use on home hero so sticky canvas stays visible.
  */
-let lockCount = 0;
+let hardLockCount = 0;
+let softLockCount = 0;
 let lockedScrollY = 0;
 
 function preventScroll(e: Event) {
-  // Allow scrolling inside modal/dialog panels
   const target = e.target as HTMLElement | null;
   if (target?.closest?.("[data-scroll-lock-allow], [role='dialog']")) {
     return;
@@ -19,7 +18,7 @@ function preventScroll(e: Event) {
   e.preventDefault();
 }
 
-function applyLock() {
+function applyHardLock() {
   lockedScrollY = window.scrollY || window.pageYOffset || 0;
   const html = document.documentElement;
 
@@ -27,9 +26,12 @@ function applyLock() {
   html.style.overflow = "hidden";
   html.style.overflowY = "hidden";
   html.style.overscrollBehavior = "none";
-  // Keep scrollbar-gutter: stable (set in globals.css) so fixed chrome
-  // does not jump when the scrollbar is hidden.
 
+  document.body.style.position = "fixed";
+  document.body.style.top = `-${lockedScrollY}px`;
+  document.body.style.left = "0";
+  document.body.style.right = "0";
+  document.body.style.width = "100%";
   document.body.style.overflow = "hidden";
   document.body.style.overscrollBehavior = "none";
   document.body.style.touchAction = "none";
@@ -38,13 +40,18 @@ function applyLock() {
   window.addEventListener("touchmove", preventScroll, { passive: false });
 }
 
-function clearLock() {
+function clearHardLock() {
   const html = document.documentElement;
   html.classList.remove("svs-scroll-locked");
   html.style.overflow = "";
   html.style.overflowY = "";
   html.style.overscrollBehavior = "";
 
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.left = "";
+  document.body.style.right = "";
+  document.body.style.width = "";
   document.body.style.overflow = "";
   document.body.style.overscrollBehavior = "";
   document.body.style.touchAction = "";
@@ -52,27 +59,48 @@ function clearLock() {
   window.removeEventListener("wheel", preventScroll);
   window.removeEventListener("touchmove", preventScroll);
 
-  // Restore exact scroll if anything drifted
   window.scrollTo(0, lockedScrollY);
 }
 
-export function lockBodyScroll() {
-  if (typeof document === "undefined") return;
-  lockCount += 1;
-  if (lockCount === 1) applyLock();
+function applySoftLock() {
+  document.body.style.touchAction = "none";
+  window.addEventListener("wheel", preventScroll, { passive: false });
+  window.addEventListener("touchmove", preventScroll, { passive: false });
 }
 
-export function unlockBodyScroll() {
-  if (typeof document === "undefined") return;
-  lockCount = Math.max(0, lockCount - 1);
-  if (lockCount === 0) clearLock();
+function clearSoftLock() {
+  document.body.style.touchAction = "";
+  window.removeEventListener("wheel", preventScroll);
+  window.removeEventListener("touchmove", preventScroll);
 }
 
-/** Lock page scroll while `locked` is true. */
-export function useBodyScrollLock(locked: boolean) {
+export function lockBodyScroll(soft = false) {
+  if (typeof document === "undefined") return;
+  if (soft) {
+    softLockCount += 1;
+    if (softLockCount === 1) applySoftLock();
+    return;
+  }
+  hardLockCount += 1;
+  if (hardLockCount === 1) applyHardLock();
+}
+
+export function unlockBodyScroll(soft = false) {
+  if (typeof document === "undefined") return;
+  if (soft) {
+    softLockCount = Math.max(0, softLockCount - 1);
+    if (softLockCount === 0) clearSoftLock();
+    return;
+  }
+  hardLockCount = Math.max(0, hardLockCount - 1);
+  if (hardLockCount === 0) clearHardLock();
+}
+
+/** Lock page scroll while `locked` is true. Pass `soft` on home hero to preserve sticky video. */
+export function useBodyScrollLock(locked: boolean, soft = false) {
   useEffect(() => {
     if (!locked) return;
-    lockBodyScroll();
-    return () => unlockBodyScroll();
-  }, [locked]);
+    lockBodyScroll(soft);
+    return () => unlockBodyScroll(soft);
+  }, [locked, soft]);
 }
