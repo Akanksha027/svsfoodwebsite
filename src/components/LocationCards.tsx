@@ -7,6 +7,11 @@ import {
   storeLocations,
   type StoreLocation,
 } from "@/data/locations";
+import {
+  fetchWebsiteStorePolicies,
+  getPolicyStatusLabel,
+  type WebsiteStorePolicy,
+} from "@/lib/store-policies";
 
 function DirectionArrow() {
   return (
@@ -60,7 +65,6 @@ function StoreCard({
         </span>
       </div>
 
-      {/* Phone: stacked. Tablet (2 col): stacked. Desktop: side-by-side */}
       <div className="flex flex-col lg:flex-row items-start justify-between gap-3 sm:gap-3 md:gap-4 lg:gap-6 px-1.5 sm:px-2 pt-3 sm:pt-4 pb-3 sm:pb-4 md:pb-5">
         <div className="flex flex-col items-start gap-1 sm:gap-1.5 md:gap-2 shrink-0 w-full lg:max-w-[36%]">
           <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-svs-ink leading-tight tracking-tight">
@@ -99,19 +103,42 @@ function StoreCard({
 }
 
 export default function LocationCards() {
-  const [status, setStatus] = useState<"Open now" | "Closing soon" | "Closed">(
-    "Open now"
-  );
+  const [statusByStore, setStatusByStore] = useState<
+    Record<string, "Open now" | "Closing soon" | "Closed">
+  >(() => {
+    const fallback = getStoreStatusLabel();
+    return Object.fromEntries(storeLocations.map((s) => [s.id, fallback]));
+  });
 
   useEffect(() => {
-    setStatus(getStoreStatusLabel());
+    let cancelled = false;
+    void fetchWebsiteStorePolicies().then((policies) => {
+      if (cancelled) return;
+      const byBackend = new Map<string, WebsiteStorePolicy>();
+      for (const p of policies) byBackend.set(p.store_id, p);
+      const next: Record<string, "Open now" | "Closing soon" | "Closed"> = {};
+      for (const store of storeLocations) {
+        const policy = byBackend.get(store.backendStoreId);
+        next[store.id] = policy
+          ? getPolicyStatusLabel(policy)
+          : getStoreStatusLabel();
+      }
+      setStatusByStore(next);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
     <div className="relative z-30 w-[94%] sm:w-[95%] -mt-10 sm:-mt-14 md:-mt-[70px]">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
         {storeLocations.map((store) => (
-          <StoreCard key={store.id} store={store} status={status} />
+          <StoreCard
+            key={store.id}
+            store={store}
+            status={statusByStore[store.id] || getStoreStatusLabel()}
+          />
         ))}
       </div>
     </div>

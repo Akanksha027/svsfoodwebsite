@@ -26,6 +26,12 @@ import {
 } from "@/lib/orders-api";
 import { isValidIndianMobile, normalizeIndianMobile } from "@/lib/indian-phone";
 import type { WebsiteCustomerAddress } from "@/lib/website-customer-api";
+import {
+  assertCheckoutAllowed,
+  defaultStorePolicy,
+  getPolicyForStore,
+  type WebsiteStorePolicy,
+} from "@/lib/store-policies";
 
 export type PayMethod = "online" | "cod";
 
@@ -91,15 +97,41 @@ export function useWebCheckout(options: Options = {}) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [booted, setBooted] = useState(false);
-
-  const totals = useMemo(
-    () => computeTotals({ subtotal, orderType }),
-    [subtotal, orderType],
+  const [policy, setPolicy] = useState<WebsiteStorePolicy>(() =>
+    defaultStorePolicy(store.backendStoreId),
   );
 
-  const codAllowed = orderType === "delivery" || orderType === "takeaway";
+  useEffect(() => {
+    let cancelled = false;
+    void getPolicyForStore(store.backendStoreId).then((p) => {
+      if (!cancelled) setPolicy(p);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [store.backendStoreId]);
+
+  const totals = useMemo(
+    () =>
+      computeTotals({
+        subtotal,
+        orderType,
+        deliveryFee: policy.delivery_fee,
+      }),
+    [subtotal, orderType, policy.delivery_fee],
+  );
+
+  const codAllowed =
+    (orderType === "delivery" || orderType === "takeaway") &&
+    policy.web_cod_enabled;
   const effectivePay: PayMethod =
-    orderType === "dine_in" ? "online" : payMethod;
+    orderType === "dine_in" || !codAllowed ? "online" : payMethod;
+
+  useEffect(() => {
+    if (!codAllowed && payMethod === "cod") {
+      setPayMethod("online");
+    }
+  }, [codAllowed, payMethod]);
 
   const fullAddress = useMemo(
     () =>
@@ -267,6 +299,15 @@ export function useWebCheckout(options: Options = {}) {
         );
       }
 
+      assertCheckoutAllowed({
+        policy,
+        orderType,
+        subtotal,
+        payMethod: effectivePay,
+        deliveryLat: deliveryCoords?.lat,
+        deliveryLng: deliveryCoords?.lng,
+      });
+
       const order = await createWebOrder({
         storeId: store.backendStoreId,
         orderType,
@@ -374,6 +415,7 @@ export function useWebCheckout(options: Options = {}) {
     notes,
     effectivePay,
     clearCart,
+    policy,
   ]);
 
   const resetErrors = useCallback(() => setError(null), []);
@@ -398,25 +440,58 @@ export function useWebCheckout(options: Options = {}) {
   }, []);
 
   const validateOrderStep = useCallback((): string | null => {
-    if (orderType === "delivery") {
-      if (flat.trim().length < 2) {
-        return "Enter flat / house / floor number.";
+    try {
+      if (!policy.web_ordering_enabled) {
+        return "Online ordering is paused for this outlet.";
       }
-      if (street.trim().length < 3) {
-        return "Enter street, building, or society name.";
+      if (orderType === "delivery") {
+        if (flat.trim().length < 2) {
+          return "Enter flat / house / floor number.";
+        }
+        if (street.trim().length < 3) {
+          return "Enter street, building, or society name.";
+        }
+        if (area.trim().length < 6) {
+          return "Enter area / locality.";
+        }
+        if (fullAddress.length < 20) {
+          return "Please complete your delivery address.";
+        }
+        if (!pinReady && !resolveDeliveryCoords(addressHint)) {
+          return "Share your location for the rider pin.";
+        }
+        const coords = resolveDeliveryCoords(addressHint);
+        assertCheckoutAllowed({
+          policy,
+          orderType,
+          subtotal,
+          payMethod: "online",
+          deliveryLat: coords?.lat,
+          deliveryLng: coords?.lng,
+        });
+      } else if (orderType === "takeaway") {
+        assertCheckoutAllowed({
+          policy,
+          orderType,
+          subtotal,
+          payMethod: "online",
+        });
       }
-      if (area.trim().length < 6) {
-        return "Enter area / locality.";
-      }
-      if (fullAddress.length < 20) {
-        return "Please complete your delivery address.";
-      }
-      if (!pinReady && !resolveDeliveryCoords(addressHint)) {
-        return "Share your location for the rider pin.";
-      }
+    } catch (err) {
+      return err instanceof Error ? err.message : "Checkout not available.";
     }
     return null;
-  }, [orderType, flat, street, area, fullAddress, pinReady, addressHint]);
+  }, [
+    orderType,
+    flat,
+    street,
+    area,
+    fullAddress,
+    pinReady,
+    addressHint,
+    policy,
+    subtotal,
+  ]);
 
   return {
     store,
@@ -455,6 +530,7 @@ export function useWebCheckout(options: Options = {}) {
     totals,
     codAllowed,
     effectivePay,
+    policy,
     applyLocation,
     clearLocationDenied,
     validateOrderStep,
