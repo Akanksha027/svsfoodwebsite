@@ -123,6 +123,7 @@ export default function VarietyFoodSection() {
     <section
       ref={sectionRef}
       className="relative flex min-h-0 w-full items-center overflow-hidden bg-transparent py-12 sm:py-16 lg:min-h-[100svh] lg:py-20"
+      data-theory-snap
     >
       <div className="relative z-10 mx-auto w-full max-w-[1200px] px-5 sm:px-8">
         <motion.header

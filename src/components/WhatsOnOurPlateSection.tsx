@@ -108,7 +108,8 @@ export default function WhatsOnOurPlateSection({
   return (
     <section
       ref={sectionRef}
-      className="relative isolate w-full overflow-hidden bg-transparent py-12 sm:py-20 lg:py-24"
+      className="relative isolate w-full overflow-hidden bg-transparent py-12 sm:py-20 lg:min-h-[100svh] lg:py-24"
+      data-theory-snap
     >
       {FLOATS.map((item) => {
         const fromX = item.side === "left" ? -220 : 220;

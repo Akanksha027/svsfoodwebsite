@@ -248,7 +248,10 @@ export default function TheoryMenuPage() {
 
       <div ref={trackRef} className="relative">
         {/* Full-bleed hero shell so edge accents can touch screen left/right */}
-        <div className="relative min-h-[100svh] overflow-x-clip sm:overflow-x-visible">
+        <div
+          data-theory-snap
+          className="relative min-h-[100svh] overflow-x-clip sm:overflow-x-visible"
+        >
           <HeroEdgeDecor heroRef={heroRef} />
 
           <div

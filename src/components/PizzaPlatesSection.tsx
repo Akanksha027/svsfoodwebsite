@@ -241,6 +241,7 @@ export default function PizzaPlatesSection() {
     <section
       ref={sectionRef}
       className="relative flex min-h-0 w-full items-center overflow-hidden bg-transparent py-12 sm:min-h-[100svh] sm:py-16 lg:py-20"
+      data-theory-snap
     >
       {/* Left accent — veggies toss up from basket, then settle back on scroll */}
       <LeftVeggieToss sectionRef={sectionRef} />

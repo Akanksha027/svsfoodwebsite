@@ -152,6 +152,7 @@ export default function RecipeInboxSection() {
   return (
     <section
       className="relative flex min-h-[52svh] w-full items-center justify-center overflow-hidden py-16 sm:min-h-[58svh] sm:py-20 lg:min-h-[60svh] lg:py-14"
+      data-theory-snap
       style={{
         backgroundImage: `
           radial-gradient(ellipse 85% 50% at 50% 45%, rgba(255,255,255,0.97) 0%, transparent 72%),

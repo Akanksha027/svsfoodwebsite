@@ -51,6 +51,13 @@ html.theorymenu-smooth {
   scroll-behavior: auto;
 }
 
+/* Soft section rhythm on large screens (pairs with Lenis Snap) */
+@media (min-width: 1024px) {
+  html.theorymenu-snap [data-theory-snap] {
+    scroll-margin-top: 0;
+  }
+}
+
 /* When cart / modal locks scroll ? hide page scrollbar, keep gutter stable */
 html.svs-scroll-locked {
   overflow: hidden !important;
