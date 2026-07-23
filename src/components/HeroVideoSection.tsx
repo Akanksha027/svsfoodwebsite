@@ -145,10 +145,14 @@ export default function HeroVideoSection() {
   }, [drawFrame, ready]);
 
   const t = copyProgress(progress);
-  const scale = 1 - t * (narrow ? 0.28 : 0.38);
-  const xPct = (narrow ? 50 : 50) - t * (narrow ? 28 : 32);
+  // Phone: milder left travel + less -translateX so scrolled copy isn't clipped.
+  const scale = 1 - t * (narrow ? 0.22 : 0.38);
+  const xPct = 50 - t * (narrow ? 16 : 32); // phone ends ~34%
   const yPct = (narrow ? 40 : 28) - t * (narrow ? 14 : 16);
   const gap = narrow ? 1 : 1.25;
+  // Start centered (-50%); on phone ease toward -26% so block sits further right.
+  const translateX = narrow ? -50 + t * 24 : -50;
+  const scrolledLeft = narrow && t > 0.35;
 
   return (
     <section
@@ -174,20 +178,24 @@ export default function HeroVideoSection() {
         />
 
         <div
-          className={`pointer-events-none absolute z-10 flex w-[min(92vw,720px)] max-w-full flex-col will-change-transform sm:w-[min(88vw,780px)] ${
-            narrow ? "items-center px-5 text-center" : "items-start px-4 sm:px-6 md:px-0"
+          className={`pointer-events-none absolute z-10 flex max-w-full flex-col will-change-transform ${
+            narrow
+              ? scrolledLeft
+                ? "w-[min(72vw,360px)] items-start pl-1 pr-2 text-left"
+                : "w-[min(88vw,720px)] items-center px-5 text-center"
+              : "w-[min(88vw,780px)] items-start px-4 sm:px-6 md:px-0"
           }`}
           style={{
             left: `${xPct}%`,
             top: `${yPct}%`,
-            transform: `translate(-50%, -50%) scale(${scale})`,
+            transform: `translate(${translateX}%, -50%) scale(${scale})`,
             gap: `${gap}rem`,
             transformOrigin: "center center",
           }}
         >
           <h1
-            className={`font-bagoss text-[clamp(1.85rem,8.5vw,7.5rem)] font-bold leading-[0.92] tracking-[-0.03em] text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.5)] ${
-              narrow ? "text-center" : "text-left"
+            className={`font-bagoss text-[clamp(1.75rem,8vw,7.5rem)] font-bold leading-[0.92] tracking-[-0.03em] text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.5)] ${
+              narrow && !scrolledLeft ? "text-center" : "text-left"
             }`}
           >
             <span className="block max-[420px]:whitespace-normal sm:whitespace-nowrap">
