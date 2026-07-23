@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   cartLineKey,
@@ -8,12 +8,20 @@ import {
   type CartLineAddon,
 } from "@/context/CartContext";
 import { RollingCounter } from "@/components/RollingCounter";
+import { resolveAddonImageUrl } from "@/lib/addon-image";
 import { useBodyScrollLock } from "@/lib/body-scroll-lock";
+import {
+  buildComboImageContext,
+  isComboItem,
+  orderComboAddonGroups,
+} from "@/lib/combo-option-image";
 import { formatInr } from "@/lib/menu-api";
+import { pickImageUrl } from "@/lib/menu-item-image";
 import { isImageReady, preloadImages } from "@/lib/preload-image";
 import type {
   MenuAddonGroup,
   MenuAddonOption,
+  MenuCategory,
   MenuItem,
   MenuVariant,
 } from "@/lib/menu-types";
@@ -30,25 +38,27 @@ export type AddItemSelection = {
 type AddItemSheetProps = {
   item: MenuItem;
   categoryImageUrl?: string | null;
+  categories?: MenuCategory[];
+  menuItems?: MenuItem[];
   onClose: () => void;
   onAdd: (selection: AddItemSelection) => void;
   onRemove?: (selection: AddItemSelection) => void;
 };
 
-function pickImageUrl(
-  ...candidates: Array<string | null | undefined>
-): string | null {
-  for (const c of candidates) {
-    const s = String(c || "").trim();
-    if (!s || s === "null" || s === "undefined") continue;
-    if (s.startsWith("http://") || s.startsWith("https://") || s.startsWith("/")) {
-      return s;
+/** Pre-select first option in each required addon group (combo slots). */
+function buildDefaultAddonSelections(
+  groups: MenuAddonGroup[],
+): Record<string, string[]> {
+  const defaults: Record<string, string[]> = {};
+  for (const group of groups) {
+    const min = group.selection_min ?? 0;
+    if (min >= 1 && group.items.length > 0) {
+      defaults[group.id] = [group.items[0].id];
     }
   }
-  return null;
+  return defaults;
 }
 
-/** Native img avoids Next/Image remote-host failures for Petpooja CDNs. */
 function SheetImage({
   src,
   alt = "",
@@ -105,6 +115,8 @@ function SheetImage({
 export default function AddItemSheet({
   item,
   categoryImageUrl,
+  categories = [],
+  menuItems = [],
   onClose,
   onAdd,
   onRemove,
@@ -125,15 +137,39 @@ export default function AddItemSheet({
     [item.addon_groups],
   );
   const hasVariants = variants.length > 0;
+  const isCombo = useMemo(
+    () => isComboItem(item, categories),
+    [item, categories],
+  );
+  const orderedAddonGroups = useMemo(
+    () => orderComboAddonGroups(addonGroups, isCombo),
+    [addonGroups, isCombo],
+  );
+
+  const comboImages = useMemo(
+    () =>
+      buildComboImageContext({
+        item,
+        categories,
+        items: menuItems,
+        isCombo,
+      }),
+    [item, categories, menuItems, isCombo],
+  );
 
   const [selectedId, setSelectedId] = useState<string | null>(
     () => variants[0]?.item_id ?? null,
   );
   const [selectedAddons, setSelectedAddons] = useState<
     Record<string, string[]>
-  >({});
+  >(() => buildDefaultAddonSelections(addonGroups));
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    setSelectedId(variants[0]?.item_id ?? null);
+    setSelectedAddons(buildDefaultAddonSelections(addonGroups));
+  }, [item.id, addonGroups, variants]);
 
   useEffect(() => {
     setMounted(true);
@@ -154,10 +190,10 @@ export default function AddItemSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose]);
 
-  function requestClose() {
+  const requestClose = useCallback(() => {
     setVisible(false);
     window.setTimeout(onClose, 280);
-  }
+  }, [onClose]);
 
   const selectedVariant =
     variants.find((v) => v.item_id === selectedId) || variants[0] || null;
@@ -208,14 +244,34 @@ export default function AddItemSheet({
     return true;
   }, [hasVariants, selectedVariant, addonGroups, selectedAddons]);
 
+  const itemCategory = useMemo(
+    () => categories.find((c) => c.id === item.category_id) ?? null,
+    [categories, item.category_id],
+  );
+
   const fallbackImage = pickImageUrl(
     item.image_url,
     Array.isArray(item.image_urls) ? item.image_urls[0] : null,
     categoryImageUrl,
+    itemCategory?.image_url,
+    itemCategory?.icon_url,
   );
 
-  const heroImage =
-    pickImageUrl(selectedVariant?.image_url) || fallbackImage;
+  const hasDistinctVariantImages = useMemo(() => {
+    if (variants.length < 2) return false;
+    const urls = variants.map((v) =>
+      typeof v.image_url === "string" ? v.image_url.trim() : "",
+    );
+    if (urls.some((u) => u === "")) return false;
+    return new Set(urls).size === urls.length;
+  }, [variants]);
+
+  const heroImage = useMemo(() => {
+    if (hasDistinctVariantImages && selectedVariant?.image_url) {
+      return pickImageUrl(selectedVariant.image_url) || fallbackImage;
+    }
+    return fallbackImage;
+  }, [hasDistinctVariantImages, selectedVariant, fallbackImage]);
 
   const sheetImageUrls = useMemo(() => {
     const urls = new Set<string>();
@@ -231,15 +287,6 @@ export default function AddItemSheet({
   useEffect(() => {
     void preloadImages(sheetImageUrls);
   }, [sheetImageUrls]);
-
-  const hasDistinctVariantImages = useMemo(() => {
-    const urls = new Set(
-      variants
-        .map((v) => pickImageUrl(v.image_url))
-        .filter((u): u is string => Boolean(u)),
-    );
-    return urls.size >= 2;
-  }, [variants]);
 
   const stagedQty = useMemo(() => {
     const itemId = selectedVariant ? selectedVariant.item_id : item.id;
@@ -310,7 +357,7 @@ export default function AddItemSheet({
         role="dialog"
         aria-modal="true"
         aria-label={`Customise ${item.name}`}
-        className={`relative z-[1601] flex flex-col w-full sm:w-[min(100%,34rem)] md:w-[min(100%,38rem)] max-h-[min(94dvh,820px)] rounded-t-[1.5rem] sm:rounded-[1.5rem] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`relative z-[1601] flex flex-col w-full sm:w-[min(100%,56rem)] md:w-[min(100%,62rem)] max-h-[min(94dvh,820px)] rounded-t-[1.5rem] sm:rounded-[1.5rem] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           visible
             ? "opacity-100 translate-y-0 sm:scale-100"
             : "opacity-0 translate-y-8 sm:translate-y-4 sm:scale-[0.96]"
@@ -318,70 +365,62 @@ export default function AddItemSheet({
         onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
       >
-        <div
-          className="flex-1 min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] bg-white"
-          data-scroll-lock-allow
-        >
-          <div className="relative w-full bg-white aspect-[4/3] sm:aspect-[16/10] max-h-[min(42vh,320px)] sm:max-h-[340px] md:max-h-[380px]">
-            {heroImage ? (
-              <SheetImage
-                src={heroImage}
-                alt={item.name}
-                priority
-                className="absolute inset-0 m-auto max-h-full max-w-full w-full h-full object-contain p-4 sm:p-6"
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-svs-orange/40">
-                SVS
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={requestClose}
-              className="absolute top-3 left-3 h-10 w-10 rounded-full bg-white border border-black/[0.06] shadow-md flex items-center justify-center cursor-pointer text-svs-ink text-lg font-bold hover:bg-gray-50 transition-colors"
-              aria-label="Go back"
-            >
-              ←
-            </button>
+        <div className="flex flex-1 min-h-0 flex-col md:flex-row">
+          {/* Left — hero image (kiosk-style: main photo stays here while picking) */}
+          <div className="relative shrink-0 md:w-[42%] lg:w-[40%] bg-white border-b md:border-b-0 md:border-r border-gray-100">
+            <div className="relative w-full aspect-[4/3] md:aspect-auto md:absolute md:inset-0 md:flex md:items-center md:justify-center md:p-6 lg:p-8 max-h-[min(38vh,280px)] md:max-h-none">
+              {heroImage ? (
+                <SheetImage
+                  src={heroImage}
+                  alt={item.name}
+                  priority
+                  className="absolute inset-0 m-auto max-h-full max-w-full w-full h-full object-contain p-4 md:p-0"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-svs-orange/40">
+                  SVS
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={requestClose}
+                className="absolute top-3 left-3 h-10 w-10 rounded-full bg-white border border-black/[0.06] shadow-md flex items-center justify-center cursor-pointer text-svs-ink text-lg font-bold hover:bg-gray-50 transition-colors z-10"
+                aria-label="Go back"
+              >
+                ←
+              </button>
+            </div>
           </div>
 
-          <div className="px-5 sm:px-6 pt-4 pb-5 bg-white">
-            <h2 className="text-lg sm:text-xl font-extrabold text-svs-ink leading-snug">
-              {item.name}
-            </h2>
-            {selectedVariant ? (
-              <p className="mt-0.5 text-sm text-svs-ink/55">
-                {selectedVariant.variant_name}
-              </p>
-            ) : null}
-            <p className="mt-1.5 text-base sm:text-lg font-bold text-svs-ink tabular-nums">
-              {formatInr(displayPrice)}
-            </p>
-            {item.description ? (
-              <p className="mt-2 text-sm text-svs-ink/55 leading-relaxed">
-                {item.description}
-              </p>
-            ) : null}
-
-            {hasVariants ? (
-              <div className="mt-5">
-                <p className="text-xs font-bold uppercase tracking-wide text-svs-ink/45 mb-2.5">
-                  {variants[0]?.group_name || "Choose option"}
+          {/* Right — title + selections (scrollable) */}
+          <div
+            className="flex flex-col flex-1 min-h-0 min-w-0"
+            data-scroll-lock-allow
+          >
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] px-5 sm:px-6 pt-4 pb-4">
+              <h2 className="text-lg sm:text-xl font-extrabold text-svs-ink leading-snug">
+                {item.name}
+              </h2>
+              {selectedVariant ? (
+                <p className="mt-0.5 text-sm text-svs-ink/55">
+                  {selectedVariant.variant_name}
                 </p>
-                {hasDistinctVariantImages ? (
-                  <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2.5">
-                    {variants.map((variant) => (
-                      <VariantImageCard
-                        key={variant.item_id}
-                        variant={variant}
-                        fallback={fallbackImage}
-                        selected={selectedVariant?.item_id === variant.item_id}
-                        onSelect={() => setSelectedId(variant.item_id)}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2.5">
+              ) : null}
+              <p className="mt-1.5 text-base sm:text-lg font-bold text-svs-ink tabular-nums">
+                {formatInr(displayPrice)}
+              </p>
+              {item.description ? (
+                <p className="mt-2 text-sm text-svs-ink/55 leading-relaxed line-clamp-3">
+                  {item.description}
+                </p>
+              ) : null}
+
+              {hasVariants ? (
+                <div className="mt-5">
+                  <p className="text-xs font-bold uppercase tracking-wide text-svs-ink/45 mb-2.5">
+                    {variants[0]?.group_name || "Choose option"}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
                     {variants.map((variant) => {
                       const selected =
                         selectedVariant?.item_id === variant.item_id;
@@ -390,7 +429,7 @@ export default function AddItemSheet({
                           key={variant.item_id}
                           type="button"
                           onClick={() => setSelectedId(variant.item_id)}
-                          className={`rounded-xl border-2 px-3 py-2.5 text-left cursor-pointer transition-colors ${
+                          className={`rounded-xl border-2 px-3 py-2 text-left cursor-pointer transition-colors min-w-[7.5rem] ${
                             selected
                               ? "border-svs-orange bg-[#fff4ee]"
                               : "border-gray-200 bg-white hover:border-svs-orange/40"
@@ -406,105 +445,143 @@ export default function AddItemSheet({
                       );
                     })}
                   </div>
-                )}
-              </div>
-            ) : null}
-
-            {addonGroups.map((group) => {
-              const max =
-                group.selection_max ?? Math.max(1, group.items.length);
-              const isSingle = max <= 1;
-              const hint = isSingle ? "Pick one" : `Pick up to ${max}`;
-              const picks = selectedAddons[group.id] || [];
-              return (
-                <div key={group.id} className="mt-5">
-                  <p className="text-xs font-bold uppercase tracking-wide text-svs-ink/45">
-                    {group.name}
-                  </p>
-                  <p className="mt-0.5 mb-2.5 text-[11px] text-svs-ink/40">
-                    {hint}
-                  </p>
-                  <div className="space-y-2">
-                    {group.items.map((option) => {
-                      const selected = picks.includes(option.id);
-                      return (
-                        <button
-                          key={option.id}
-                          type="button"
-                          onClick={() => toggleAddon(group, option)}
-                          className={`w-full flex items-center gap-3 rounded-xl border-2 px-3 py-2.5 text-left cursor-pointer transition-colors ${
-                            selected
-                              ? "border-svs-orange bg-[#fff4ee]"
-                              : "border-gray-200 bg-white hover:border-svs-orange/35"
-                          }`}
-                        >
-                          <span
-                            className={`shrink-0 h-5 w-5 rounded-[5px] border-2 flex items-center justify-center text-[11px] font-bold ${
-                              selected
-                                ? "border-svs-orange bg-svs-orange text-white"
-                                : "border-svs-ink/25 bg-white text-transparent"
-                            }`}
-                            aria-hidden
-                          >
-                            ✓
-                          </span>
-                          <span className="flex-1 min-w-0 text-sm font-semibold text-svs-ink">
-                            {option.name}
-                          </span>
-                          <span className="shrink-0 text-xs font-bold text-svs-ink/55 tabular-nums">
-                            {option.price > 0
-                              ? `+${formatInr(option.price)}`
-                              : formatInr(0)}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
                 </div>
-              );
-            })}
+              ) : null}
 
-            {!canSubmit ? (
-              <p className="mt-3 text-xs text-svs-orange-dark">
-                Pick the required options to add this item.
-              </p>
-            ) : null}
-          </div>
-        </div>
+              {orderedAddonGroups.map((group) => {
+                const max =
+                  group.selection_max ?? Math.max(1, group.items.length);
+                const isSingle = max <= 1;
+                const hint = isSingle ? "Pick one" : `Pick up to ${max}`;
+                const picks = selectedAddons[group.id] || [];
+                const isComboRequiredSlot =
+                  isCombo && (group.selection_min ?? 0) >= 1;
 
-        <div
-          className="shrink-0 border-t border-gray-100 bg-white px-5 sm:px-6 pt-3.5"
-          style={{
-            paddingBottom: "max(0.85rem, env(safe-area-inset-bottom, 0px))",
-          }}
-        >
-          <div className="flex items-center justify-center">
-            <div className="inline-flex h-12 items-center overflow-hidden rounded-xl bg-svs-orange text-white shadow-sm">
-              <button
-                type="button"
-                onClick={handleMinus}
-                disabled={stagedQty <= 0}
-                className="w-11 h-full flex items-center justify-center text-xl font-bold border-0 bg-transparent cursor-pointer hover:bg-svs-orange-dark disabled:opacity-40 disabled:cursor-not-allowed"
-                aria-label="Decrease"
-              >
-                −
-              </button>
-              <span className="min-w-[28px] flex items-center justify-center">
-                <RollingCounter
-                  value={stagedQty}
-                  fontSize={18}
-                  color="#ffffff"
-                />
-              </span>
-              <button
-                type="button"
-                onClick={handlePlus}
-                disabled={!canSubmit}
-                className="w-11 h-full flex items-center justify-center text-xl font-bold border-0 bg-transparent cursor-pointer hover:bg-svs-orange-dark disabled:opacity-40 disabled:cursor-not-allowed"
-                aria-label="Increase"
-              >
-                +
-              </button>
+                return (
+                  <div key={group.id} className="mt-5">
+                    {isComboRequiredSlot ? (
+                      <ComboOptionCarousel
+                        group={group}
+                        hint={hint}
+                        picks={picks}
+                        resolveOptionImage={(option) =>
+                          comboImages.resolveComboOptionImage(
+                            group,
+                            option.name,
+                          )
+                        }
+                        onToggle={(option) => toggleAddon(group, option)}
+                      />
+                    ) : (
+                      <>
+                        <p className="text-xs font-bold uppercase tracking-wide text-svs-ink/45">
+                          {group.name}
+                        </p>
+                        <p className="mt-0.5 mb-2.5 text-[11px] text-svs-ink/40">
+                          {hint}
+                        </p>
+                        <div className="space-y-2">
+                          {group.items.map((option) => {
+                            const selected = picks.includes(option.id);
+                            const optionImage = resolveAddonImageUrl(option.name);
+                            return (
+                              <button
+                                key={option.id}
+                                type="button"
+                                onClick={() => toggleAddon(group, option)}
+                                className={`w-full flex items-center gap-3 rounded-xl border-2 px-3 py-2.5 text-left cursor-pointer transition-colors ${
+                                  selected
+                                    ? "border-svs-orange bg-[#fff4ee]"
+                                    : "border-gray-200 bg-white hover:border-svs-orange/35"
+                                }`}
+                              >
+                                {optionImage ? (
+                                  <span className="relative shrink-0 h-11 w-11 rounded-lg overflow-hidden bg-white border border-gray-100">
+                                    <SheetImage
+                                      src={optionImage}
+                                      alt=""
+                                      className="absolute inset-0 w-full h-full object-cover"
+                                    />
+                                    {selected ? (
+                                      <span className="absolute inset-0 bg-svs-orange/15 flex items-center justify-center">
+                                        <span className="h-4 w-4 rounded-full bg-svs-orange text-white text-[10px] font-bold flex items-center justify-center">
+                                          ✓
+                                        </span>
+                                      </span>
+                                    ) : null}
+                                  </span>
+                                ) : (
+                                  <span
+                                    className={`shrink-0 h-5 w-5 rounded-[5px] border-2 flex items-center justify-center text-[11px] font-bold ${
+                                      selected
+                                        ? "border-svs-orange bg-svs-orange text-white"
+                                        : "border-svs-ink/25 bg-white text-transparent"
+                                    }`}
+                                    aria-hidden
+                                  >
+                                    ✓
+                                  </span>
+                                )}
+                                <span className="flex-1 min-w-0 text-sm font-semibold text-svs-ink">
+                                  {option.name}
+                                </span>
+                                <span className="shrink-0 text-xs font-bold text-svs-ink/55 tabular-nums">
+                                  {option.price > 0
+                                    ? `+${formatInr(option.price)}`
+                                    : formatInr(0)}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+
+              {!canSubmit ? (
+                <p className="mt-3 text-xs text-svs-orange-dark">
+                  Pick the required options to add this item.
+                </p>
+              ) : null}
+            </div>
+
+            <div
+              className="shrink-0 border-t border-gray-100 bg-white px-5 sm:px-6 pt-3.5"
+              style={{
+                paddingBottom: "max(0.85rem, env(safe-area-inset-bottom, 0px))",
+              }}
+            >
+              <div className="flex items-center justify-center">
+                <div className="inline-flex h-12 items-center overflow-hidden rounded-xl bg-svs-orange text-white shadow-sm">
+                  <button
+                    type="button"
+                    onClick={handleMinus}
+                    disabled={stagedQty <= 0}
+                    className="w-11 h-full flex items-center justify-center text-xl font-bold border-0 bg-transparent cursor-pointer hover:bg-svs-orange-dark disabled:opacity-40 disabled:cursor-not-allowed"
+                    aria-label="Decrease"
+                  >
+                    −
+                  </button>
+                  <span className="min-w-[28px] flex items-center justify-center">
+                    <RollingCounter
+                      value={stagedQty}
+                      fontSize={18}
+                      color="#ffffff"
+                    />
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handlePlus}
+                    disabled={!canSubmit}
+                    className="w-11 h-full flex items-center justify-center text-xl font-bold border-0 bg-transparent cursor-pointer hover:bg-svs-orange-dark disabled:opacity-40 disabled:cursor-not-allowed"
+                    aria-label="Increase"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -521,43 +598,139 @@ export function selectionKey(
   return cartLineKey(itemId, addons);
 }
 
-function VariantImageCard({
-  variant,
-  fallback,
-  selected,
-  onSelect,
+function ComboOptionCarousel({
+  group,
+  hint,
+  picks,
+  resolveOptionImage,
+  onToggle,
 }: {
-  variant: MenuVariant;
-  fallback: string | null;
-  selected: boolean;
-  onSelect: () => void;
+  group: MenuAddonGroup;
+  hint: string;
+  picks: string[];
+  resolveOptionImage: (option: MenuAddonOption) => string | null;
+  onToggle: (option: MenuAddonOption) => void;
 }) {
-  const src = pickImageUrl(variant.image_url, fallback);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollHints = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const overflow = el.scrollWidth - el.clientWidth > 8;
+    setCanScrollLeft(overflow && el.scrollLeft > 8);
+    setCanScrollRight(
+      overflow && el.scrollLeft + el.clientWidth < el.scrollWidth - 8,
+    );
+  }, []);
+
+  useEffect(() => {
+    updateScrollHints();
+    const el = scrollRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateScrollHints, { passive: true });
+    const ro = new ResizeObserver(updateScrollHints);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", updateScrollHints);
+      ro.disconnect();
+    };
+  }, [group.items.length, updateScrollHints]);
+
+  const scrollByPage = (direction: -1 | 1) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardStep = Math.max(160, Math.round(el.clientWidth * 0.72));
+    el.scrollBy({ left: direction * cardStep, behavior: "smooth" });
+  };
+
+  const showArrows = canScrollLeft || canScrollRight;
+
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={`relative rounded-xl border-2 overflow-hidden text-left cursor-pointer bg-white ${
-        selected ? "border-svs-orange" : "border-gray-200"
-      }`}
-    >
-      <div className="relative aspect-square w-full max-h-[150px] bg-white">
-        {src ? (
-          <SheetImage
-            src={src}
-            alt=""
-            className="absolute inset-0 w-full h-full object-contain p-2"
-          />
+    <>
+      <div className="flex items-start justify-between gap-3 mb-2.5">
+        <div className="min-w-0">
+          <p className="text-xs font-bold uppercase tracking-wide text-svs-ink/45">
+            {group.name}
+          </p>
+          <p className="mt-0.5 text-[11px] text-svs-ink/40">{hint}</p>
+        </div>
+        {showArrows ? (
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={() => scrollByPage(-1)}
+              disabled={!canScrollLeft}
+              className="h-8 w-8 rounded-full border border-gray-200 bg-white text-svs-ink text-sm font-bold flex items-center justify-center cursor-pointer hover:border-svs-orange/40 hover:bg-[#fff4ee] disabled:opacity-35 disabled:cursor-not-allowed transition-colors"
+              aria-label={`Scroll ${group.name} left`}
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollByPage(1)}
+              disabled={!canScrollRight}
+              className="h-8 w-8 rounded-full border border-gray-200 bg-white text-svs-ink text-sm font-bold flex items-center justify-center cursor-pointer hover:border-svs-orange/40 hover:bg-[#fff4ee] disabled:opacity-35 disabled:cursor-not-allowed transition-colors"
+              aria-label={`Scroll ${group.name} right`}
+            >
+              →
+            </button>
+          </div>
         ) : null}
       </div>
-      <div className="px-2.5 pb-2.5">
-        <p className="text-xs font-semibold text-svs-ink line-clamp-2">
-          {variant.variant_name}
-        </p>
-        <p className="text-[11px] font-bold text-svs-ink/55 tabular-nums">
-          {formatInr(variant.price)}
-        </p>
+
+      <div
+        ref={scrollRef}
+        className="flex gap-2.5 overflow-x-auto pb-1 -mx-1 px-1 snap-x snap-mandatory [scrollbar-width:thin]"
+      >
+        {group.items.map((option) => {
+          const selected = picks.includes(option.id);
+          const optionImage = resolveOptionImage(option);
+          return (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => onToggle(option)}
+              className={`snap-start shrink-0 w-[7.5rem] sm:w-[8.25rem] rounded-xl border-2 overflow-hidden text-left cursor-pointer transition-colors ${
+                selected
+                  ? "border-svs-orange bg-[#fff4ee]"
+                  : "border-gray-200 bg-white hover:border-svs-orange/35"
+              }`}
+              aria-pressed={selected}
+            >
+              <div className="relative aspect-square w-full bg-white">
+                {optionImage ? (
+                  <SheetImage
+                    src={optionImage}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-contain p-2"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-svs-orange/35">
+                    SVS
+                  </div>
+                )}
+                {selected ? (
+                  <span className="absolute top-1.5 right-1.5 h-5 w-5 rounded-full bg-svs-orange text-white text-[11px] font-bold flex items-center justify-center shadow-sm">
+                    ✓
+                  </span>
+                ) : null}
+              </div>
+              <div className="px-2 pb-2 pt-1">
+                <p className="text-[11px] font-semibold text-svs-ink line-clamp-2 leading-snug">
+                  {option.name}
+                </p>
+                <p className="mt-0.5 text-[10px] font-bold text-svs-ink/55 tabular-nums">
+                  {option.price > 0
+                    ? `+${formatInr(option.price)}`
+                    : formatInr(0)}
+                </p>
+              </div>
+            </button>
+          );
+        })}
       </div>
-    </button>
+    </>
   );
 }

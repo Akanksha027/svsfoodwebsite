@@ -308,6 +308,92 @@ export async function getCustomerCodPayStatus(
   );
 }
 
+export type SupportChatMessage = {
+  id: string;
+  sessionId: string;
+  authorSide: "customer" | "agent" | "system";
+  authorName: string | null;
+  body: string;
+  createdAt: string;
+};
+
+export type SupportChatSession = {
+  id: string;
+  topic: string;
+  status: "waiting" | "active" | "resolved" | "closed" | string;
+  orderId: string | null;
+  assignedAgentName: string | null;
+  closedBySide: string | null;
+  closedByName: string | null;
+  resolvedAt: string | null;
+  resolvedByName: string | null;
+  customerConfirmedAt: string | null;
+  customerRating: number | null;
+  customerFeedback: string | null;
+  createdAt: string;
+  updatedAt: string;
+  closedAt: string | null;
+};
+
+export async function createSupportChatSession(input: {
+  orderId?: string | null;
+  topic?: string;
+  message?: string;
+}) {
+  return customerRequest<{
+    session: SupportChatSession;
+    messages: SupportChatMessage[];
+  }>("/website-customer/support/sessions", {
+    method: "POST",
+    body: {
+      orderId: input.orderId || null,
+      topic: input.topic || "other",
+      message: input.message || undefined,
+    },
+  });
+}
+
+export async function fetchSupportChatSession(sessionId: string) {
+  return customerRequest<{
+    session: SupportChatSession;
+    messages: SupportChatMessage[];
+  }>(`/website-customer/support/sessions/${encodeURIComponent(sessionId)}`);
+}
+
+export async function fetchSupportChatMessages(
+  sessionId: string,
+  after?: string,
+) {
+  return customerRequest<{ messages: SupportChatMessage[] }>(
+    `/website-customer/support/sessions/${encodeURIComponent(sessionId)}/messages`,
+    { query: after ? { after } : undefined },
+  );
+}
+
+export async function sendSupportChatMessage(sessionId: string, body: string) {
+  return customerRequest<{ message: SupportChatMessage }>(
+    `/website-customer/support/sessions/${encodeURIComponent(sessionId)}/messages`,
+    { method: "POST", body: { body } },
+  );
+}
+
+export async function closeSupportChatSession(sessionId: string) {
+  return customerRequest<{ session: SupportChatSession }>(
+    `/website-customer/support/sessions/${encodeURIComponent(sessionId)}/close`,
+    { method: "POST", body: {} },
+  );
+}
+
+export async function confirmSupportChatSession(
+  sessionId: string,
+  input: { rating: number; feedback?: string },
+) {
+  return customerRequest<{ session: SupportChatSession }>(
+    `/website-customer/support/sessions/${encodeURIComponent(sessionId)}/confirm`,
+    { method: "POST", body: input },
+  );
+}
+
 /** Save delivery fields after a successful order if not already stored. */
 export async function persistCheckoutDeliveryAddress(input: {
   customer: WebsiteCustomer;

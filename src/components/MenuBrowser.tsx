@@ -458,6 +458,8 @@ export default function MenuBrowser({
                     categoryImageUrl={
                       category.image_url || category.icon_url || null
                     }
+                    categories={categories}
+                    menuItems={menu?.items ?? []}
                   />
                 </li>
               ))}
@@ -479,6 +481,8 @@ export default function MenuBrowser({
             key={cat.id}
             category={cat}
             items={itemsByCategory.get(cat.id) || []}
+            allMenuItems={menu?.items ?? []}
+            categories={categories}
             sectionRef={(el) => {
               sectionRefs.current[cat.id] = el;
             }}
@@ -493,10 +497,14 @@ export default function MenuBrowser({
 function CategorySection({
   category,
   items,
+  allMenuItems,
+  categories,
   sectionRef,
 }: {
   category: MenuCategory;
   items: MenuItem[];
+  allMenuItems: MenuItem[];
+  categories: MenuCategory[];
   sectionRef: (el: HTMLElement | null) => void;
 }) {
   return (
@@ -531,6 +539,8 @@ function CategorySection({
             <MenuItemCard
               item={item}
               categoryImageUrl={category.image_url || category.icon_url || null}
+              categories={categories}
+              menuItems={allMenuItems}
             />
           </li>
         ))}
@@ -542,9 +552,13 @@ function CategorySection({
 function MenuItemCard({
   item,
   categoryImageUrl,
+  categories,
+  menuItems,
 }: {
   item: MenuItem;
   categoryImageUrl: string | null;
+  categories: MenuCategory[];
+  menuItems: MenuItem[];
 }) {
   const {
     addItem,
@@ -796,7 +810,7 @@ function MenuItemCard({
                   e.stopPropagation();
                   onAdd();
                 }}
-                className="shrink-0 h-7 sm:h-8 min-w-[52px] px-2.5 sm:px-3 rounded-lg border-2 border-svs-orange bg-svs-white text-svs-orange text-[11px] sm:text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-orange hover:text-white disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:cursor-not-allowed transition-all duration-150"
+                className="shrink-0 h-7 sm:h-8 min-w-[52px] px-2.5 sm:px-3 rounded-lg border-2 border-svs-orange bg-svs-white text-svs-orange text-xs sm:text-sm font-bold uppercase tracking-normal cursor-pointer hover:bg-svs-orange hover:text-white disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:cursor-not-allowed transition-all duration-150"
               >
                 ADD
               </button>
@@ -809,6 +823,8 @@ function MenuItemCard({
         <AddItemSheet
           item={item}
           categoryImageUrl={categoryImageUrl}
+          categories={categories}
+          menuItems={menuItems}
           onClose={() => setPickerOpen(false)}
           onAdd={commitSelection}
           onRemove={removeSelection}

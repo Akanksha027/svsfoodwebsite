@@ -3,8 +3,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
+  closeSupportChatSession,
+  confirmSupportChatSession,
+  createSupportChatSession,
   fetchCustomerOrders,
+  fetchSupportChatSession,
+  sendSupportChatMessage,
   type CustomerOrderSummary,
+  type SupportChatMessage,
+  type SupportChatSession,
 } from "@/lib/website-customer-api";
 import { formatInr } from "@/lib/menu-api";
 import {
@@ -13,12 +20,6 @@ import {
   storeLocations,
 } from "@/data/locations";
 import { useBodyScrollLock } from "@/lib/body-scroll-lock";
-
-type ChatMsg = {
-  id: string;
-  role: "bot" | "user";
-  text: string;
-};
 
 function formatOrderWhen(iso: string) {
   try {
@@ -42,26 +43,74 @@ function isWithinPastDays(iso: string, days: number) {
 
 function HelpChatbot({
   order,
+  topic,
+  bootstrap,
   onClose,
 }: {
   order: CustomerOrderSummary | null;
+  topic: string;
+  bootstrap: {
+    session: SupportChatSession;
+    messages: SupportChatMessage[];
+  } | null;
   onClose: () => void;
 }) {
   const [mounted, setMounted] = useState(false);
   const [draft, setDraft] = useState("");
-  const [msgs, setMsgs] = useState<ChatMsg[]>(() => {
-    const store = order
-      ? storeDisplayName(resolveStoreLocation(order.store_id))
-      : null;
-    const intro = order
-      ? `Hi! I’m here to help with your order from ${store}. What went wrong? (Chat isn’t connected yet — this is a preview.)`
-      : "Hi! Tell me how we can help. (Chat isn’t connected yet — this is a preview.)";
-    return [{ id: "m0", role: "bot", text: intro }];
-  });
+  const [sessionId, setSessionId] = useState<string | null>(
+    bootstrap?.session.id ?? null,
+  );
+  const [status, setStatus] = useState<string>(
+    bootstrap?.session.status ?? "connecting",
+  );
+  const [sessionMeta, setSessionMeta] = useState<SupportChatSession | null>(
+    bootstrap?.session ?? null,
+  );
+  const [msgs, setMsgs] = useState<SupportChatMessage[]>(
+    bootstrap?.messages ?? [],
+  );
+  const [error, setError] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState("");
+  const [confirming, setConfirming] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setMounted(true), []);
   useBodyScrollLock(mounted);
+
+  useEffect(() => {
+    if (bootstrap?.session.id) {
+      setSessionId(bootstrap.session.id);
+      setStatus(bootstrap.session.status);
+      setSessionMeta(bootstrap.session);
+      setMsgs(bootstrap.messages || []);
+      setError(null);
+    }
+  }, [bootstrap]);
+
+  useEffect(() => {
+    if (!sessionId) return;
+    const poll = async () => {
+      try {
+        const data = await fetchSupportChatSession(sessionId);
+        setStatus(data.session.status);
+        setSessionMeta(data.session);
+        setMsgs(data.messages || []);
+      } catch {
+        /* ignore transient poll errors */
+      }
+    };
+    void poll();
+    const id = window.setInterval(() => void poll(), 2500);
+    return () => window.clearInterval(id);
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (status === "resolved") {
+      endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [status]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -75,27 +124,76 @@ function HelpChatbot({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const send = () => {
+  const send = async () => {
     const text = draft.trim();
-    if (!text) return;
-    const userMsg: ChatMsg = {
-      id: `u-${Date.now()}`,
-      role: "user",
-      text,
-    };
+    if (!text || !sessionId || sending || status === "closed" || status === "resolved")
+      return;
+    setSending(true);
     setDraft("");
-    setMsgs((prev) => [
-      ...prev,
-      userMsg,
-      {
-        id: `b-${Date.now()}`,
-        role: "bot",
-        text: "Thanks — support chat will connect here soon. You can also use Directions under Connect to a store if you need the outlet location.",
-      },
-    ]);
+    try {
+      const { message } = await sendSupportChatMessage(sessionId, text);
+      setMsgs((prev) => [...prev, message]);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not send message");
+      setDraft(text);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const closeChat = async () => {
+    if (!sessionId) return;
+    try {
+      const { session } = await closeSupportChatSession(sessionId);
+      setStatus(session.status);
+      setSessionMeta(session);
+      const data = await fetchSupportChatSession(sessionId);
+      setMsgs(data.messages || []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not close chat");
+    }
+  };
+
+  const submitRating = async () => {
+    if (!sessionId || rating < 1) return;
+    setConfirming(true);
+    setError(null);
+    try {
+      const { session } = await confirmSupportChatSession(sessionId, {
+        rating,
+        feedback: feedback.trim() || undefined,
+      });
+      setStatus(session.status);
+      setSessionMeta(session);
+      const data = await fetchSupportChatSession(sessionId);
+      setMsgs(data.messages || []);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not submit feedback");
+    } finally {
+      setConfirming(false);
+    }
   };
 
   if (!mounted) return null;
+
+  const statusLabel =
+    status === "waiting"
+      ? "Waiting for an agent"
+      : status === "active"
+        ? "Connected"
+        : status === "resolved"
+          ? "Confirm & rate"
+          : status === "closed"
+            ? "Chat closed"
+            : status === "error"
+              ? "Unavailable"
+              : "Connecting…";
+
+  const canMessage =
+    sessionId &&
+    status !== "closed" &&
+    status !== "resolved" &&
+    status !== "error";
 
   return createPortal(
     <div className="fixed inset-0 z-[1300] flex items-end sm:items-center justify-center sm:p-4">
@@ -108,7 +206,7 @@ function HelpChatbot({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Help chatbot"
+        aria-label="Help chat"
         className="relative z-[1301] flex flex-col w-full sm:w-[min(100%,420px)] h-[min(88dvh,640px)] rounded-t-2xl sm:rounded-2xl bg-white shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
@@ -120,12 +218,33 @@ function HelpChatbot({
             <p className="text-[14px] font-extrabold text-gray-900">Help chat</p>
             <p className="text-[11px] text-gray-500 truncate">
               {order
-                ? `Ticket · Order · ${formatOrderWhen(order.created_at)}`
+                ? `Order · ${formatOrderWhen(order.created_at)}`
                 : "General support"}
               {" · "}
-              <span className="text-amber-700 font-semibold">Preview only</span>
+              <span
+                className={
+                  status === "active"
+                    ? "text-emerald-700 font-semibold"
+                    : status === "resolved"
+                      ? "text-blue-700 font-semibold"
+                      : "text-amber-700 font-semibold"
+                }
+              >
+                {statusLabel}
+              </span>
             </p>
           </div>
+          {canMessage || status === "resolved" ? (
+            status === "resolved" ? null : (
+            <button
+              type="button"
+              onClick={() => void closeChat()}
+              className="text-[11px] font-bold text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 cursor-pointer border-0 bg-transparent"
+            >
+              End chat
+            </button>
+            )
+          ) : null}
           <button
             type="button"
             onClick={onClose}
@@ -137,52 +256,141 @@ function HelpChatbot({
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50">
+          {error ? (
+            <p className="text-[13px] text-rose-600 bg-rose-50 rounded-xl px-3 py-2">
+              {error}
+            </p>
+          ) : null}
+          {status === "resolved" ? (
+            <div className="rounded-xl bg-blue-50 border border-blue-100 px-3 py-2.5 text-[12px] text-blue-800 text-center font-semibold">
+              Support marked this resolved — please rate your experience below.
+            </div>
+          ) : null}
           {msgs.map((m) => (
             <div
               key={m.id}
-              className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex ${
+                m.authorSide === "customer"
+                  ? "justify-end"
+                  : m.authorSide === "system"
+                    ? "justify-center"
+                    : "justify-start"
+              }`}
             >
               <div
                 className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
-                  m.role === "user"
+                  m.authorSide === "customer"
                     ? "bg-[#f16a34] text-white rounded-br-md"
-                    : "bg-white text-gray-800 border border-gray-100 rounded-bl-md shadow-sm"
+                    : m.authorSide === "system"
+                      ? "bg-gray-200/80 text-gray-600 text-[11px] px-3 py-1.5"
+                      : "bg-white text-gray-800 border border-gray-100 rounded-bl-md shadow-sm"
                 }`}
               >
-                {m.text}
+                {m.authorSide === "agent" && m.authorName ? (
+                  <p className="text-[10px] font-bold opacity-70 mb-0.5">
+                    {m.authorName}
+                  </p>
+                ) : null}
+                {m.body}
               </div>
             </div>
           ))}
+
+          {status === "closed" && sessionMeta?.customerRating != null ? (
+            <p className="text-center text-[12px] text-gray-500">
+              Thanks for your {sessionMeta.customerRating}/5 rating.
+            </p>
+          ) : null}
+
           <div ref={endRef} />
         </div>
 
-        <div
-          className="shrink-0 border-t border-gray-100 bg-white px-3 pt-3 flex gap-2"
-          style={{
-            paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))",
-          }}
-        >
-          <input
-            type="text"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                send();
-              }
+        {canMessage ? (
+          <div
+            className="shrink-0 border-t border-gray-100 bg-white px-3 pt-3 flex gap-2"
+            style={{
+              paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))",
             }}
-            placeholder="Type your message…"
-            className="flex-1 h-11 rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-[14px] outline-none focus:border-[#f16a34]"
-          />
-          <button
-            type="button"
-            onClick={send}
-            className="h-11 px-4 rounded-xl bg-[#f16a34] text-white text-sm font-extrabold border-0 cursor-pointer"
           >
-            Send
-          </button>
-        </div>
+            <input
+              type="text"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void send();
+                }
+              }}
+              placeholder="Type your message…"
+              className="flex-1 h-11 rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-[14px] outline-none focus:border-[#f16a34]"
+            />
+            <button
+              type="button"
+              onClick={() => void send()}
+              disabled={sending}
+              className="h-11 px-4 rounded-xl bg-[#f16a34] text-white text-sm font-extrabold border-0 cursor-pointer disabled:opacity-50"
+            >
+              Send
+            </button>
+          </div>
+        ) : status === "resolved" ? (
+          <div
+            className="shrink-0 border-t border-[#ffdccc] bg-[#fff8f4] px-4 pt-4 space-y-3"
+            style={{
+              paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))",
+            }}
+          >
+            <div>
+              <p className="text-[14px] font-extrabold text-gray-900">
+                Was your issue resolved?
+              </p>
+              <p className="text-[12px] text-gray-500 mt-0.5">
+                Rate your support experience before you go.
+              </p>
+            </div>
+            <div className="flex gap-1.5">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setRating(n)}
+                  className={`h-11 flex-1 rounded-xl border text-lg cursor-pointer ${
+                    rating >= n
+                      ? "bg-[#fff4ee] border-[#f16a34] text-[#f16a34]"
+                      : "bg-white border-gray-200 text-gray-400"
+                  }`}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+            <textarea
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              placeholder="Tell us more (optional)…"
+              rows={2}
+              className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-[13px] outline-none focus:border-[#f16a34] resize-none"
+            />
+            <button
+              type="button"
+              disabled={rating < 1 || confirming}
+              onClick={() => void submitRating()}
+              className="w-full h-11 rounded-xl bg-[#f16a34] text-white text-sm font-extrabold border-0 cursor-pointer disabled:opacity-50"
+            >
+              {confirming ? "Submitting…" : "Submit rating & close"}
+            </button>
+          </div>
+        ) : status === "closed" ? (
+          <div
+            className="shrink-0 border-t border-gray-100 bg-white px-4 py-3 text-center text-[13px] text-gray-500"
+            style={{
+              paddingBottom: "max(0.75rem, env(safe-area-inset-bottom, 0px))",
+            }}
+          >
+            This chat is closed.
+          </div>
+        ) : null}
       </div>
     </div>,
     document.body,
@@ -194,6 +402,11 @@ export default function AccountHelpCenter() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | "none">("none");
   const [chatOpen, setChatOpen] = useState(false);
+  const [chatBootstrap, setChatBootstrap] = useState<{
+    session: SupportChatSession;
+    messages: SupportChatMessage[];
+  } | null>(null);
+  const [startingChat, setStartingChat] = useState(false);
   const [topic, setTopic] = useState("order_issue");
 
   useEffect(() => {
@@ -232,21 +445,34 @@ export default function AccountHelpCenter() {
       ? null
       : recentOrders.find((o) => o.id === selectedId) || null;
 
-  const startTicket = () => {
+  const startTicket = async () => {
     if (topic === "order_issue" && !selectedOrder && recentOrders.length > 0) {
       return;
     }
-    setChatOpen(true);
+    setStartingChat(true);
+    try {
+      const data = await createSupportChatSession({
+        orderId: selectedOrder?.id || null,
+        topic,
+      });
+      setChatBootstrap(data);
+      setChatOpen(true);
+    } catch (e) {
+      window.alert(
+        e instanceof Error ? e.message : "Could not start chat. Try again.",
+      );
+    } finally {
+      setStartingChat(false);
+    }
   };
 
   return (
     <div className="max-w-2xl space-y-4">
       <p className="text-[13px] text-gray-500 leading-relaxed">
-        Get store directions, or raise a ticket about a recent order. Support
-        chat opens as a preview for now.
+        Get store directions, or chat with our online order support team about a
+        recent order.
       </p>
 
-      {/* Connect to store */}
       <section className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
         <div className="px-4 sm:px-5 py-3.5 border-b border-black/[0.04] bg-[#fafbfc]">
           <h2 className="text-[14px] font-extrabold text-gray-900">
@@ -285,14 +511,13 @@ export default function AccountHelpCenter() {
         </ul>
       </section>
 
-      {/* Raise ticket */}
       <section className="rounded-2xl bg-white border border-black/[0.04] shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
         <div className="px-4 sm:px-5 py-3.5 border-b border-black/[0.04] bg-[#fafbfc]">
           <h2 className="text-[14px] font-extrabold text-gray-900">
             Raise a ticket
           </h2>
           <p className="text-[12px] text-gray-500 mt-0.5">
-            Pick an order from the last 2 days, then open chat
+            Pick an order from the last 2 days, then open live chat
           </p>
         </div>
         <div className="p-4 sm:p-5 space-y-4">
@@ -380,26 +605,29 @@ export default function AccountHelpCenter() {
 
           <button
             type="button"
-            onClick={startTicket}
+            onClick={() => void startTicket()}
             disabled={
-              (topic === "order_issue" || topic === "payment") &&
-              recentOrders.length > 0 &&
-              !selectedOrder
+              startingChat ||
+              ((topic === "order_issue" || topic === "payment") &&
+                recentOrders.length > 0 &&
+                !selectedOrder)
             }
             className="w-full h-11 rounded-xl bg-[#f16a34] text-white text-sm font-extrabold border-0 cursor-pointer disabled:opacity-50"
           >
-            Open help chat
+            {startingChat ? "Opening chat…" : "Open help chat"}
           </button>
-          <p className="text-[11px] text-gray-400 text-center">
-            Chatbot UI only — live support connection coming soon
-          </p>
         </div>
       </section>
 
-      {chatOpen ? (
+      {chatOpen && chatBootstrap ? (
         <HelpChatbot
           order={selectedOrder}
-          onClose={() => setChatOpen(false)}
+          topic={topic}
+          bootstrap={chatBootstrap}
+          onClose={() => {
+            setChatOpen(false);
+            setChatBootstrap(null);
+          }}
         />
       ) : null}
     </div>
