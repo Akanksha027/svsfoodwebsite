@@ -113,33 +113,3 @@ export function findNearestStore(lat: number, lng: number): StoreLocation {
   return best;
 }
 
-/** Rough open window for status badge (IST). Prefer getPolicyStatusLabel when policies are loaded. */
-export function getStoreStatusLabel(
-  now = new Date(),
-  hours?: {
-    open?: string;
-    closingSoon?: string;
-    close?: string;
-  },
-): "Open now" | "Closing soon" | "Closed" {
-  const parse = (hhmm: string, fallback: number) => {
-    const m = /^(\d{1,2}):(\d{2})$/.exec(String(hhmm || "").trim());
-    if (!m) return fallback;
-    return Number(m[1]) * 60 + Number(m[2]);
-  };
-  const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Asia/Kolkata",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(now);
-  const hour = Number(parts.find((p) => p.type === "hour")?.value || 0);
-  const minute = Number(parts.find((p) => p.type === "minute")?.value || 0);
-  const mins = hour * 60 + minute;
-  const open = parse(hours?.open || "10:00", 10 * 60);
-  const closingSoon = parse(hours?.closingSoon || "21:30", 21 * 60 + 30);
-  const close = parse(hours?.close || "22:30", 22 * 60 + 30);
-  if (mins >= open && mins < closingSoon) return "Open now";
-  if (mins >= closingSoon && mins < close) return "Closing soon";
-  return "Closed";
-}

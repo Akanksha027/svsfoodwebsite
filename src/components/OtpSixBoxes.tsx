@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const LEN = 6;
 
@@ -14,6 +14,8 @@ type Props = {
   autoFocus?: boolean;
   /** Wait before focus (ms), e.g. login slide animation. */
   focusDelayMs?: number;
+  /** Login modal: larger square boxes with charcoal focus border. */
+  variant?: "default" | "login";
 };
 
 export default function OtpSixBoxes({
@@ -24,6 +26,7 @@ export default function OtpSixBoxes({
   error,
   autoFocus = false,
   focusDelayMs = 0,
+  variant = "default",
 }: Props) {
   const digits = value.replace(/\D/g, "").slice(0, LEN).split("");
   while (digits.length < LEN) digits.push("");
@@ -31,6 +34,7 @@ export default function OtpSixBoxes({
   const refs = useRef<(HTMLInputElement | null)[]>([]);
   const completedRef = useRef<string | null>(null);
   const hadAutoFocus = useRef(false);
+  const [focusedIdx, setFocusedIdx] = useState<number | null>(null);
 
   const focusFirstEmpty = useCallback(() => {
     const d = value.replace(/\D/g, "").slice(0, LEN);
@@ -80,17 +84,30 @@ export default function OtpSixBoxes({
     refs.current[Math.min(pasted.length, LEN - 1)]?.focus();
   };
 
-  const box = (filled: boolean) =>
-    `h-11 w-full min-w-0 rounded-lg border text-center text-[17px] font-bold tabular-nums outline-none transition-colors ${
+  const boxClass = (filled: boolean, focused: boolean) => {
+    if (variant === "login") {
+      return `h-12 sm:h-[52px] w-full min-w-0 rounded-xl border-[1.5px] text-center text-[18px] font-bold tabular-nums outline-none transition-colors ${
+        error
+          ? "border-red-400 bg-red-50"
+          : focused || filled
+            ? "border-gray-900 bg-white"
+            : "border-gray-200 bg-[#f3f3f3]"
+      } ${disabled ? "opacity-50" : ""}`;
+    }
+    return `h-11 w-full min-w-0 rounded-lg border text-center text-[17px] font-bold tabular-nums outline-none transition-colors ${
       error
         ? "border-red-300 bg-red-50"
         : filled
           ? "border-[#f16a34] bg-white"
           : "border-gray-200 bg-white focus:border-[#f16a34] focus:ring-2 focus:ring-[#f16a34]/15"
     } ${disabled ? "opacity-50" : ""}`;
+  };
 
   return (
-    <div className="grid grid-cols-6 gap-1.5 w-full" onPaste={handlePaste}>
+    <div
+      className={`grid grid-cols-6 w-full ${variant === "login" ? "gap-2.5" : "gap-1.5"}`}
+      onPaste={handlePaste}
+    >
       {digits.map((d, i) => (
         <input
           key={i}
@@ -104,7 +121,9 @@ export default function OtpSixBoxes({
           disabled={disabled}
           value={d}
           aria-label={`Digit ${i + 1} of 6`}
-          className={box(Boolean(d))}
+          className={boxClass(Boolean(d), focusedIdx === i)}
+          onFocus={() => setFocusedIdx(i)}
+          onBlur={() => setFocusedIdx((cur) => (cur === i ? null : cur))}
           onChange={(e) => {
             const v = e.target.value.replace(/\D/g, "");
             if (v.length > 1) {

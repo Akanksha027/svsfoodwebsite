@@ -27,160 +27,79 @@ const HANDLING_FEE = 2;
 
 type DrawerStep = "cart" | "checkout1" | "checkout2" | "pay" | "done";
 
-function OrderTypeIcon({
+const ORDER_TYPE_ART: Record<
+  "dine_in" | "takeaway" | "delivery",
+  { src: string; alt: string }
+> = {
+  dine_in: {
+    src: "/images/order-types/dine-in.png",
+    alt: "Dine-in burger plate",
+  },
+  takeaway: {
+    src: "/images/order-types/takeaway-open.png",
+    alt: "Open SVS takeaway bag with burger and fries",
+  },
+  delivery: {
+    src: "/images/order-types/delivery.png",
+    alt: "Delivery scooter",
+  },
+};
+
+function OrderTypeArt({
   type,
-  className,
 }: {
   type: "dine_in" | "takeaway" | "delivery";
-  className?: string;
 }) {
-  const cn = className ?? "h-9 w-9";
-
-  if (type === "dine_in") {
-    /* Restaurant plate — dine-in */
-    return (
-      <svg className={cn} viewBox="0 0 48 48" fill="none" aria-hidden>
-        <circle
-          cx="24"
-          cy="26"
-          r="14"
-          stroke="currentColor"
-          strokeWidth="2.4"
-        />
-        <circle
-          cx="24"
-          cy="26"
-          r="6.5"
-          stroke="currentColor"
-          strokeWidth="2.2"
-        />
-        <path
-          d="M14 8.5v6.5M14 15v4.5M11.5 8.5v4c0 1.4 1.1 2.5 2.5 2.5h0c1.4 0 2.5-1.1 2.5-2.5v-4"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M33 8.5c2.5 0 4.5 2 4.5 4.5S35.5 17.5 33 17.5V19.5"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-
-  if (type === "takeaway") {
-    /* Shopping bag — takeaway / pickup */
-    return (
-      <svg className={cn} viewBox="0 0 48 48" fill="none" aria-hidden>
-        <path
-          d="M12 16h24l-2.2 24.5A3.5 3.5 0 0 1 30.4 44H17.6a3.5 3.5 0 0 1-3.4-3.5L12 16Z"
-          stroke="currentColor"
-          strokeWidth="2.4"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M18 16v-3.5a6 6 0 0 1 12 0V16"
-          stroke="currentColor"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-        />
-        <path
-          d="M20.5 24.5h7M20.5 31h7"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-        />
-      </svg>
-    );
-  }
-
-  /* Bicycle — delivery (common food-app motif) */
+  const art = ORDER_TYPE_ART[type];
   return (
-    <svg className={cn} viewBox="0 0 48 48" fill="none" aria-hidden>
-      <circle
-        cx="12"
-        cy="34"
-        r="7"
-        stroke="currentColor"
-        strokeWidth="2.4"
+    <span className="relative flex h-[4.5rem] w-[4.5rem] sm:h-[5rem] sm:w-[5rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#fff4ee] ring-1 ring-black/[0.04]">
+      <Image
+        src={art.src}
+        alt={art.alt}
+        fill
+        unoptimized
+        className="object-contain object-center p-1"
+        sizes="80px"
       />
-      <circle
-        cx="36"
-        cy="34"
-        r="7"
-        stroke="currentColor"
-        strokeWidth="2.4"
-      />
-      <path
-        d="M12 34h8.5l6-12.5h7"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M20.5 34l5.5-12.5M26.5 21.5l-5-6.5H16"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx="28.5" cy="14" r="2.6" fill="currentColor" />
-      <path
-        d="M33.5 21.5h5.5"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-    </svg>
+    </span>
   );
 }
 
 function CancellationPolicy() {
-  const [expanded, setExpanded] = useState(false);
+  const points = [
+    "Once an order is placed and confirmed, it cannot be cancelled.",
+    "We start preparing your food right away so it reaches you fresh and on time.",
+    "If SVS Food cancels due to unavailability or operational issues, a full refund will be issued.",
+  ];
+
   return (
     <div className="mx-4 mb-4 rounded-xl border border-gray-100 bg-white px-4 py-3">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <svg className="h-3.5 w-3.5 text-[#f16a34] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
-          </svg>
-          <span className="text-xs font-bold text-gray-700">Cancellation Policy</span>
-        </div>
-        <button
-          type="button"
-          onClick={() => setExpanded((p) => !p)}
-          className="text-[11px] font-bold text-[#f16a34] cursor-pointer border-0 bg-transparent shrink-0"
+      <div className="flex items-center gap-2">
+        <svg
+          className="h-3.5 w-3.5 text-[#f16a34] shrink-0"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden
         >
-          {expanded ? "Show less" : "Read more"}
-        </button>
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4m0 4h.01" />
+        </svg>
+        <span className="text-xs font-bold text-gray-700">
+          Cancellation Policy
+        </span>
       </div>
-      {!expanded ? (
-        <p className="mt-1.5 text-[11px] text-gray-500 leading-relaxed">
-          Orders can be cancelled <span className="font-semibold">within 2 minutes</span> of placing. No cancellation once preparation begins.
-        </p>
-      ) : (
-        <div className="mt-2.5 space-y-2">
-          {[
-            ["2-min window", "Orders can be cancelled within 2 minutes of placing. After that, cancellation is not possible as food preparation begins."],
-            ["Full refund", "100% refund is issued for cancellations before preparation starts. Credited within 5–7 business days."],
-            ["Delivery orders", "Once a rider is assigned, cancellation is not allowed. Contact support for assistance."],
-            ["Wrong / missing item", "Raise a complaint within 30 minutes of delivery for a replacement or refund."],
-            ["Store's right", "SVS Food may cancel orders due to unavailability or operational constraints. Full refund will be issued."],
-          ].map(([title, desc]) => (
-            <div key={title} className="flex items-start gap-2">
-              <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#f16a34] shrink-0" />
-              <p className="text-[11px] text-gray-600 leading-relaxed">
-                <span className="font-semibold text-gray-800">{title}: </span>{desc}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+      <ul className="mt-2.5 space-y-2">
+        {points.map((text) => (
+          <li key={text} className="flex items-start gap-2">
+            <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#f16a34] shrink-0" />
+            <p className="text-[11px] text-gray-600 leading-relaxed">{text}</p>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -257,7 +176,7 @@ export default function CartDrawer() {
 
   const checkoutActive = isOpen && itemCount > 0;
   const checkout = useWebCheckout({ active: checkoutActive });
-  const { customer, refreshCustomer } = useWebsiteAuth();
+  const { customer, refreshCustomer, openLogin } = useWebsiteAuth();
   const deliveryAddressModeRef = useRef<string | "new">("new");
   const placeOrderAttemptRef = useRef(0);
   const cancelledPlaceOrderAttemptRef = useRef<number | null>(null);
@@ -317,6 +236,12 @@ export default function CartDrawer() {
     }
   }, [itemCount, step]);
 
+  useEffect(() => {
+    if (step === "checkout2" && !customer) {
+      setStep(checkout.orderType === "delivery" ? "checkout1" : "cart");
+    }
+  }, [step, customer, checkout.orderType]);
+
   const totals = useMemo(
     () =>
       computeTotals({
@@ -327,6 +252,19 @@ export default function CartDrawer() {
   );
 
   const grandWithHandling = totals.grandTotal + HANDLING_FEE;
+
+  const advanceCheckout = useCallback(
+    (target: "checkout1" | "checkout2") => {
+      checkout.resetErrors();
+      const go = () => setStep(target);
+      if (customer) {
+        go();
+        return;
+      }
+      openLogin({ onSuccess: go });
+    },
+    [checkout, customer, openLogin],
+  );
 
   useBodyScrollLock(isOpen);
 
@@ -506,9 +444,12 @@ export default function CartDrawer() {
 
       <aside
         id="menu-cart-drawer"
+        role="dialog"
+        aria-modal="true"
+        data-scroll-lock-allow
         aria-label="My cart"
         aria-hidden={!isOpen}
-        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,450px)] xl:w-[480px] bg-white sm:rounded-l-[2rem] border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
+        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,450px)] xl:w-[480px] overflow-hidden bg-white rounded-tl-[2rem] rounded-bl-[2rem] border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
         style={{
@@ -587,7 +528,7 @@ export default function CartDrawer() {
           <CartCheckoutForm
             checkout={checkout}
             page={1}
-            onContinue={() => setStep("checkout2")}
+            onContinue={() => advanceCheckout("checkout2")}
             onPlaceOrder={handlePlaceOrder}
             onAddressSelectionChange={(id) => {
               deliveryAddressModeRef.current = id;
@@ -749,15 +690,16 @@ export default function CartDrawer() {
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Cancellation Policy */}
-            <CancellationPolicy />
+              <CancellationPolicy />
+            </div>
 
             {/* Order type picker */}
             <div className="mx-4 mb-3 bg-white">
-              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2">How would you like it?</p>
-              <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2.5">
+                How would you like it?
+              </p>
+              <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
                 {([
                   { type: "dine_in" as const, label: "Dine-in" },
                   { type: "takeaway" as const, label: "Takeaway" },
@@ -773,33 +715,32 @@ export default function CartDrawer() {
                         if (type === "dine_in") checkout.setPayMethod("online");
                       }}
                       className={[
-                        "aspect-square flex flex-col items-center justify-center gap-1 sm:gap-2 rounded-none text-[10px] sm:text-[11px] font-extrabold border cursor-pointer transition-all px-0.5",
+                        "min-h-[7.5rem] sm:min-h-[8.25rem] flex flex-col items-center justify-center gap-2 rounded-2xl text-[11px] sm:text-xs font-extrabold border-[3px] cursor-pointer transition-all px-1.5 py-2.5",
                         active
-                          ? "bg-orange-50 border-[#f16a34] text-[#f16a34] ring-1 ring-[#f16a34]/20"
-                          : "bg-white border-gray-200 text-gray-500 hover:border-[#f16a34]/30",
+                          ? "bg-orange-50 border-[#f16a34] text-[#f16a34] shadow-[0_2px_10px_rgba(241,106,52,0.18)]"
+                          : "bg-white border-gray-200 text-gray-500 hover:border-[#f16a34]/40",
                       ].join(" ")}
                     >
-                      <OrderTypeIcon type={type} className="h-10 w-10 sm:h-11 sm:w-11" />
-                      {label}
+                      <OrderTypeArt type={type} />
+                      <span className="leading-none">{label}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            <div className="shrink-0 border-t border-gray-200 bg-white px-4 py-3">
+            <div className="shrink-0 border-t border-gray-200 bg-white px-4 py-3 rounded-bl-[2rem]">
               <button
                 type="button"
                 onClick={() => {
                   checkout.resetErrors();
-                  // If delivery selected, go to checkout1 for address; otherwise skip straight to checkout2
                   if (checkout.orderType === "delivery") {
                     setStep("checkout1");
                   } else {
-                    setStep("checkout2");
+                    advanceCheckout("checkout2");
                   }
                 }}
-                className="flex items-center justify-between w-full h-[52px] rounded-lg px-4 text-white border-0 cursor-pointer shadow-md"
+                className="flex items-center justify-between w-full h-[52px] rounded-2xl px-4 text-white border-0 cursor-pointer shadow-md"
                 style={{ backgroundColor: SVS_ORANGE }}
               >
                 <span className="text-sm font-bold uppercase tracking-wide opacity-95">

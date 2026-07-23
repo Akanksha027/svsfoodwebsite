@@ -1,11 +1,29 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   updateCustomerProfile,
   uploadCustomerPhoto,
   type WebsiteCustomer,
 } from "@/lib/website-customer-api";
+import {
+  formatIndianMobileInput,
+  isValidIndianMobile,
+  normalizeIndianMobile,
+} from "@/lib/indian-phone";
+import {
+  getPreferredOrderContact,
+  setPreferredOrderContact,
+} from "@/lib/order-contact-mobile";
+
+function resolveSavedOrderContact(customer: WebsiteCustomer): string {
+  const login = normalizeIndianMobile(customer.phone);
+  const preferred = getPreferredOrderContact(customer.id);
+  const fromProfile = normalizeIndianMobile(customer.alternate_phone || "");
+  const alt = preferred || fromProfile;
+  if (!alt || alt === login || !isValidIndianMobile(alt)) return "";
+  return alt;
+}
 
 const GENDER_OPTIONS = [
   { value: "", label: "Select gender" },
@@ -62,11 +80,23 @@ export default function AccountProfileForm({
   const [email, setEmail] = useState(customer.email || "");
   const [gender, setGender] = useState(customer.gender || "");
   const [dob, setDob] = useState(customer.date_of_birth || "");
+  const [alternatePhone, setAlternatePhone] = useState(() =>
+    resolveSavedOrderContact(customer),
+  );
+  const [showOrderContact, setShowOrderContact] = useState(
+    () => Boolean(resolveSavedOrderContact(customer)),
+  );
   const [saving, setSaving] = useState(false);
   const [photoBusy, setPhotoBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState(customer.photo_url || null);
+
+  useEffect(() => {
+    const alt = resolveSavedOrderContact(customer);
+    setAlternatePhone(alt);
+    setShowOrderContact(Boolean(alt));
+  }, [customer]);
 
   const initial = (customer.name || customer.phone || "U").charAt(0).toUpperCase();
   const completion = useMemo(() => profileCompletion({ ...customer, name, email, gender, date_of_birth: dob, photo_url: previewUrl }), [customer, name, email, gender, dob, previewUrl]);
@@ -76,13 +106,35 @@ export default function AccountProfileForm({
     setError(null);
     setOk(null);
     try {
+      let nextAlt: string | null = null;
+      if (showOrderContact) {
+        const alt = normalizeIndianMobile(alternatePhone);
+        if (alt && !isValidIndianMobile(alt)) {
+          throw new Error("Enter a valid 10-digit order contact mobile");
+        }
+        if (alt && alt === normalizeIndianMobile(customer.phone)) {
+          throw new Error("Order contact should be different from login number");
+        }
+        nextAlt = alt || null;
+      } else {
+        nextAlt = resolveSavedOrderContact(customer) || null;
+      }
       const { customer: next } = await updateCustomerProfile({
         name: name.trim(),
         email: email.trim(),
         gender: gender || "",
         date_of_birth: dob || "",
       });
-      onSaved(next);
+      if (showOrderContact) {
+        setPreferredOrderContact(customer.id, nextAlt);
+      }
+      const withContact = {
+        ...next,
+        alternate_phone: nextAlt,
+      };
+      onSaved(withContact);
+      setAlternatePhone(nextAlt || "");
+      setShowOrderContact(Boolean(nextAlt));
       setOk("Profile saved successfully");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not save profile");
@@ -131,13 +183,9 @@ export default function AccountProfileForm({
   return (
     <div className="w-full space-y-5 lg:space-y-6">
       {/* Hero banner */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#f16a34] via-[#f97316] to-[#ea580c] px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-10 shadow-[0_24px_64px_-20px_rgba(241,106,52,0.55)]">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#f16a34] via-[#f97316] to-[#ea580c] px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-10">
         <div
           className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/15 blur-3xl"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -bottom-20 left-1/3 h-48 w-48 rounded-full bg-black/10 blur-3xl"
           aria-hidden
         />
 
@@ -156,7 +204,7 @@ export default function AccountProfileForm({
                 }}
                 aria-hidden
               />
-              <span className="absolute inset-[5px] rounded-full overflow-hidden bg-[#fff4ee] border-2 border-white/90 shadow-lg">
+              <span className="absolute inset-[5px] rounded-full overflow-hidden bg-[#fff4ee] border-2 border-white/90">
                 {previewUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -207,7 +255,7 @@ export default function AccountProfileForm({
       {/* Main grid — fills available width */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 lg:gap-6">
         <div className="xl:col-span-8 space-y-5">
-          <div className="rounded-2xl bg-white border border-black/[0.05] shadow-[0_4px_24px_rgba(15,23,42,0.06)] p-5 sm:p-7">
+          <div className="rounded-2xl bg-white border border-black/[0.05] p-5 sm:p-7">
             <div className="mb-6">
               <h2 className="text-lg font-extrabold text-gray-900">Personal information</h2>
               <p className="text-[13px] text-gray-500 mt-1">
@@ -249,7 +297,7 @@ export default function AccountProfileForm({
 
               <div>
                 <label className={labelClass} htmlFor="profile-phone">
-                  Mobile
+                  Login mobile
                 </label>
                 <input
                   id="profile-phone"
@@ -260,15 +308,42 @@ export default function AccountProfileForm({
                 />
                 <p className="text-[11px] text-gray-400 mt-2">
                   Login number can&apos;t be changed
-                  {customer.alternate_phone
-                    ? ` · Alt +91 ${customer.alternate_phone}`
-                    : ""}
                 </p>
               </div>
+
+              {showOrderContact ? (
+              <div className="md:col-span-2">
+                <label className={labelClass} htmlFor="profile-alt-phone">
+                  Order contact mobile
+                </label>
+                <div className="flex items-center gap-2">
+                  <span className="flex h-12 shrink-0 items-center rounded-xl bg-gray-100 px-3 text-sm font-bold text-gray-600">
+                    +91
+                  </span>
+                  <input
+                    id="profile-alt-phone"
+                    type="tel"
+                    inputMode="numeric"
+                    className={fieldClass}
+                    value={alternatePhone}
+                    onChange={(e) =>
+                      setAlternatePhone(formatIndianMobileInput(e.target.value))
+                    }
+                    placeholder="For deliveries &amp; rider calls"
+                    maxLength={10}
+                    autoComplete="tel-national"
+                  />
+                </div>
+                <p className="text-[11px] text-gray-400 mt-2">
+                  Set when you use a different number at checkout. Clear and save
+                  to remove.
+                </p>
+              </div>
+              ) : null}
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white border border-black/[0.05] shadow-[0_4px_24px_rgba(15,23,42,0.06)] p-5 sm:p-7">
+          <div className="rounded-2xl bg-white border border-black/[0.05] p-5 sm:p-7">
             <div className="mb-6">
               <h2 className="text-lg font-extrabold text-gray-900">About you</h2>
               <p className="text-[13px] text-gray-500 mt-1">
@@ -314,7 +389,7 @@ export default function AccountProfileForm({
         <aside className="xl:col-span-4 space-y-5">
 
 
-          <div className="rounded-2xl bg-white border border-black/[0.05] shadow-[0_4px_24px_rgba(15,23,42,0.06)] p-5 sm:p-6">
+          <div className="rounded-2xl bg-white border border-black/[0.05] p-5 sm:p-6">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fff4ee] text-[#f16a34] mb-3">
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round" />
@@ -334,7 +409,7 @@ export default function AccountProfileForm({
 
       {/* Save bar */}
       <div className="mt-6 z-10">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl bg-white/95 backdrop-blur-md border border-black/[0.06] shadow-[0_-4px_24px_rgba(15,23,42,0.08)] px-4 py-3.5 sm:px-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl bg-white/95 backdrop-blur-md border border-black/[0.06] px-4 py-3.5 sm:px-6">
           <div className="min-h-[20px]">
             {error ? (
               <p className="text-[13px] text-red-600 font-semibold">{error}</p>

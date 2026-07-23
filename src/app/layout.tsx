@@ -3,10 +3,12 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { MenuCartProvider } from "@/context/MenuCartContext";
+import { MenuSearchProvider } from "@/context/MenuSearchContext";
 import { WebsiteAuthProvider } from "@/context/WebsiteAuthContext";
 import SiteNavbar from "@/components/SiteNavbar";
 import AccountLoginPopup from "@/components/AccountLoginPopup";
 import AccountMenuDropdown from "@/components/AccountMenuDropdown";
+import CartDrawer from "@/components/CartDrawer";
 import PoweredBy from "@/components/PoweredBy";
 
 const inter = Inter({
@@ -33,11 +35,14 @@ export default function RootLayout({
         <CartProvider>
           <WebsiteAuthProvider>
             <MenuCartProvider>
-              <SiteNavbar />
-              {children}
-              <AccountLoginPopup />
-              <AccountMenuDropdown />
-              <PoweredBy />
+              <MenuSearchProvider>
+                <SiteNavbar />
+                {children}
+                <CartDrawer />
+                <AccountLoginPopup />
+                <AccountMenuDropdown />
+                <PoweredBy />
+              </MenuSearchProvider>
             </MenuCartProvider>
           </WebsiteAuthProvider>
         </CartProvider>

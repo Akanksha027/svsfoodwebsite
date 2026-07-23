@@ -33,6 +33,7 @@ type AccountSection =
   | "addresses"
   | "gift_cards"
   | "rewards"
+  | "svs_cash"
   | "help";
 
 const ACCOUNT_TAB_PATH: Record<AccountSection, string> = {
@@ -42,6 +43,7 @@ const ACCOUNT_TAB_PATH: Record<AccountSection, string> = {
   addresses: "/account?tab=addresses",
   gift_cards: "/account?tab=gift-cards",
   rewards: "/account?tab=rewards",
+  svs_cash: "/account?tab=svs-cash",
   help: "/account?tab=help",
 };
 type LiveOrderData = Awaited<ReturnType<typeof fetchOrder>>;
@@ -235,6 +237,16 @@ function IconBell({ className = "w-5 h-5" }: { className?: string }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+function IconWallet({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.75" />
+      <path d="M16 12v.01" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M21 12H13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
     </svg>
   );
 }
@@ -751,6 +763,7 @@ function AccountInner() {
     else if (tab === "notifications") setSection("notifications");
     else if (tab === "gift-cards" || tab === "gift_cards") setSection("gift_cards");
     else if (tab === "rewards") setSection("rewards");
+    else if (tab === "svs-cash" || tab === "svs_cash") setSection("svs_cash");
     else if (tab === "help") setSection("help");
     else setSection("orders");
 
@@ -815,7 +828,7 @@ function AccountInner() {
   };
 
   const shell =
-    "min-h-[calc(100dvh-3.5rem)] sm:min-h-[calc(100dvh-4rem)] lg:min-h-[calc(100dvh-72px)] pt-[calc(3.5rem+0.75rem)] sm:pt-[calc(4rem+1rem)] lg:pt-[calc(72px+1.25rem)] bg-white";
+    "min-h-[calc(100dvh-3.5rem)] sm:min-h-[calc(100dvh-4rem)] lg:min-h-[calc(100dvh-72px)] pt-[calc(3.5rem+0.75rem)] sm:pt-[calc(4rem+1rem)] md:pt-[calc(5rem+1rem)] lg:pt-[calc(72px+1rem)] bg-white";
 
   if (loading) {
     return (
@@ -841,7 +854,7 @@ function AccountInner() {
           </p>
           <button
             type="button"
-            onClick={openLogin}
+            onClick={() => openLogin()}
             className="h-11 w-full rounded-xl bg-[#f16a34] text-white text-sm font-extrabold cursor-pointer border-0"
           >
             Continue with mobile
@@ -975,6 +988,7 @@ function AccountInner() {
               </p>
               {navItem("gift_cards", "Gift cards", <IconGift className="w-[18px] h-[18px]" />)}
               {navItem("rewards", "Rewards", <IconRewards className="w-[18px] h-[18px]" />)}
+              {navItem("svs_cash", "SVS Cash", <IconWallet className="w-[18px] h-[18px]" />)}
 
               <p className="px-3 pt-3 pb-1 text-[10px] font-extrabold uppercase tracking-wider text-gray-400">
                 Support
@@ -1026,7 +1040,12 @@ function AccountInner() {
           ) : section === "rewards" ? (
             <ComingSoonPanel
               title="Rewards"
-              blurb="Earn points on every order and unlock member perks. Loyalty rewards are on the way."
+              blurb="Earn points on every order and unlock exclusive rewards. Loyalty program launching soon."
+            />
+          ) : section === "svs_cash" ? (
+            <ComingSoonPanel
+              title="SVS Cash"
+              blurb="A new way to earn rewards and pay for your favorite meals. Coming soon!"
             />
           ) : section === "help" ? (
             <>

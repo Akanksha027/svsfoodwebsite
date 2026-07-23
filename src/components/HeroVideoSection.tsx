@@ -1,25 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+
+import { useEffect, useRef } from "react";
 import AnimatedOrderButton from "@/components/AnimatedOrderButton";
 
-const HERO_VIDEO_SRC = "/bg1.mp4";
+const HERO_VIDEO_SRC = "/bg.mp4";
 
 const HERO_LINES = [
   "We make our own buns",
-  "हम खुद बनाते हैं अपने बन",
 ] as const;
-
-const TYPE_MS = 70;
-const DELETE_MS = 40;
-const HOLD_MS = 1800;
-const GAP_MS = 450;
 
 export default function HeroVideoSection() {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [display, setDisplay] = useState("");
-  const [lineIndex, setLineIndex] = useState(0);
-  const [phase, setPhase] = useState<"typing" | "holding" | "deleting">("typing");
 
   useEffect(() => {
     const video = videoRef.current;
@@ -28,38 +21,6 @@ export default function HeroVideoSection() {
       /* autoplay may be blocked until interaction */
     });
   }, []);
-
-  useEffect(() => {
-    const full = HERO_LINES[lineIndex];
-    let timer: ReturnType<typeof setTimeout>;
-
-    if (phase === "typing") {
-      if (display.length < full.length) {
-        timer = setTimeout(() => {
-          setDisplay(full.slice(0, display.length + 1));
-        }, TYPE_MS);
-      } else {
-        timer = setTimeout(() => setPhase("holding"), HOLD_MS);
-      }
-    } else if (phase === "holding") {
-      timer = setTimeout(() => setPhase("deleting"), GAP_MS);
-    } else if (phase === "deleting") {
-      if (display.length > 0) {
-        timer = setTimeout(() => {
-          setDisplay(display.slice(0, -1));
-        }, DELETE_MS);
-      } else {
-        timer = setTimeout(() => {
-          setLineIndex((i) => (i + 1) % HERO_LINES.length);
-          setPhase("typing");
-        }, GAP_MS);
-      }
-    }
-
-    return () => clearTimeout(timer);
-  }, [display, phase, lineIndex]);
-
-  const isHindi = lineIndex === 1;
 
   return (
     <section
@@ -85,44 +46,25 @@ export default function HeroVideoSection() {
       />
 
       <div className="relative z-[2] flex h-full flex-col items-center justify-center px-5 pb-10 sm:px-8 sm:pb-12 md:px-10 md:pb-14 lg:px-14 lg:pb-16 text-center">
+        {/* Absolute positioned logo so it doesn't push the centered text down */}
+        <div className="absolute top-[2%] sm:top-[4%] md:top-[5%] left-1/2 -translate-x-1/2 w-full flex justify-center pointer-events-none">
+          <Image
+            src="/svsherosectionlogo.png"
+            alt="SVS Hero Logo"
+            width={480}
+            height={240}
+            className="w-[200px] sm:w-[280px] md:w-[360px] lg:w-[440px] object-contain drop-shadow-lg"
+            priority
+          />
+        </div>
+        
         <div className="flex w-full flex-col items-center gap-8 sm:gap-10">
-          <div className="flex flex-col items-center gap-3 sm:gap-4">
+          <div className="flex flex-col items-center gap-4 sm:gap-6 mt-16 sm:mt-24">
             <h1
-              className={`max-w-[min(96vw,28ch)] text-center text-[clamp(1.45rem,4.6vw,3.75rem)] font-bold leading-[1.2] tracking-[0.02em] text-[#faf3dc] ${
-                isHindi ? "normal-case" : "uppercase"
-              }`}
+              className="max-w-[min(96vw,28ch)] text-center text-[clamp(2.25rem,6.5vw,5rem)] font-medium leading-[1.1] tracking-[0.02em] text-[#faf3dc] uppercase drop-shadow-md"
               id="hero-text"
-              aria-live="polite"
             >
-              <span className="relative inline-grid justify-items-center">
-                <span
-                  className="invisible col-start-1 row-start-1 whitespace-nowrap"
-                  aria-hidden
-                >
-                  &lsquo;{HERO_LINES[0]}&rsquo;
-                </span>
-                <span
-                  className="invisible col-start-1 row-start-1 whitespace-nowrap"
-                  aria-hidden
-                >
-                  &lsquo;{HERO_LINES[1]}&rsquo;
-                </span>
-                <span className="col-start-1 row-start-1 whitespace-nowrap">
-                  {display ? (
-                    <>
-                      &lsquo;{display}
-                      <span className="hero-type-caret" aria-hidden />
-                      &rsquo;
-                    </>
-                  ) : (
-                    <>
-                      &lsquo;
-                      <span className="hero-type-caret" aria-hidden />
-                      &rsquo;
-                    </>
-                  )}
-                </span>
-              </span>
+              &lsquo;{HERO_LINES[0]}&rsquo;
             </h1>
           </div>
 

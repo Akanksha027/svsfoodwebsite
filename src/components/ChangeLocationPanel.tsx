@@ -28,7 +28,10 @@ import {
   deleteCustomerAddress,
   type WebsiteCustomerAddress,
 } from "@/lib/website-customer-api";
-import { useBodyScrollLock } from "@/lib/body-scroll-lock";
+import {
+  lockBodyScroll,
+  unlockBodyScroll,
+} from "@/lib/body-scroll-lock";
 
 type PanelPosition = {
   top: number;
@@ -164,7 +167,9 @@ export default function ChangeLocationPanel({
 }: Props) {
   const router = useRouter();
   const { customer, openLogin, refreshCustomer } = useWebsiteAuth();
-  const [mounted, setMounted] = useState(false);
+  const [portalReady, setPortalReady] = useState(false);
+  const [renderPanel, setRenderPanel] = useState(false);
+  const [entered, setEntered] = useState(false);
   const [panelPos, setPanelPos] = useState<PanelPosition | null>(null);
   const [panelLayout, setPanelLayout] = useState<PanelLayout>("dropdown");
   const [search, setSearch] = useState("");
@@ -177,17 +182,23 @@ export default function ChangeLocationPanel({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const searchSeq = useRef(0);
 
-  useBodyScrollLock(open);
-
   useEffect(() => {
-    setMounted(true);
+    setPortalReady(true);
   }, []);
 
+  // Only lock page scroll for the mobile bottom sheet — desktop dropdown stays put.
+  useEffect(() => {
+    if (!open || panelLayout !== "sheet") return;
+    lockBodyScroll();
+    return () => unlockBodyScroll();
+  }, [open, panelLayout]);
+
   useLayoutEffect(() => {
-    if (!open) {
+    if (!open && !renderPanel) {
       setPanelPos(null);
       return;
     }
+
     const anchor = anchorRef.current;
     const mq = window.matchMedia("(max-width: 767px)");
 
@@ -211,7 +222,24 @@ export default function ChangeLocationPanel({
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
     };
-  }, [open, anchorRef]);
+  }, [open, renderPanel, anchorRef]);
+
+  useEffect(() => {
+    if (open) {
+      setRenderPanel(true);
+      const raf = requestAnimationFrame(() => {
+        requestAnimationFrame(() => setEntered(true));
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+
+    setEntered(false);
+    const timer = window.setTimeout(() => {
+      setRenderPanel(false);
+      setPanelPos(null);
+    }, 280);
+    return () => window.clearTimeout(timer);
+  }, [open]);
 
   useEffect(() => {
     if (!open) {
@@ -306,7 +334,7 @@ export default function ChangeLocationPanel({
     }
   };
 
-  if (!mounted || !open || !panelPos) return null;
+  if (!portalReady || !renderPanel || !panelPos) return null;
 
   const isSheet = panelLayout === "sheet";
 
@@ -316,16 +344,24 @@ export default function ChangeLocationPanel({
         type="button"
         aria-label="Close change location"
         onClick={onClose}
-        className="fixed inset-0 z-[1550] border-0 cursor-pointer bg-black/30 touch-none"
+        className={`fixed inset-0 z-[1550] border-0 cursor-pointer bg-black/30 touch-none transition-opacity duration-300 ease-out ${
+          entered ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="change-location-title"
-        className={`fixed z-[1551] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-y-auto overscroll-contain ${
+        className={`fixed z-[1551] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-y-auto overscroll-contain transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           isSheet
             ? "inset-x-0 bottom-0 rounded-t-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))] max-h-[min(88dvh,100dvh)]"
             : "rounded-2xl p-4 sm:p-5"
+        } ${
+          entered
+            ? "opacity-100 translate-y-0"
+            : isSheet
+              ? "opacity-100 translate-y-full"
+              : "opacity-0 -translate-y-2 pointer-events-none"
         }`}
         style={
           isSheet

@@ -4,7 +4,8 @@ import { useEffect } from "react";
 
 /**
  * Ref-counted body scroll lock so nested popups don't unlock early.
- * Keeps the vertical scrollbar visible (no layout jump / navbar shift).
+ * Hides the page scrollbar while open and pads the layout so fixed UI
+ * (navbar, etc.) does not shift sideways.
  */
 let lockCount = 0;
 let lockedScrollY = 0;
@@ -23,9 +24,12 @@ function applyLock() {
   const html = document.documentElement;
 
   html.classList.add("svs-scroll-locked");
-  // Keep scrollbar gutter visible; block page scroll via overflow + listeners
-  html.style.overflowY = "scroll";
+  html.style.overflow = "hidden";
+  html.style.overflowY = "hidden";
   html.style.overscrollBehavior = "none";
+  // Keep scrollbar-gutter: stable (set in globals.css) so fixed chrome
+  // does not jump when the scrollbar is hidden.
+
   document.body.style.overflow = "hidden";
   document.body.style.overscrollBehavior = "none";
   document.body.style.touchAction = "none";
@@ -37,8 +41,10 @@ function applyLock() {
 function clearLock() {
   const html = document.documentElement;
   html.classList.remove("svs-scroll-locked");
+  html.style.overflow = "";
   html.style.overflowY = "";
   html.style.overscrollBehavior = "";
+
   document.body.style.overflow = "";
   document.body.style.overscrollBehavior = "";
   document.body.style.touchAction = "";

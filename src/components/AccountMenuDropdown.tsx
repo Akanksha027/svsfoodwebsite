@@ -110,6 +110,7 @@ export default function AccountMenuDropdown() {
             onClick={() => go("/account?tab=gift-cards")}
           />
           <Row label="Rewards" onClick={() => go("/account?tab=rewards")} />
+          <Row label="SVS Cash" onClick={() => go("/account?tab=svs-cash")} />
           <Row label="Help Center" onClick={() => go("/account?tab=help")} />
           <Link
             href="/privacy-policy"
