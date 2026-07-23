@@ -145,13 +145,12 @@ export default function HeroVideoSection() {
   }, [drawFrame, ready]);
 
   const t = copyProgress(progress);
-  // Phone: milder left travel + less -translateX so scrolled copy isn't clipped.
+  // Scrolled end position: +10% right, +20% down from prior top-left anchor.
   const scale = 1 - t * (narrow ? 0.22 : 0.38);
-  const xPct = 50 - t * (narrow ? 16 : 32); // phone ends ~34%
-  const yPct = (narrow ? 40 : 28) - t * (narrow ? 14 : 16);
+  const xPct = 50 - t * (narrow ? 6 : 22); // was ~18% desktop → ~28%
+  const yPct = (narrow ? 40 : 28) - t * (narrow ? 14 : 16) + t * 20; // +20% down at full scroll
   const gap = narrow ? 1 : 1.25;
-  // Start centered (-50%); on phone ease toward -26% so block sits further right.
-  const translateX = narrow ? -50 + t * 24 : -50;
+  const translateX = narrow ? -50 + t * 34 : -50 + t * 10; // nudge right when scrolled
   const scrolledLeft = narrow && t > 0.35;
 
   return (

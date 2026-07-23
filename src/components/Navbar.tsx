@@ -20,13 +20,13 @@ const HANDLING_FEE = 2;
 const iconBtnBase =
   "flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full border-none bg-transparent cursor-pointer transition-colors duration-200 no-underline shrink-0";
 
-const iconBtnDefault = `${iconBtnBase} text-gray-400 hover:bg-white/10 hover:text-gray-300`;
-const iconBtnHero = `${iconBtnBase} text-gray-400 hover:bg-white/10 hover:text-gray-300`;
+const iconBtnDefault = `${iconBtnBase} text-gray-400 hover:bg-black/5 hover:text-gray-600`;
+const iconBtnHero = `${iconBtnBase} text-white hover:bg-white/15 hover:text-white`;
 
 const navOrderBtn =
-  "flex items-center justify-center relative overflow-visible w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-14 lg:h-14 rounded-full border-none bg-transparent cursor-pointer transition-[color,transform] duration-300 no-underline shrink-0 text-gray-400 hover:text-gray-300 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/40 focus-visible:ring-offset-2";
+  "flex items-center justify-center relative overflow-visible w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-14 lg:h-14 rounded-full border-none bg-transparent cursor-pointer transition-[color,transform] duration-300 no-underline shrink-0 text-gray-400 hover:text-gray-600 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/40 focus-visible:ring-offset-2";
 
-const navOrderBtnHero = `${navOrderBtn} text-gray-400 hover:text-gray-300 focus-visible:ring-gray-400/50`;
+const navOrderBtnHero = `${navOrderBtn} text-white hover:text-white focus-visible:ring-white/50`;
 
 const iconSvg = "w-5 h-5 sm:w-[22px] sm:h-[22px] lg:w-7 lg:h-7";
 
@@ -595,7 +595,7 @@ export default function Navbar({
         } pl-3 sm:pl-4 md:pl-6 lg:pl-8 pr-2 sm:pr-3 md:pr-3 lg:pr-4 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b ${menuMode ? "border-black/10" : "border-transparent"} shadow-none ${homePage
           ? "top-3 sm:top-4 lg:top-5 pb-1 sm:pb-1.5 lg:pb-2.5"
           : "top-0 pt-2.5 sm:pt-3 md:pt-4 pb-2 sm:pb-3"
-        } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} text-gray-400`}
+        } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-400"}`}
       id="main-navbar"
     >
       {menuMode ? (

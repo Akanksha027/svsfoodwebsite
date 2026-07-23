@@ -1252,6 +1252,15 @@ html:has(#main-navbar[data-menu-mode="true"]) {
   color: color-mix(in srgb, var(--color-svs-ink) 70%, transparent);
 }
 
+#main-navbar[data-navbar-variant="hero"] {
+  color: var(--color-svs-white);
+}
+
+#main-navbar[data-navbar-variant="hero"] #navbar-icons a,
+#main-navbar[data-navbar-variant="hero"] #navbar-icons button {
+  color: var(--color-svs-white);
+}
+
 .nav-revolving-bag .bag-front,
 .nav-revolving-bag .bag-back {
   background: var(--color-svs-cream);
