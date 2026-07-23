@@ -193,7 +193,7 @@ export default function HeroVideoSection() {
           }}
         >
           <h1
-            className={`font-bagoss text-[clamp(1.45rem,6.5vw,5.75rem)] font-bold leading-[0.92] tracking-[-0.03em] text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.5)] ${
+            className={`font-bagoss text-[clamp(1.45rem,4.8vw,3.65rem)] font-bold leading-[0.92] tracking-[-0.03em] text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.5)] ${
               narrow && !scrolledLeft ? "text-center" : "text-left"
             }`}
           >
@@ -206,7 +206,7 @@ export default function HeroVideoSection() {
           </h1>
           <Link
             href="/menu"
-            className="pointer-events-auto inline-flex min-h-[2.35rem] items-center justify-center rounded-full bg-[#f16a34] px-6 py-2.5 text-[0.95rem] font-semibold text-white shadow-lg shadow-black/25 transition hover:brightness-110 active:scale-[0.98] sm:min-h-[2.75rem] sm:px-9 sm:py-3 sm:text-[1.25rem] md:min-h-[3rem] md:px-10 md:py-3.5 md:text-[1.4rem] lg:min-h-[3.25rem] lg:px-12 lg:py-4 lg:text-[1.55rem] xl:text-[1.65rem]"
+            className="pointer-events-auto inline-flex min-h-[2.35rem] items-center justify-center rounded-full bg-[#f16a34] px-6 py-2.5 text-[0.95rem] font-semibold text-white shadow-lg shadow-black/25 transition hover:brightness-110 active:scale-[0.98] sm:min-h-[2.5rem] sm:px-7 sm:py-2.5 sm:text-[1.05rem] md:min-h-[2.6rem] md:px-8 md:py-2.5 md:text-[1.1rem] lg:min-h-[2.7rem] lg:px-8 lg:text-[1.125rem]"
           >
             Order now
           </Link>

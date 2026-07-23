@@ -379,6 +379,28 @@ html.svs-scroll-locked body {
   transform-style: preserve-3d;
 }
 
+@keyframes nav-order-now-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.nav-order-now-caret {
+  animation: nav-order-now-caret 0.85s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-order-now-caret {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 .bag-face {
   position: absolute;
   left: 50%;

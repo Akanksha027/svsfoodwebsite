@@ -52,9 +52,54 @@ function GiftCardNavIcon({ className }: { className?: string }) {
   );
 }
 
-function truncateText(text: string, max = 48) {
-  if (text.length <= max) return text;
-  return `${text.slice(0, max).trimEnd()}…`;
+function NavOrderNowTypewriter({ hero }: { hero?: boolean }) {
+  const full = "ORDER NOW";
+  const [text, setText] = useState("");
+  const [phase, setPhase] = useState<"typing" | "hold" | "deleting">("typing");
+
+  useEffect(() => {
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setText(full);
+      return;
+    }
+
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (phase === "typing") {
+      if (text.length < full.length) {
+        timer = setTimeout(() => setText(full.slice(0, text.length + 1)), 90);
+      } else {
+        timer = setTimeout(() => setPhase("hold"), 1200);
+      }
+    } else if (phase === "hold") {
+      timer = setTimeout(() => setPhase("deleting"), 400);
+    } else if (phase === "deleting") {
+      if (text.length > 0) {
+        timer = setTimeout(() => setText(full.slice(0, text.length - 1)), 55);
+      } else {
+        timer = setTimeout(() => setPhase("typing"), 350);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [text, phase]);
+
+  return (
+    <span
+      className={`nav-order-now-chip pointer-events-none absolute -top-1 -right-2 z-10 inline-flex min-w-[4.6em] items-center justify-start whitespace-nowrap rounded-full px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide sm:-top-1.5 sm:-right-2.5 sm:min-w-[5em] sm:text-[9px] lg:-top-2 lg:-right-1 lg:px-2 lg:text-[10px] ${
+        hero
+          ? "bg-white text-svs-orange shadow-sm"
+          : "bg-svs-orange text-white shadow-sm"
+      }`}
+      aria-hidden
+    >
+      <span>{text}</span>
+      <span className="nav-order-now-caret ml-px inline-block h-[0.85em] w-[1.5px] bg-current" />
+    </span>
+  );
 }
 
 function StoryTriggerButton({
@@ -466,7 +511,7 @@ function NavIcons({
             stacked
               ? `${btn} !justify-start`
               : homePage
-                ? `${hero ? navOrderBtnHero : navOrderBtn} w-10 h-10 sm:w-11 sm:h-11 lg:w-16 lg:h-16 xl:w-20 xl:h-20`
+                ? `${hero ? navOrderBtnHero : navOrderBtn} relative w-10 h-10 sm:w-11 sm:h-11 lg:w-16 lg:h-16 xl:w-20 xl:h-20`
                 : `${iconBtn} relative flex items-center justify-center`
           }
           id="btn-menu"
@@ -475,16 +520,20 @@ function NavIcons({
         >
           <img
             src="/Package.png"
-            alt="Order now"
+            alt=""
             className={
               stacked
                 ? "h-6 w-6 object-contain"
                 : homePage
-                  ? "h-9 w-9 sm:h-10 sm:w-10 lg:h-14 lg:w-14 xl:h-16 xl:w-16 object-contain hover:scale-110 transition-transform duration-200"
-                  : "w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 object-contain hover:scale-110 transition-transform duration-200"
+                  ? "h-9 w-9 sm:h-10 sm:w-10 lg:h-14 lg:w-14 xl:h-16 xl:w-16 object-contain transition-transform duration-200 group-hover:scale-110"
+                  : "w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 object-contain transition-transform duration-200 hover:scale-110"
             }
           />
-          {stacked ? <span className="text-sm font-semibold">Order now</span> : null}
+          {stacked ? (
+            <span className="text-sm font-semibold">Order now</span>
+          ) : (
+            <NavOrderNowTypewriter hero={hero} />
+          )}
         </Link>
       ) : null}
     </>
@@ -593,7 +642,7 @@ export default function Navbar({
           ? "flex flex-nowrap items-end h-12 sm:h-14 md:h-16 lg:h-[72px]"
           : "flex flex-nowrap items-center min-h-12 sm:min-h-14"
         } pl-3 sm:pl-4 md:pl-6 lg:pl-8 pr-2 sm:pr-3 md:pr-3 lg:pr-4 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b ${menuMode ? "border-black/10" : "border-transparent"} shadow-none ${homePage
-          ? "top-3 sm:top-4 lg:top-5 pb-1 sm:pb-1.5 lg:pb-2.5"
+          ? "top-5 sm:top-6 lg:top-8 pb-1 sm:pb-1.5 lg:pb-2.5"
           : "top-0 pt-2.5 sm:pt-3 md:pt-4 pb-2 sm:pb-3"
         } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-400"}`}
       id="main-navbar"
