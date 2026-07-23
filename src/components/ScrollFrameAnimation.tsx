@@ -11,7 +11,7 @@ function frameSrc(index: number): string {
 }
 
 /**
- * Scroll-scrubbed frame sequence from home.mp4 (24fps → 240 frames).
+ * Scroll-scrubbed frame sequence from hero.mp4 (24fps → 240 frames).
  * Sticky full-viewport canvas; scroll progress maps 0→1 across the tall track.
  */
 export default function ScrollFrameAnimation() {
