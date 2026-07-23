@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useRef, type RefObject } from "react";
 
 /** Top 3 Recommended burgers from live svsfood.com/products/burgers */
 const SPECIALTIES = [
@@ -14,14 +14,17 @@ const SPECIALTIES = [
       "A classic Jain burger with raw banana patty and sauces — pure, thoughtful flavour without onion or garlic.",
     image: "/combo/vegBurgerDairy.png",
     href: "/menu",
+    /** Filled by scroll-flying burger from hero — no local image */
+    receivesFlight: false,
   },
   {
     id: "maharaja",
     name: "Maharaja Burger",
     description:
       "Crispy aloo & paneer patty with special sauce — the royal bite that keeps topping the recommend list.",
-    image: "/combo/Supremee.png",
+    image: "/nobg/burger.png",
     href: "/menu",
+    receivesFlight: true,
   },
   {
     id: "jumbo-paneer",
@@ -30,17 +33,18 @@ const SPECIALTIES = [
       "Loaded with a jumbo thick paneer patty for the ultimate big bite — rich, hearty, and made to share.",
     image: "/combo/burgerVada.png",
     href: "/menu",
+    receivesFlight: false,
   },
 ] as const;
 
 /** Exactly 3 unique items per side */
 const FLOATS = [
-  /* LEFT: tomato · cheese · lettuce */
+  /* LEFT: tomato · cheese · lettuce — smaller / faded on phones */
   {
     id: "left-tomato",
     src: "/images/tomato.png",
     className:
-      "absolute left-[1%] top-[6%] z-[2] h-32 w-32 sm:left-[2%] sm:h-40 sm:w-40 md:h-48 md:w-48 lg:left-[3%] lg:h-52 lg:w-52",
+      "absolute left-[-4%] top-[4%] z-[2] hidden h-16 w-16 opacity-50 sm:left-[1%] sm:block sm:h-28 sm:w-28 sm:opacity-100 md:left-[2%] md:h-40 md:w-40 lg:left-[3%] lg:h-52 lg:w-52",
     side: "left" as const,
     delay: 0.05,
   },
@@ -48,7 +52,7 @@ const FLOATS = [
     id: "left-cheese",
     src: "/images/cheese.png",
     className:
-      "absolute left-[2%] top-[38%] z-[2] h-28 w-28 -rotate-[16deg] sm:left-[3%] sm:h-36 sm:w-36 md:h-40 md:w-40 lg:left-[4%] lg:h-44 lg:w-44",
+      "absolute left-[-2%] top-[38%] z-[2] hidden h-14 w-14 -rotate-[16deg] opacity-50 sm:left-[2%] sm:block sm:h-24 sm:w-24 sm:opacity-100 md:left-[3%] md:h-36 md:w-36 lg:left-[4%] lg:h-44 lg:w-44",
     side: "left" as const,
     delay: 0.18,
   },
@@ -56,7 +60,7 @@ const FLOATS = [
     id: "left-lettuce",
     src: "/images/lettuce.png",
     className:
-      "absolute bottom-[8%] left-[1%] z-[2] h-28 w-28 rotate-[10deg] sm:left-[2%] sm:h-36 sm:w-36 md:h-44 md:w-44 lg:left-[3%] lg:h-48 lg:w-48",
+      "absolute bottom-[6%] left-[-4%] z-[2] hidden h-14 w-14 rotate-[10deg] opacity-50 sm:left-[1%] sm:block sm:h-24 sm:w-24 sm:opacity-100 md:left-[2%] md:h-36 md:w-36 lg:left-[3%] lg:h-48 lg:w-48",
     side: "left" as const,
     delay: 0.3,
   },
@@ -65,7 +69,7 @@ const FLOATS = [
     id: "right-cheese",
     src: "/images/cheese.png",
     className:
-      "absolute right-[1%] top-[6%] z-[2] h-32 w-32 rotate-[18deg] sm:right-[2%] sm:h-40 sm:w-40 md:h-48 md:w-48 lg:right-[3%] lg:h-52 lg:w-52",
+      "absolute right-[-4%] top-[4%] z-[2] hidden h-16 w-16 rotate-[18deg] opacity-50 sm:right-[1%] sm:block sm:h-28 sm:w-28 sm:opacity-100 md:right-[2%] md:h-40 md:w-40 lg:right-[3%] lg:h-52 lg:w-52",
     side: "right" as const,
     delay: 0.08,
   },
@@ -73,7 +77,7 @@ const FLOATS = [
     id: "right-tikki",
     src: "/images/tikki.png",
     className:
-      "absolute right-[2%] top-[38%] z-[2] h-28 w-28 -rotate-[10deg] sm:right-[3%] sm:h-36 sm:w-36 md:h-40 md:w-40 lg:right-[4%] lg:h-44 lg:w-44",
+      "absolute right-[-2%] top-[38%] z-[2] hidden h-14 w-14 -rotate-[10deg] opacity-50 sm:right-[2%] sm:block sm:h-24 sm:w-24 sm:opacity-100 md:right-[3%] md:h-36 md:w-36 lg:right-[4%] lg:h-44 lg:w-44",
     side: "right" as const,
     delay: 0.2,
   },
@@ -81,7 +85,7 @@ const FLOATS = [
     id: "right-tomato",
     src: "/images/tomato.png",
     className:
-      "absolute bottom-[8%] right-[1%] z-[2] h-28 w-28 rotate-[12deg] sm:right-[2%] sm:h-36 sm:w-36 md:h-44 md:w-44 lg:right-[3%] lg:h-48 lg:w-48",
+      "absolute bottom-[6%] right-[-4%] z-[2] hidden h-14 w-14 rotate-[12deg] opacity-50 sm:right-[1%] sm:block sm:h-24 sm:w-24 sm:opacity-100 md:right-[2%] md:h-36 md:w-36 lg:right-[3%] lg:h-48 lg:w-48",
     side: "right" as const,
     delay: 0.32,
   },
@@ -90,14 +94,21 @@ const FLOATS = [
 const spinEase = [0.16, 1, 0.3, 1] as const;
 const softEase = [0.25, 0.1, 0.25, 1] as const;
 
-export default function WhatsOnOurPlateSection() {
+type WhatsOnOurPlateSectionProps = {
+  /** Landing pad for the scroll-flying burger (Maharaja center) */
+  landingRef?: RefObject<HTMLDivElement | null>;
+};
+
+export default function WhatsOnOurPlateSection({
+  landingRef,
+}: WhatsOnOurPlateSectionProps = {}) {
   const sectionRef = useRef<HTMLElement>(null);
   const inView = useInView(sectionRef, { amount: 0.25, once: false });
 
   return (
     <section
       ref={sectionRef}
-      className="relative isolate w-full overflow-hidden bg-transparent py-16 sm:py-20 lg:py-24"
+      className="relative isolate w-full overflow-hidden bg-transparent py-12 sm:py-20 lg:py-24"
     >
       {FLOATS.map((item) => {
         const fromX = item.side === "left" ? -220 : 220;
@@ -118,7 +129,6 @@ export default function WhatsOnOurPlateSection() {
             }}
             aria-hidden
           >
-            {/* Assets have black backgrounds — screen blend knocks black out on white */}
             <Image
               src={item.src}
               alt=""
@@ -146,77 +156,92 @@ export default function WhatsOnOurPlateSection() {
           </p>
         </motion.header>
 
-        <div className="relative mt-12 grid grid-cols-1 gap-12 sm:mt-14 sm:grid-cols-3 sm:gap-6 lg:mt-16 lg:gap-8">
-          {SPECIALTIES.map((item, index) => (
-            <article
-              key={item.id}
-              className="group relative flex flex-col items-center text-center"
-            >
-              <div className="relative mx-auto flex h-[240px] w-full max-w-[280px] items-center justify-center sm:h-[260px] lg:h-[300px] lg:max-w-[320px] [perspective:900px]">
+        <div className="relative mt-10 grid grid-cols-1 gap-10 sm:mt-14 sm:grid-cols-3 sm:gap-6 lg:mt-16 lg:gap-8">
+          {SPECIALTIES.map((item, index) => {
+            const isLanding = item.receivesFlight;
+
+            return (
+              <article
+                key={item.id}
+                className={`group relative flex flex-col items-center text-center ${
+                  isLanding ? "order-first sm:order-none" : ""
+                }`}
+              >
+                <div className="relative mx-auto flex h-[200px] w-full max-w-[240px] items-center justify-center sm:h-[260px] sm:max-w-[280px] lg:h-[300px] lg:max-w-[320px] [perspective:900px]">
+                  {isLanding ? (
+                    /* Empty pad — flying burger from hero lands here */
+                    <div
+                      ref={landingRef}
+                      className="relative h-full w-full"
+                      aria-label="Maharaja burger landing spot"
+                    />
+                  ) : (
+                    <motion.div
+                      className="h-full w-full will-change-transform"
+                      initial={{ rotate: -360, scale: 0.78, opacity: 0 }}
+                      animate={
+                        inView
+                          ? { rotate: 0, scale: 1, opacity: 1 }
+                          : { rotate: -360, scale: 0.78, opacity: 0 }
+                      }
+                      transition={{
+                        rotate: {
+                          duration: 2.6,
+                          delay: inView ? 0.12 + index * 0.2 : 0,
+                          ease: spinEase,
+                        },
+                        scale: {
+                          duration: 2.2,
+                          delay: inView ? 0.12 + index * 0.2 : 0,
+                          ease: spinEase,
+                        },
+                        opacity: {
+                          duration: 1.4,
+                          delay: inView ? 0.12 + index * 0.2 : 0,
+                          ease: "easeOut",
+                        },
+                      }}
+                    >
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        width={360}
+                        height={360}
+                        className="h-full w-full object-contain drop-shadow-[0_28px_40px_rgba(26,26,26,0.22)] [mix-blend-mode:screen] [transform:rotateX(18deg)] transition-transform duration-500 group-hover:scale-[1.04]"
+                        sizes="320px"
+                        priority={index === 0}
+                      />
+                    </motion.div>
+                  )}
+                </div>
+
                 <motion.div
-                  className="h-full w-full will-change-transform"
-                  initial={{ rotate: -360, scale: 0.78, opacity: 0 }}
+                  initial={{ opacity: 0, y: 18 }}
                   animate={
-                    inView
-                      ? { rotate: 0, scale: 1, opacity: 1 }
-                      : { rotate: -360, scale: 0.78, opacity: 0 }
+                    inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }
                   }
                   transition={{
-                    rotate: {
-                      duration: 2.6,
-                      delay: inView ? 0.12 + index * 0.2 : 0,
-                      ease: spinEase,
-                    },
-                    scale: {
-                      duration: 2.2,
-                      delay: inView ? 0.12 + index * 0.2 : 0,
-                      ease: spinEase,
-                    },
-                    opacity: {
-                      duration: 1.4,
-                      delay: inView ? 0.12 + index * 0.2 : 0,
-                      ease: "easeOut",
-                    },
+                    duration: 0.85,
+                    delay: inView ? 0.9 + index * 0.12 : 0,
+                    ease: softEase,
                   }}
                 >
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={360}
-                    height={360}
-                    className="h-full w-full object-contain drop-shadow-[0_28px_40px_rgba(26,26,26,0.22)] [transform:rotateX(18deg)] transition-transform duration-500 group-hover:scale-[1.04]"
-                    sizes="320px"
-                    priority={index === 1}
-                  />
+                  <h3 className="mt-6 font-serif text-xl font-semibold tracking-tight text-svs-ink sm:text-[1.35rem]">
+                    {item.name}
+                  </h3>
+                  <p className="mt-2.5 max-w-[240px] text-[13px] leading-relaxed text-svs-ink/45 sm:text-sm">
+                    {item.description}
+                  </p>
+                  <Link
+                    href={item.href}
+                    className="mt-4 inline-block text-[11px] font-bold uppercase tracking-[0.16em] text-svs-orange transition-colors hover:text-svs-orange-dark"
+                  >
+                    Order now
+                  </Link>
                 </motion.div>
-              </div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 18 }}
-                animate={
-                  inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }
-                }
-                transition={{
-                  duration: 0.85,
-                  delay: inView ? 0.9 + index * 0.12 : 0,
-                  ease: softEase,
-                }}
-              >
-                <h3 className="mt-6 font-serif text-xl font-semibold tracking-tight text-svs-ink sm:text-[1.35rem]">
-                  {item.name}
-                </h3>
-                <p className="mt-2.5 max-w-[240px] text-[13px] leading-relaxed text-svs-ink/45 sm:text-sm">
-                  {item.description}
-                </p>
-                <Link
-                  href={item.href}
-                  className="mt-4 inline-block text-[11px] font-bold uppercase tracking-[0.16em] text-svs-orange transition-colors hover:text-svs-orange-dark"
-                >
-                  Order now
-                </Link>
-              </motion.div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

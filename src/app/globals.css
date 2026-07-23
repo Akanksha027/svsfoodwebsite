@@ -46,6 +46,11 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* Lenis owns scroll on /theorymenu — disable native smooth to avoid fighting it */
+html.theorymenu-smooth {
+  scroll-behavior: auto;
+}
+
 /* When cart / modal locks scroll ? hide page scrollbar, keep gutter stable */
 html.svs-scroll-locked {
   overflow: hidden !important;
