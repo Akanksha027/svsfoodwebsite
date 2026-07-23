@@ -81,14 +81,7 @@ export default function StoryViewer({
     setPaused(false);
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
+  // No scroll lock and no canvas snapshot — live sticky hero stays under the dim and scrolls.
 
   useEffect(() => {
     if (!open) return;
@@ -161,23 +154,16 @@ export default function StoryViewer({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/25"
+      className="pointer-events-none fixed inset-0 z-[2000] flex items-center justify-center"
       role="dialog"
       aria-modal="true"
       aria-label="SVS Food stories"
     >
-      {/* Click outside card to close */}
-      <button
-        type="button"
-        className="absolute inset-0 cursor-default border-0 bg-transparent"
-        aria-label="Close stories"
-        onClick={onClose}
-      />
+      {/* Dim only — no pointer capture so page (incl. sticky hero) keeps scrolling */}
+      <div className="absolute inset-0 bg-black/70" aria-hidden />
 
-      {/* Stage: arrows hug the 9:16 card */}
       <div className="relative z-[1] flex max-h-[100svh] w-full items-center justify-center px-11 sm:px-16">
-        <div className="relative flex items-center justify-center">
-          {/* Prev — outside left of card */}
+        <div className="pointer-events-auto relative flex items-center justify-center">
           <button
             type="button"
             className={`absolute right-full z-10 mr-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/25 text-white shadow-sm backdrop-blur-md transition-colors hover:bg-white/40 sm:mr-4 sm:h-11 sm:w-11 ${
@@ -190,29 +176,28 @@ export default function StoryViewer({
             <Chevron dir="left" />
           </button>
 
-          {/* Story column: bars ABOVE the white 9:16 box */}
-          <div
-            className="relative flex w-[min(72vw,calc((100svh-4.5rem)*9/16),400px)] flex-col sm:w-[min(48vw,calc((100svh-4.5rem)*9/16),400px)]"
-          >
-            {/* Progress bars — sit above the story container */}
+          <div className="relative flex w-[min(72vw,calc((100svh-4.5rem)*9/16),400px)] flex-col sm:w-[min(48vw,calc((100svh-4.5rem)*9/16),400px)]">
+            {/* Progress bars — fill over each slide duration */}
             <div className="mb-2.5 flex gap-1.5 px-0.5 sm:mb-3">
               {slides.map((s, i) => {
                 const filled = i < index ? 1 : i === index ? progress : 0;
                 return (
                   <div
                     key={s.id}
-                    className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/40"
+                    className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/35"
                   >
                     <div
-                      className="h-full rounded-full bg-white transition-[width] duration-75 ease-linear"
-                      style={{ width: `${filled * 100}%` }}
+                      className="h-full origin-left rounded-full bg-white"
+                      style={{
+                        width: `${filled * 100}%`,
+                        transition: i === index ? "none" : "width 0.2s ease",
+                      }}
                     />
                   </div>
                 );
               })}
             </div>
 
-            {/* 9:16 white story container */}
             <div
               className="relative w-full overflow-hidden bg-white shadow-[0_20px_60px_rgba(0,0,0,0.28)]"
               style={{ aspectRatio: "9 / 16" }}
@@ -291,7 +276,6 @@ export default function StoryViewer({
             </div>
           </div>
 
-          {/* Next — outside right of card */}
           <button
             type="button"
             className="absolute left-full z-10 ml-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/25 text-white shadow-sm backdrop-blur-md transition-colors hover:bg-white/40 sm:ml-4 sm:h-11 sm:w-11"
