@@ -66,7 +66,7 @@ export default function CartDrawerPayStep({
           onPaid(pending.orderId, store.id);
         } else if (result.internal_status === "failed") {
           setStatus("failed");
-          setError("Payment failed. You can try again from the order page.");
+          setError("Payment failed. Your cart is still here — you can try again.");
         }
       } catch {
         /* keep polling */

@@ -100,7 +100,7 @@ function PayInner() {
       /* still leave pay screen */
     }
     sessionStorage.removeItem("svs_pending_payment");
-    router.replace("/menu");
+    router.replace("/cart");
   };
 
   const qrSrc = useMemo(() => {

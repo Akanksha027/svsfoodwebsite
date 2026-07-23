@@ -490,8 +490,8 @@ function LiveOrderPanel({
           />
         </div>
 
-        {/* COD note */}
-        {isCod && !liveIsDelivered(order) && (
+        {/* COD note — active COD only, not cancelled */}
+        {isCod && !cancelled && !liveIsDelivered(order) && (
           <div className="flex items-start gap-2.5 rounded-xl bg-amber-50 border border-amber-100 px-4 py-3">
             <span className="text-lg">💵</span>
             <div>
@@ -556,7 +556,7 @@ function OrderCard({ order, highlighted }: { order: CustomerOrderSummary; highli
             {order.total_amount != null ? formatInr(order.total_amount) : "-"}
             <span className="mx-1.5 text-gray-300">·</span>
             {formatOrderWhen(order.created_at)}
-            {order.cod_unpaid ? (
+            {order.cod_unpaid && order.status !== "cancelled" ? (
               <span className="ml-2 text-[10px] font-bold text-[#c2410c]">COD · unpaid</span>
             ) : null}
           </p>

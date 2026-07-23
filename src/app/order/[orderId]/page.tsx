@@ -10,6 +10,7 @@ import {
 } from "@/data/locations";
 import { fetchOrder } from "@/lib/orders-api";
 import { formatInr } from "@/lib/menu-api";
+import { canShowCodOnlinePay, isOrderCancelled } from "@/lib/order-pay-eligibility";
 import CodOnlinePayPanel from "@/components/CodOnlinePayPanel";
 
 type OrderData = Awaited<ReturnType<typeof fetchOrder>>;
@@ -21,9 +22,7 @@ type TrackStep = {
 };
 
 function isCancelled(order: OrderData) {
-  return (
-    order.status === "cancelled" || order.petpooja_status === "cancelled"
-  );
+  return isOrderCancelled(order);
 }
 
 function isDelivered(order: OrderData) {
@@ -385,7 +384,7 @@ function OrderInner() {
               </p>
             </div>
 
-            {order.cod_unpaid ? (
+            {canShowCodOnlinePay(order) ? (
               <CodOnlinePayPanel
                 orderId={order.order_id}
                 amount={order.grand_total}
