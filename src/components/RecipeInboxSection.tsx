@@ -17,115 +17,35 @@ type IconItem = {
   rotate?: number;
 };
 
-/** Top rail — small & mid screens */
+/** Top rail — equal slots */
 const TOP_ROW: IconItem[] = [
   { src: "/nobg/vegies/im4.png", alt: "Onion", delay: 0, rotate: -8 },
   { src: "/nobg/vegies/im5.png", alt: "Cucumber", delay: 0.05, rotate: 4 },
   { src: "/images/lettuce.png", alt: "Lettuce", delay: 0.1, rotate: -10 },
   { src: "/nobg/vegies/im6.png", alt: "Broccoli", delay: 0.14, rotate: -4 },
   { src: "/nobg/vegies/im1.png", alt: "Pepper", delay: 0.18, rotate: 8 },
+  { src: "/images/tikki.png", alt: "Tikki", delay: 0.22, rotate: 6 },
 ];
 
-/** Bottom rail — small & mid screens */
+/** Bottom rail — equal slots */
 const BOTTOM_ROW: IconItem[] = [
   { src: "/nobg/vegies/im2.png", alt: "Avocado", delay: 0.08, rotate: -6 },
   { src: "/images/cheese.png", alt: "Cheese", delay: 0.12, rotate: 12 },
   { src: "/nobg/vegies/im8.png", alt: "Mint", delay: 0.16, rotate: 8 },
   { src: "/nobg/vegies/im7.png", alt: "Bun", delay: 0.2, rotate: -4 },
-  { src: "/nobg/vegies/im3.png", alt: "Chili", delay: 0.24, rotate: 22 },
+  // { src: "/nobg/vegies/im3.png", alt: "Chili", delay: 0.24, rotate: 22 },
 ];
 
-/** Large-screen corner scatter (text stays clear in the center) */
-const DESKTOP_FLOATERS: (IconItem & { pos: string })[] = [
-  {
-    src: "/nobg/vegies/im4.png",
-    alt: "Onion",
-    pos: "left-[3%] top-[4%]",
-    delay: 0,
-    rotate: -8,
-  },
-  {
-    src: "/nobg/vegies/im5.png",
-    alt: "Cucumber",
-    pos: "left-[20%] top-[3%]",
-    delay: 0.06,
-    rotate: 4,
-  },
-  {
-    src: "/nobg/vegies/im6.png",
-    alt: "Broccoli",
-    pos: "right-[34%] top-[4%]",
-    delay: 0.1,
-    rotate: -6,
-  },
-  {
-    src: "/images/lettuce.png",
-    alt: "Lettuce",
-    pos: "left-[2%] top-[36%]",
-    delay: 0.08,
-    rotate: -12,
-  },
-  {
-    src: "/images/tikki.png",
-    alt: "Tikki",
-    pos: "right-[30%] top-[36%]",
-    delay: 0.12,
-    rotate: 8,
-  },
-  {
-    src: "/nobg/vegies/im1.png",
-    alt: "Pepper",
-    pos: "left-[3%] top-[58%]",
-    delay: 0.14,
-    rotate: 8,
-  },
-  {
-    src: "/nobg/vegies/im3.png",
-    alt: "Chili",
-    pos: "right-[28%] top-[58%]",
-    delay: 0.16,
-    rotate: 24,
-  },
-  {
-    src: "/nobg/vegies/im2.png",
-    alt: "Avocado",
-    pos: "left-[3%] bottom-[4%]",
-    delay: 0.18,
-    rotate: -6,
-  },
-  {
-    src: "/images/cheese.png",
-    alt: "Cheese",
-    pos: "left-[20%] bottom-[3%]",
-    delay: 0.2,
-    rotate: 14,
-  },
-  {
-    src: "/nobg/vegies/im8.png",
-    alt: "Mint",
-    pos: "right-[42%] bottom-[3%]",
-    delay: 0.22,
-    rotate: 10,
-  },
-  {
-    src: "/nobg/vegies/im7.png",
-    alt: "Bun",
-    pos: "right-[28%] bottom-[4%]",
-    delay: 0.24,
-    rotate: -4,
-  },
-];
+/**
+ * Uniform icon box — scales up on large screens, always square & same size.
+ */
+const ICON_BOX =
+  "relative aspect-square w-full max-w-[3rem] sm:max-w-[4rem] md:max-w-[5rem] lg:max-w-[7.5rem] xl:max-w-[8.5rem]";
 
-function RailIcon({
-  item,
-  className,
-}: {
-  item: IconItem;
-  className?: string;
-}) {
+function RailIcon({ item }: { item: IconItem }) {
   return (
     <motion.div
-      className={`relative shrink-0 ${className ?? ""}`}
+      className={ICON_BOX}
       style={{ rotate: item.rotate ?? 0 }}
       initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -142,16 +62,52 @@ function RailIcon({
         alt=""
         fill
         className="object-contain drop-shadow-[0_10px_20px_rgba(26,26,26,0.14)] [mix-blend-mode:screen]"
-        sizes="80px"
+        sizes="(min-width: 1280px) 136px, (min-width: 1024px) 120px, (min-width: 768px) 80px, 64px"
       />
     </motion.div>
+  );
+}
+
+function IconRail({
+  items,
+  edge,
+}: {
+  items: IconItem[];
+  edge: "top" | "bottom";
+}) {
+  const edgeClass =
+    edge === "top"
+      ? "top-3 sm:top-5 lg:top-7"
+      : "bottom-3 sm:bottom-5 lg:bottom-7";
+
+  const cols =
+    items.length === 6
+      ? "grid-cols-6"
+      : items.length === 5
+        ? "grid-cols-5"
+        : "grid-cols-6";
+
+  return (
+    <div
+      className={`pointer-events-none absolute inset-x-0 z-[2] grid ${cols} items-center px-2 sm:px-6 md:px-10 lg:px-12 xl:px-16 ${edgeClass}`}
+      aria-hidden
+    >
+      {items.map((item) => (
+        <div
+          key={`${edge}-${item.src}`}
+          className="flex items-center justify-center"
+        >
+          <RailIcon item={item} />
+        </div>
+      ))}
+    </div>
   );
 }
 
 export default function RecipeInboxSection() {
   return (
     <section
-      className="relative flex min-h-[52svh] w-full items-center justify-center overflow-hidden py-16 sm:min-h-[58svh] sm:py-20 lg:min-h-[60svh] lg:py-14"
+      className="relative flex min-h-[52svh] w-full items-center justify-center overflow-hidden py-20 sm:min-h-[58svh] sm:py-24 lg:min-h-[60svh] lg:py-28"
       data-theory-snap
       style={{
         backgroundImage: `
@@ -171,74 +127,25 @@ export default function RecipeInboxSection() {
         aria-hidden
       />
 
-      {/* ——— Small & mid: icons in a top line + bottom line (text clear) ——— */}
-      <div
-        className="pointer-events-none absolute inset-x-0 top-3 z-[2] flex items-center justify-between px-3 sm:top-5 sm:px-8 md:px-12 lg:hidden"
-        aria-hidden
-      >
-        {TOP_ROW.map((item) => (
-          <RailIcon
-            key={`top-${item.src}`}
-            item={item}
-            className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20"
-          />
-        ))}
-      </div>
+      {/* Top + bottom rails — equal spacing */}
+      <IconRail items={TOP_ROW} edge="top" />
+      <IconRail items={BOTTOM_ROW} edge="bottom" />
 
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-3 z-[2] flex items-center justify-between px-3 sm:bottom-5 sm:px-8 md:px-12 lg:hidden"
-        aria-hidden
-      >
-        {BOTTOM_ROW.map((item) => (
-          <RailIcon
-            key={`bot-${item.src}`}
-            item={item}
-            className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20"
-          />
-        ))}
-      </div>
-
-      {/* ——— Large: corner scatter + pan ——— */}
-      <div className="pointer-events-none absolute inset-0 z-[2] hidden lg:block" aria-hidden>
-        {DESKTOP_FLOATERS.map((item) => (
-          <motion.div
-            key={`desk-${item.src}-${item.pos}`}
-            className={`absolute h-[145px] w-[145px] ${item.pos}`}
-            style={{ rotate: item.rotate ?? 0 }}
-            initial={{ opacity: 0, scale: 0.88 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{
-              duration: 0.75,
-              delay: item.delay,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          >
-            <Image
-              src={item.src}
-              alt=""
-              fill
-              className="object-contain drop-shadow-[0_12px_24px_rgba(26,26,26,0.16)] [mix-blend-mode:screen]"
-              sizes="145px"
-            />
-          </motion.div>
-        ))}
-      </div>
-
+      {/* Pan — bottom right (no screen blend — dark pan vanishes on light bg) */}
       <motion.div
-        className="pointer-events-none absolute -right-20 top-[-4%] z-[1] hidden h-[110%] w-[540px] lg:block"
-        initial={{ opacity: 0, x: 36 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        className="pointer-events-none absolute -bottom-2 -right-2 z-[4] h-[220px] w-[140px] sm:-bottom-4 sm:-right-3 sm:h-[280px] sm:w-[175px] md:h-[340px] md:w-[210px] lg:-bottom-6 lg:-right-4 lg:h-[420px] lg:w-[260px] xl:h-[480px] xl:w-[300px]"
+        initial={{ opacity: 0, x: 28, y: 20 }}
+        whileInView={{ opacity: 1, x: 0, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
         aria-hidden
       >
         <Image
           src="/nobg/vegies/pan.png"
           alt=""
           fill
-          className="object-contain object-right-top drop-shadow-[0_16px_32px_rgba(26,26,26,0.2)] [mix-blend-mode:screen]"
-          sizes="540px"
+          className="object-contain object-right-bottom drop-shadow-[0_16px_32px_rgba(26,26,26,0.22)]"
+          sizes="(min-width: 1280px) 300px, (min-width: 1024px) 260px, 180px"
           priority
         />
       </motion.div>

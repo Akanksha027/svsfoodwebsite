@@ -76,15 +76,15 @@ export const journeyStops: JourneyStop[] = [
     image: "/journey/NEV00687.jpg",
     imageAlt: "SVS Food branded packaging, desserts, and menu variety",
   },
-  {
-    id: "stop-2024",
-    year: "2024",
-    title: "Powered by Technology",
-    description:
-      "With self-order kiosks, WhatsApp tracking, and digital ordering experiences, SVS Food embraced the future of food service.",
-    image: "/journey/im3.png",
-    imageAlt: "SVS Food delivery bike with scan-to-order QR code",
-  },
+  // {
+  //   id: "stop-2024",
+  //   year: "2024",
+  //   title: "Powered by Technology",
+  //   description:
+  //     "With self-order kiosks, WhatsApp tracking, and digital ordering experiences, SVS Food embraced the future of food service.",
+  //   image: "/journey/im3.png",
+  //   imageAlt: "SVS Food delivery bike with scan-to-order QR code",
+  // },
   {
     id: "stop-2025",
     year: "2025",

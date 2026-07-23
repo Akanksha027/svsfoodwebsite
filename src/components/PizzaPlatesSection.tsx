@@ -30,7 +30,6 @@ const PIZZAS = [
 ] as const;
 
 const softEase = [0.25, 0.1, 0.25, 1] as const;
-const spinEase = [0.22, 0.61, 0.36, 1] as const;
 
 /**
  * Left accent: veggies toss up from the basket as the section opens,
@@ -159,40 +158,39 @@ function RightCornerSlide({
 
 function PizzaCard({
   pizza,
-  index,
-  inView,
 }: {
   pizza: (typeof PIZZAS)[number];
   index: number;
-  inView: boolean;
 }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  /*
+    Spin starts as the pizza enters the bottom of the viewport,
+    and is fully finished once ~20% of the pizza is on screen.
+  */
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "20% end"],
+  });
+
+  const rotate = useTransform(scrollYProgress, [0, 1], [-360, 0]);
+  const scale = useTransform(scrollYProgress, [0, 1], [0.9, 1]);
+  const imgOpacity = useTransform(scrollYProgress, [0, 0.15, 1], [0, 0.85, 1]);
+  const copyOpacity = useTransform(scrollYProgress, [0.55, 1], [0, 1]);
+  const copyY = useTransform(scrollYProgress, [0.55, 1], [12, 0]);
+
   return (
     <article className="flex w-full flex-col items-center text-center">
-      <div className="relative mx-auto aspect-square w-full max-w-[220px] sm:max-w-[340px] lg:max-w-[380px]">
+      <div
+        ref={cardRef}
+        className="relative mx-auto aspect-square w-full max-w-[220px] sm:max-w-[340px] lg:max-w-[380px]"
+      >
         <motion.div
           className="relative h-full w-full will-change-transform"
-          initial={{ rotate: -360, scale: 0.9, opacity: 0 }}
-          animate={
-            inView
-              ? { rotate: 0, scale: 1, opacity: 1 }
-              : { rotate: -360, scale: 0.9, opacity: 0 }
-          }
-          transition={{
-            rotate: {
-              duration: 3.8,
-              delay: inView ? 0.08 + index * 0.18 : 0,
-              ease: spinEase,
-            },
-            scale: {
-              duration: 3.2,
-              delay: inView ? 0.08 + index * 0.18 : 0,
-              ease: spinEase,
-            },
-            opacity: {
-              duration: 1.6,
-              delay: inView ? 0.08 + index * 0.18 : 0,
-              ease: "easeOut",
-            },
+          style={{
+            rotate,
+            scale,
+            opacity: imgOpacity,
           }}
         >
           <Image
@@ -208,13 +206,7 @@ function PizzaCard({
 
       <motion.div
         className="mt-3 sm:mt-4"
-        initial={{ opacity: 0, y: 12 }}
-        animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-        transition={{
-          duration: 0.7,
-          delay: inView ? 1.0 + index * 0.12 : 0,
-          ease: softEase,
-        }}
+        style={{ opacity: copyOpacity, y: copyY }}
       >
         <h3 className="font-serif text-xl font-semibold tracking-tight text-svs-ink sm:text-[1.35rem]">
           {pizza.name}
@@ -270,7 +262,7 @@ export default function PizzaPlatesSection() {
               key={pizza.id}
               className="relative flex justify-center px-2 py-1 sm:px-4"
             >
-              <PizzaCard pizza={pizza} index={index} inView={inView} />
+              <PizzaCard pizza={pizza} index={index} />
             </div>
           ))}
         </div>
