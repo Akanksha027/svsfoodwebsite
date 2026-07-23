@@ -18,7 +18,7 @@ function JourneyCard({ stop }: { stop: JourneyStop }) {
   return (
     <article
       tabIndex={0}
-      className="shrink-0 snap-center w-[250px] sm:w-[280px] md:w-[300px]"
+      className="shrink-0 snap-center w-[220px] min-[400px]:w-[250px] sm:w-[280px] md:w-[300px]"
     >
       <div className="relative w-full overflow-hidden rounded-2xl md:rounded-3xl aspect-[202/163] bg-svs-cream">
         <Image
@@ -35,7 +35,7 @@ function JourneyCard({ stop }: { stop: JourneyStop }) {
         {/* Spacer so the orange line sits through the year row */}
         <div className="h-24" aria-hidden />
 
-        <h3 className="mb-5 md:mb-6 text-[32px] leading-[35px] md:text-[44px] md:leading-[49px] font-bold text-svs-ink">
+        <h3 className="mb-4 text-[1.65rem] font-bold leading-tight text-svs-ink sm:mb-5 sm:text-[1.85rem] md:mb-6 md:text-[2.25rem] md:leading-[1.1]">
           <span className="relative z-10">{stop.year}</span>
         </h3>
 
@@ -56,11 +56,11 @@ export default function JourneySection() {
   return (
     <section
       id="journey-section"
-      className="relative w-full bg-svs-cream overflow-x-hidden px-0 pt-10 pb-10 md:pt-20 md:pb-20"
+      className="relative w-full bg-svs-cream overflow-x-hidden px-0 pt-8 pb-8 sm:pt-10 sm:pb-10 md:pt-16 md:pb-16 lg:pt-20 lg:pb-20"
       aria-label="Company journey"
     >
-      <div className="mx-auto w-full px-6 md:px-10 lg:px-16">
-        <h2 className="font-bold mb-5 text-[32px] leading-[35px] md:text-[44px] md:leading-[49px] text-svs-ink">
+      <div className="mx-auto w-full px-4 sm:px-6 md:px-10 lg:px-16">
+        <h2 className="mb-4 text-[1.65rem] font-bold leading-[1.1] text-svs-ink sm:mb-5 sm:text-[2rem] sm:leading-[1.12] md:text-[2.75rem] md:leading-[1.1] lg:text-[2.75rem]">
           <span className="relative z-10">{journeySectionTitle}</span>
         </h2>
       </div>
@@ -91,7 +91,7 @@ export default function JourneySection() {
 
             <div
               tabIndex={0}
-              className="shrink-0 snap-center w-[250px] sm:w-[280px] md:w-[300px]"
+              className="shrink-0 snap-center w-[220px] min-[400px]:w-[250px] sm:w-[280px] md:w-[300px]"
             >
               <div
                 className="w-full aspect-[202/163] rounded-2xl md:rounded-3xl"

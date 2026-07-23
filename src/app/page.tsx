@@ -1,6 +1,6 @@
 import HeroVideoSection from "@/components/HeroVideoSection";
 import DeliveringSection from "@/components/DeliveringSection";
-import DealsSection from "@/components/DealsSection";
+import SharkTankSection from "@/components/SharkTankSection";
 import JourneySection from "@/components/JourneySection";
 import DeliveringMomentsSection from "@/components/DeliveringMomentsSection";
 import Footer from "@/components/Footer";
@@ -10,17 +10,17 @@ import CitiesWeServeSection from "@/components/CitiesWeServeSection";
 
 export default function Home() {
   return (
-    <>
+    <main className="overflow-x-clip">
       {/* <FestiveDrops /> */}
       <HeroVideoSection />
 
       <DeliveringMomentsSection />
-      <DealsSection />
+      <SharkTankSection />
       <JourneySection />
-      <DeliveringSection />
+      {/* <DeliveringSection /> */}
       <AppDownloadSection />
       <CitiesWeServeSection />
       <Footer />
-    </>
+    </main>
   );
 }

@@ -3,12 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Playfair_Display } from "next/font/google";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-});
 
 type IconItem = {
   src: string;
@@ -153,7 +147,7 @@ export default function RecipeInboxSection() {
 
       <div className="relative z-10 mx-auto flex w-full max-w-[520px] flex-col items-center px-5 text-center sm:px-8">
         <motion.h2
-          className={`${playfair.className} text-[clamp(1.55rem,6vw,3.15rem)] font-bold leading-[1.15] tracking-tight text-svs-ink`}
+          className="font-bagoss text-[clamp(1.55rem,6vw,3.15rem)] font-bold leading-[1.15] tracking-tight text-svs-ink"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

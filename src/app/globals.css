@@ -1,6 +1,5 @@
 ﻿@import "tailwindcss";
 @import "../styles/bagoss.css";
-@import "../styles/atma.css";
 
 @theme inline {
   /* SVS brand palette */
@@ -21,8 +20,10 @@
   --color-muted: color-mix(in srgb, #1a1a1a 55%, transparent);
 
   --font-sans: var(--font-bagoss);
+  --font-serif: var(--font-bagoss);
+  --font-mono: var(--font-bagoss);
   --font-bagoss: "Bagoss", var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
-  --font-atma: "Atma", var(--font-bagoss);
+  --font-atma: var(--font-bagoss);
 }
 
 /* Reset - do not zero margin/padding here; it overrides Tailwind utilities */
@@ -30,6 +31,13 @@
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  overflow-x: clip;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  font-family: var(--font-bagoss);
 }
 
 body {
@@ -40,10 +48,12 @@ body {
   overflow-x: clip;
 }
 
-html {
-  overflow-x: clip;
-  scroll-behavior: smooth;
-  scrollbar-gutter: stable;
+button,
+input,
+textarea,
+select,
+optgroup {
+  font: inherit;
 }
 
 /* Lenis owns scroll on /theorymenu — disable native smooth to avoid fighting it */
@@ -69,12 +79,15 @@ html.svs-scroll-locked body {
   overflow: hidden !important;
 }
 
-.font-bagoss {
+.font-bagoss,
+.font-serif,
+.font-sans,
+.font-mono {
   font-family: var(--font-bagoss);
 }
 
 .font-atma {
-  font-family: var(--font-atma);
+  font-family: var(--font-bagoss);
 }
 
 
@@ -579,7 +592,7 @@ html.svs-scroll-locked body {
   font-size: 22px;
   font-weight: 900;
   letter-spacing: 0.02em;
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-bagoss);
 }
 
 .footer-bag-star {
@@ -594,7 +607,7 @@ html.svs-scroll-locked body {
   font-size: 18px;
   font-weight: 900;
   letter-spacing: 0.04em;
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-bagoss);
 }
 
 @keyframes story-ring-spin {
