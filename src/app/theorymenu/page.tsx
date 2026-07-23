@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ChevronRight, ChevronLeft, ArrowRight } from "lucide-react";
+import WhatsOnOurPlateSection from "@/components/WhatsOnOurPlateSection";
 
 function IconTwitter({ className }: { className?: string }) {
   return (
@@ -78,8 +79,8 @@ export default function TheoryMenuPage() {
   }, [paused, active]);
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-white">
-      <div className="relative mx-auto flex min-h-screen max-w-[1400px] flex-col px-6 pt-20 sm:px-10 sm:pt-24 lg:px-16 lg:pt-28">
+    <main className="relative w-full bg-white">
+      <div className="relative mx-auto flex min-h-screen max-w-[1400px] flex-col overflow-hidden px-6 pt-20 sm:px-10 sm:pt-24 lg:px-16 lg:pt-28">
         <section className="relative mt-2 flex flex-1 flex-col justify-center pb-8 sm:mt-4">
           {/* BURGERS — shifted down */}
           <h1
@@ -93,7 +94,7 @@ export default function TheoryMenuPage() {
           {/* Main stage: left copy + centered combo */}
           <div className="relative z-10 flex min-h-[420px] flex-col items-center justify-center gap-8 py-6 lg:min-h-[520px] lg:flex-row lg:items-center lg:justify-center lg:gap-0">
             {/* LEFT copy + CTA */}
-            <div className="relative z-10 order-2 flex w-full max-w-sm flex-col self-start lg:order-1 lg:absolute lg:left-0 lg:top-[80%] lg:w-auto lg:self-auto xl:left-2">
+            <div className="relative z-10 order-2 flex w-full max-w-sm flex-col self-start lg:order-1 lg:absolute lg:left-0 lg:top-[60%] lg:w-auto lg:self-auto xl:left-2">
               <h2 className="text-3xl font-black uppercase leading-[0.95] tracking-tight text-svs-ink sm:text-4xl md:text-[2.65rem]">
                 Veg Delight
                 <br />
@@ -135,7 +136,7 @@ export default function TheoryMenuPage() {
 
           {/* RIGHT CORNER — vertical pill nav + vertical thumb carousel */}
           <div
-            className="relative z-20 mt-6 flex justify-end lg:fixed lg:right-6 lg:top-1/2 lg:mt-0 lg:-translate-y-1/2 xl:right-10"
+            className="relative z-20 mt-6 flex justify-end lg:absolute lg:right-0 lg:top-1/2 lg:mt-0 lg:-translate-y-1/2 xl:right-2"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           >
@@ -228,6 +229,8 @@ export default function TheoryMenuPage() {
           </a>
         </div>
       </div>
+
+      <WhatsOnOurPlateSection />
     </main>
   );
 }
