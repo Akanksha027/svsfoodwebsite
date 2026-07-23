@@ -22,7 +22,8 @@
   --font-sans: var(--font-bagoss);
   --font-serif: var(--font-bagoss);
   --font-mono: var(--font-bagoss);
-  --font-bagoss: "Bagoss", var(--font-inter), "Inter", Arial, Helvetica, sans-serif;
+  /* Site-wide: Bagoss Standard only (public/fonts/bagoss) */
+  --font-bagoss: "Bagoss", sans-serif;
   --font-atma: var(--font-bagoss);
 }
 
@@ -37,13 +38,13 @@ html {
   overflow-x: clip;
   scroll-behavior: smooth;
   scrollbar-gutter: stable;
-  font-family: var(--font-bagoss);
+  font-family: "Bagoss", sans-serif;
 }
 
 body {
   background-color: var(--color-svs-white);
   color: var(--color-svs-ink);
-  font-family: var(--font-bagoss);
+  font-family: "Bagoss", sans-serif;
   /* clip does not break position:sticky the way overflow-x:hidden does */
   overflow-x: clip;
 }
@@ -54,6 +55,7 @@ textarea,
 select,
 optgroup {
   font: inherit;
+  font-family: inherit;
 }
 
 /* Lenis owns scroll on /theorymenu — disable native smooth to avoid fighting it */
@@ -82,12 +84,9 @@ html.svs-scroll-locked body {
 .font-bagoss,
 .font-serif,
 .font-sans,
-.font-mono {
-  font-family: var(--font-bagoss);
-}
-
+.font-mono,
 .font-atma {
-  font-family: var(--font-bagoss);
+  font-family: "Bagoss", sans-serif;
 }
 
 

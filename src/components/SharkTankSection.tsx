@@ -18,12 +18,7 @@ export default function SharkTankSection() {
 
       <div className="relative mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-11">
         {/* Eyebrow */}
-        <div className="mb-2.5 flex items-center gap-2 sm:mb-3">
-          <span className="h-px w-6 bg-svs-orange sm:w-8" />
-          <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-svs-orange sm:text-[10px] sm:tracking-[0.26em] md:text-xs">
-            Shark Tank India &middot; Season 5
-          </span>
-        </div>
+       
 
         {/* Headline + stats */}
         <div className="grid grid-cols-1 items-end gap-4 md:grid-cols-12 md:gap-6">
@@ -128,19 +123,7 @@ export default function SharkTankSection() {
         </div>
 
         {/* Compact footer CTA */}
-        <div className="mt-4 flex flex-col items-start justify-between gap-2.5 border-t border-svs-ink/10 pt-3 sm:mt-5 sm:flex-row sm:items-center sm:pt-4">
-          <p className="max-w-md text-xs text-svs-ink/45">
-            SVS Foods&apos; full Shark Tank India appearance.
-          </p>
-          <a
-            href={`https://www.youtube.com/watch?v=${videoId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-svs-orange/40 bg-white px-3.5 py-1.5 text-xs font-semibold text-svs-orange transition-colors hover:bg-svs-orange hover:text-white"
-          >
-            See the full episode
-          </a>
-        </div>
+       
       </div>
     </section>
   );

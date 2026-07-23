@@ -1,4 +1,4 @@
-/* Bagoss Standard — site-wide via globals.css + root layout */
+/* Bagoss Standard — ONLY typeface used site-wide (public/fonts/bagoss) */
 
 @font-face {
   font-family: "Bagoss";
@@ -36,7 +36,7 @@
   font-display: swap;
 }
 
-/* Trial pack has no ExtraBold/Black — reuse Bold for heavy headings */
+/* Trial pack has no ExtraBold/Black — reuse Bold for heavy weights */
 @font-face {
   font-family: "Bagoss";
   src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Bold.woff2")
@@ -52,5 +52,60 @@
     format("woff2");
   font-weight: 900;
   font-style: normal;
+  font-display: swap;
+}
+
+/* Italics: trial has no italic cut — map italic to upright Bagoss */
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Regular.woff2")
+    format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Medium.woff2")
+    format("woff2");
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-SemiBold.woff2")
+    format("woff2");
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Bold.woff2")
+    format("woff2");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Bold.woff2")
+    format("woff2");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bagoss";
+  src: url("/fonts/bagoss/Bagoss%20Standard/BagossStandard-TRIAL-Bold.woff2")
+    format("woff2");
+  font-weight: 900;
+  font-style: italic;
   font-display: swap;
 }

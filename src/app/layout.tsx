@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { MenuCartProvider } from "@/context/MenuCartContext";
@@ -10,12 +9,6 @@ import AccountLoginPopup from "@/components/AccountLoginPopup";
 import AccountMenuDropdown from "@/components/AccountMenuDropdown";
 import CartDrawer from "@/components/CartDrawer";
 import PoweredBy from "@/components/PoweredBy";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://svsfood.com"),
@@ -30,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} font-bagoss antialiased`}>
+    <html lang="en" className="font-bagoss antialiased">
       <body className="font-bagoss">
         <CartProvider>
           <WebsiteAuthProvider>
