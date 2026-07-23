@@ -356,6 +356,7 @@ export function useCart() {
 }
 
 export const GST_RATE = 0.05;
+/** Fallback when store policy has not loaded yet. */
 export const DELIVERY_FEE = 40;
 
 export function trunc2(n: number): number {
@@ -366,12 +367,17 @@ export function computeTotals(input: {
   subtotal: number;
   discountAmount?: number;
   orderType: "dine_in" | "takeaway" | "delivery";
+  /** Per-store fee from Online → Policies (defaults to DELIVERY_FEE). */
+  deliveryFee?: number;
 }) {
   const discount = Math.max(0, Number(input.discountAmount) || 0);
   const taxable = trunc2(Math.max(0, input.subtotal - discount));
   const gstAmount = trunc2(taxable * GST_RATE);
-  const deliveryCharges =
-    input.orderType === "delivery" ? DELIVERY_FEE : 0;
+  const fee =
+    input.deliveryFee != null && Number.isFinite(Number(input.deliveryFee))
+      ? Math.max(0, Number(input.deliveryFee))
+      : DELIVERY_FEE;
+  const deliveryCharges = input.orderType === "delivery" ? fee : 0;
   const grandTotal = trunc2(taxable + gstAmount + deliveryCharges);
   return { taxable, gstAmount, deliveryCharges, grandTotal };
 }
