@@ -393,66 +393,10 @@ function NavIcons({
   return (
     <>
       {showCartAndLocation && !cartPage ? (
-        accountPage ? (
-          stacked ? (
-            <OrangeCartButton stacked />
-          ) : (
-            <OrangeCartButton />
-          )
+        stacked ? (
+          <OrangeCartButton stacked />
         ) : (
-          <Link
-            href="/cart"
-            className={`${btn} relative overflow-visible ${
-              stacked
-                ? ""
-                : "w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12"
-            }`}
-            id="btn-cart"
-            aria-label={`Cart${itemCount ? `, ${itemCount} items` : ""}`}
-            onClick={onNavigate}
-          >
-            {!stacked ? (
-              <span className="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden">
-                <span className="scale-[0.17] sm:scale-[0.19] lg:scale-[0.23]">
-                  <span
-                    className="block w-[120px] h-[150px] relative nav-revolving-bag"
-                    style={{ perspective: "800px" }}
-                  >
-                    <span className="block w-full h-full relative revolving-bag">
-                      <span className="bag-top-handle bag-front-handle" />
-                      <span className="bag-top-handle bag-back-handle" />
-                      <span className="bag-face bag-front">
-                        <span className="text-[14px] font-black tracking-widest text-svs-ink">
-                          SVS
-                        </span>
-                      </span>
-                      <span className="bag-face bag-back">
-                        <span className="text-[14px] font-black tracking-widest text-svs-ink transform rotate-y-180">
-                          SVS
-                        </span>
-                      </span>
-                      <span className="bag-face bag-left" />
-                      <span className="bag-face bag-right" />
-                    </span>
-                  </span>
-                </span>
-              </span>
-            ) : (
-              <>
-                <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                  <circle cx="9" cy="21" r="1" />
-                  <circle cx="20" cy="21" r="1" />
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                </svg>
-                <span className="text-sm font-semibold">Cart{itemCount ? ` (${itemCount})` : ""}</span>
-              </>
-            )}
-            {!stacked && itemCount > 0 ? (
-              <span className="absolute top-0 right-0 min-w-[16px] h-4 px-1 rounded-full bg-svs-orange text-white text-[9px] sm:text-[10px] font-bold flex items-center justify-center z-10">
-                {itemCount > 99 ? "99+" : itemCount}
-              </span>
-            ) : null}
-          </Link>
+          <OrangeCartButton />
         )
       ) : null}
 
@@ -717,7 +661,6 @@ export default function Navbar({
             </div>
 
             <div className="ml-auto flex flex-nowrap items-center shrink-0 relative z-[2] gap-0.5 min-[400px]:gap-1 sm:gap-1.5 lg:gap-2.5 pl-1">
-              <OrangeCartButton />
               <div
                 className="hidden lg:flex flex-nowrap items-center gap-0 sm:gap-0.5"
                 id="navbar-icons"
@@ -738,6 +681,7 @@ export default function Navbar({
                 onClick={() => setMobileMenuOpen((open) => !open)}
                 hero={hero}
               />
+              <OrangeCartButton />
             </div>
           </div>
 

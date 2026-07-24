@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { WebOrderType } from "@/lib/orders-api";
 import { formatInr } from "@/lib/menu-api";
 import type { useWebCheckout } from "@/hooks/useWebCheckout";
@@ -18,6 +18,7 @@ import {
   resolveOrderContactMobile,
   setPreferredOrderContact,
 } from "@/lib/order-contact-mobile";
+import { fetchPgPaymentsAvailable } from "@/lib/orders-api";
 
 const SVS_ORANGE = "#f16a34";
 
@@ -125,6 +126,154 @@ function PaymentOption({
         </span>
       </span>
     </button>
+  );
+}
+
+function PayMethodRow({
+  active,
+  title,
+  subtitle,
+  badge,
+  icon,
+  onClick,
+  accentTitle,
+}: {
+  active: boolean;
+  title: string;
+  subtitle?: string;
+  badge?: string;
+  icon: ReactNode;
+  onClick: () => void;
+  accentTitle?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-center gap-3 px-3.5 py-3.5 text-left border-0 cursor-pointer transition-colors ${
+        active ? "bg-[#fff8f4]" : "bg-white hover:bg-gray-50"
+      }`}
+    >
+      <span
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
+          active
+            ? "border-[#f16a34]/35 bg-[#fff4ee] text-[#f16a34]"
+            : "border-gray-200 bg-gray-50 text-gray-700"
+        }`}
+        aria-hidden
+      >
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-2 flex-wrap">
+          <span
+            className={`text-[14px] font-semibold leading-tight ${
+              accentTitle ? "text-[#e11d48]" : "text-gray-900"
+            }`}
+          >
+            {title}
+          </span>
+          {badge ? (
+            <span className="inline-flex items-center rounded-md bg-[#e8f8ee] px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-[#0f8a3c]">
+              {badge}
+            </span>
+          ) : null}
+        </span>
+        {subtitle ? (
+          <span className="mt-0.5 block text-[12px] font-medium text-gray-500 leading-snug">
+            {subtitle}
+          </span>
+        ) : null}
+      </span>
+      <span
+        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${
+          active ? "border-[#f16a34]" : "border-gray-300"
+        }`}
+        aria-hidden
+      >
+        {active ? <span className="h-2 w-2 rounded-full bg-[#f16a34]" /> : null}
+      </span>
+    </button>
+  );
+}
+
+function PaySection({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="space-y-2">
+      <h3 className="px-0.5 text-[14px] font-bold text-gray-900">{title}</h3>
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.04)] divide-y divide-gray-100">
+        {children}
+      </div>
+    </section>
+  );
+}
+
+function IconQr({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden
+    >
+      <path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6z" />
+      <path d="M14 14h2v2h-2v-2zm4 0h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 0h2v2h-2v-2zm-2-2h2v2h-2v-2z" />
+    </svg>
+  );
+}
+
+function IconCard({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden
+    >
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="M3 10h18" />
+      <path d="M7 15h4" />
+    </svg>
+  );
+}
+
+function IconCash({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden
+    >
+      <rect x="2" y="6" width="20" height="12" rx="2" />
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M6 12h.01M18 12h.01" />
+    </svg>
+  );
+}
+
+function ToPayBar({ amount }: { amount: number }) {
+  return (
+    <div className="flex items-center bg-[#f3f4f6] px-4 py-2.5 border-b border-gray-200/80">
+      <p className="text-[13px] font-semibold text-gray-700">
+        To Pay:{" "}
+        <span className="font-bold text-[#0f8a3c] tabular-nums">
+          {formatInr(amount)}
+        </span>
+      </p>
+    </div>
   );
 }
 
@@ -687,6 +836,319 @@ export default function CartCheckoutForm({
               : effectivePay === "card"
                 ? `Continue to pay · ${formatInr(totals.grandTotal)}`
                 : `Pay ${formatInr(totals.grandTotal)} · UPI`}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Payment step for inline cart checkout (no address step). */
+export function CartInlinePayment(props: {
+  checkout: Checkout;
+  onPlaceOrder: (opts?: {
+    contactMobile?: string;
+  }) => void | Promise<void>;
+  onBack: () => void;
+  riderTip?: number;
+}) {
+  const { checkout, onPlaceOrder, onBack, riderTip = 0 } = props;
+  const [stepError, setStepError] = useState<string | null>(null);
+  const [pgAvailable, setPgAvailable] = useState(true);
+  const prefillDone = useRef(false);
+  const { customer, refreshCustomer, setCustomer, openLogin } = useWebsiteAuth();
+  const phoneOtp = useInlinePhoneOtp({
+    active: true,
+    phone: checkout.phone,
+    name: checkout.name,
+    skipOtpWhenLoggedIn: true,
+  });
+
+  const {
+    store,
+    orderType,
+    setPayMethod,
+    name,
+    setName,
+    phone,
+    setPhone,
+    notes,
+    setNotes,
+    busy,
+    error,
+    totals,
+    codAllowed,
+    effectivePay,
+    resetErrors,
+  } = checkout;
+
+  const grandTotal = totals.grandTotal + riderTip;
+
+  useEffect(() => {
+    if (!customer || prefillDone.current) return;
+    const contact = resolveOrderContactMobile({
+      customerId: customer.id,
+      loginPhone: customer.phone,
+      alternatePhone: customer.alternate_phone,
+    });
+    if (contact) setPhone(contact);
+    if (customer.name) setName(customer.name);
+    prefillDone.current = true;
+  }, [customer, setPhone, setName]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchPgPaymentsAvailable({ storeId: store.backendStoreId })
+      .then((res) => {
+        if (!cancelled) setPgAvailable(Boolean(res.available));
+      })
+      .catch(() => {
+        if (!cancelled) setPgAvailable(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [store.backendStoreId]);
+
+  useEffect(() => {
+    if (!pgAvailable && effectivePay === "card") {
+      setPayMethod("upi");
+    }
+  }, [pgAvailable, effectivePay, setPayMethod]);
+
+  const persistContactMobile = async (contact: string) => {
+    if (!customer) return;
+    const login = normalizeIndianMobile(customer.phone);
+    const next = normalizeIndianMobile(contact);
+    if (!isValidIndianMobile(next)) {
+      throw new Error("Enter a valid 10-digit contact mobile number");
+    }
+    const nextAlt = next === login ? "" : next;
+    setPreferredOrderContact(customer.id, nextAlt || null);
+    setCustomer({
+      ...customer,
+      alternate_phone: nextAlt || null,
+    });
+    setPhone(next);
+  };
+
+  const handlePlaceOrderClick = async () => {
+    resetErrors();
+    setStepError(null);
+    phoneOtp.setOtpError(null);
+
+    if (!customer) {
+      setStepError("Please log in to place your order.");
+      openLogin();
+      return;
+    }
+
+    let contact = normalizeIndianMobile(phone);
+    if (!isValidIndianMobile(contact)) {
+      contact = resolveOrderContactMobile({
+        customerId: customer.id,
+        loginPhone: customer.phone,
+        alternatePhone: customer.alternate_phone,
+      });
+      if (isValidIndianMobile(contact)) {
+        setPhone(contact);
+      }
+    }
+    if (!isValidIndianMobile(contact)) {
+      setStepError("Enter a valid 10-digit contact mobile number.");
+      return;
+    }
+
+    try {
+      await persistContactMobile(contact);
+    } catch (e) {
+      setStepError(
+        e instanceof Error
+          ? e.message
+          : "Could not save contact mobile. Try again.",
+      );
+      void refreshCustomer();
+      return;
+    }
+    await onPlaceOrder({ contactMobile: contact });
+  };
+
+  if (!customer) {
+    return (
+      <section className="rounded-2xl border border-gray-100 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.04)] px-4 py-8 text-center">
+        <p className="text-[14px] font-bold text-gray-900 mb-1.5">
+          Log in to continue
+        </p>
+        <p className="text-[12px] text-gray-500 mb-5 max-w-[280px] mx-auto leading-relaxed">
+          Sign in with your mobile number to review payment options and place your order.
+        </p>
+        <button
+          type="button"
+          onClick={() => openLogin()}
+          className="h-10 px-5 rounded-xl bg-[#f16a34] text-white font-bold text-[13px] cursor-pointer"
+        >
+          Log in
+        </button>
+      </section>
+    );
+  }
+
+  return (
+    <div className="flex flex-col flex-1 min-h-0 bg-[#f6f6f6]">
+      <div className="shrink-0 bg-white border-b border-gray-100">
+        <div className="flex items-center gap-2 px-3 py-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-0 bg-transparent text-gray-800 cursor-pointer hover:bg-gray-100"
+            aria-label="Back to cart"
+          >
+            <svg
+              className="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              aria-hidden
+            >
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <div className="min-w-0">
+            <h2 className="text-[16px] font-bold text-gray-900 leading-tight">
+              Payment Options
+            </h2>
+            <p className="text-[11px] font-medium text-gray-500 mt-0.5 truncate">
+              {orderType === "delivery"
+                ? "Delivery order"
+                : orderType === "takeaway"
+                  ? "Takeaway order"
+                  : "Dine-in order"}
+            </p>
+          </div>
+        </div>
+        <ToPayBar amount={grandTotal} />
+      </div>
+
+      <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-3 space-y-4">
+        <section className="rounded-2xl border border-gray-100 bg-white shadow-[0_1px_4px_rgba(15,23,42,0.04)] px-3.5 py-3 space-y-2.5">
+          <p className={sectionEyebrowClass}>Contact</p>
+          <label className="block">
+            <span className={fieldLabelClass}>Name</span>
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className={inputClass}
+              autoComplete="name"
+              placeholder="Your name"
+            />
+          </label>
+          <PhoneWhatsAppAuth
+            embedded
+            phone={phone}
+            onPhoneChange={(v) => {
+              phoneOtp.setOtpError(null);
+              setPhone(v);
+            }}
+            otp={phoneOtp}
+            signedInPhone={customer?.phone ?? null}
+            onContactSave={
+              customer
+                ? async (mobile) => {
+                    await persistContactMobile(mobile);
+                  }
+                : undefined
+            }
+          />
+          <label className="block">
+            <span className={fieldLabelClass}>
+              Notes for kitchen{" "}
+              <span className="font-medium text-gray-400">(optional)</span>
+            </span>
+            <input
+              value={notes}
+              onChange={(e) => setNotes(e.target.value.slice(0, 250))}
+              className={inputClass}
+              placeholder="Less spicy, no onions…"
+            />
+          </label>
+        </section>
+
+        <PaySection title="Pay by UPI">
+          <PayMethodRow
+            active={effectivePay === "upi"}
+            title="Pay via QR Code"
+            subtitle="Scan with GPay, PhonePe, Paytm, or any UPI app"
+            badge="New"
+            icon={<IconQr className="h-5 w-5" />}
+            onClick={() => setPayMethod("upi")}
+          />
+        </PaySection>
+
+        {pgAvailable ? (
+          <PaySection title="Credit & Debit Cards">
+            <PayMethodRow
+              active={effectivePay === "card"}
+              title="Pay with card / netbanking"
+              subtitle="Visa, Mastercard, RuPay & more"
+              accentTitle
+              icon={<IconCard className="h-5 w-5" />}
+              onClick={() => setPayMethod("card")}
+            />
+          </PaySection>
+        ) : null}
+
+        {codAllowed ? (
+          <PaySection
+            title={
+              orderType === "delivery" ? "Cash on Delivery" : "Pay at counter"
+            }
+          >
+            <PayMethodRow
+              active={effectivePay === "cod"}
+              title={
+                orderType === "delivery"
+                  ? "Cash on delivery"
+                  : "Pay at counter"
+              }
+              subtitle={
+                orderType === "delivery"
+                  ? "Pay the rider when your order arrives"
+                  : "Pay with cash when you collect"
+              }
+              icon={<IconCash className="h-5 w-5" />}
+              onClick={() => setPayMethod("cod")}
+            />
+          </PaySection>
+        ) : null}
+
+        {error ? (
+          <p className="text-[11px] font-semibold text-[#c2410c] bg-orange-50 border border-orange-200 rounded-xl px-3 py-2">
+            {error}
+          </p>
+        ) : null}
+        {stepError ? (
+          <p className="text-[11px] font-semibold text-[#c2410c] bg-orange-50 border border-orange-200 rounded-xl px-3 py-2">
+            {stepError}
+          </p>
+        ) : null}
+      </div>
+
+      <div className="shrink-0 border-t border-gray-200 bg-white px-3 py-3">
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => void handlePlaceOrderClick()}
+          className="w-full h-12 rounded-xl bg-[#f16a34] text-white font-bold text-[14px] cursor-pointer disabled:opacity-50 shadow-sm"
+        >
+          {busy
+            ? effectivePay === "card"
+              ? "Redirecting to payment…"
+              : "Placing order…"
+            : effectivePay === "cod"
+              ? `Confirm order · ${formatInr(grandTotal)}`
+              : effectivePay === "card"
+                ? `Continue to pay · ${formatInr(grandTotal)}`
+                : `Pay ${formatInr(grandTotal)} · UPI`}
         </button>
       </div>
     </div>

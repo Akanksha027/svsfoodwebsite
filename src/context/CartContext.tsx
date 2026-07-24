@@ -12,6 +12,7 @@ import {
 import type { StoreLocation } from "@/data/locations";
 import { resolveStoreLocation } from "@/data/locations";
 import { SELECTED_STORE_KEY } from "@/lib/config";
+import type { WebOrderType } from "@/lib/orders-api";
 
 export type CartLineAddon = {
   id: string;
@@ -48,6 +49,7 @@ export type CartLine = {
 type CartState = {
   storeId: string;
   lines: CartLine[];
+  orderType?: WebOrderType | null;
 };
 
 export type CartAddFlyEvent = {
@@ -82,6 +84,8 @@ type CartContextValue = {
   quantityForItemIds: (itemIds: string[]) => number;
   removeLine: (key: string) => void;
   clearCart: () => void;
+  orderType: WebOrderType | null;
+  setOrderType: (orderType: WebOrderType) => void;
 };
 
 const CART_KEY = "svs_web_cart_v3";
@@ -148,6 +152,12 @@ function parseCartFromRaw(raw: string | null): CartState {
   if (!parsed || !Array.isArray(parsed.lines)) return EMPTY;
   return {
     storeId: parsed.storeId || "satna",
+    orderType:
+      parsed.orderType === "dine_in" ||
+      parsed.orderType === "takeaway" ||
+      parsed.orderType === "delivery"
+        ? parsed.orderType
+        : null,
     lines: parsed.lines
       .filter((l) => l && l.itemId && l.quantity > 0)
       .map((l) => {
@@ -190,6 +200,7 @@ function writeCart(state: CartState) {
   cachedSnapshot = {
     storeId: state.storeId,
     lines: state.lines,
+    orderType: state.orderType ?? null,
   };
   window.dispatchEvent(new Event("svs-cart-change"));
 }
@@ -341,7 +352,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
       },
       clearCart: () => {
         const current = readCart();
-        writeCart({ storeId: current.storeId, lines: [] });
+        writeCart({ storeId: current.storeId, lines: [], orderType: current.orderType ?? null });
+      },
+      orderType: state.orderType ?? null,
+      setOrderType: (orderType) => {
+        const current = readCart();
+        writeCart({ ...current, orderType });
       },
     };
   }, [acknowledgeAddFly, lastAddFly, state]);

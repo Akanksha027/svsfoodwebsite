@@ -10,6 +10,7 @@ import {
   composeDeliveryAddress,
   fetchDeliveryAddressHint,
   resolveDeliveryCoords,
+  cacheDeliveryAddressHint,
   type DeliveryAddressHint,
 } from "@/lib/reverse-geocode";
 import {
@@ -34,6 +35,11 @@ import {
   getPolicyForStore,
   type WebsiteStorePolicy,
 } from "@/lib/store-policies";
+import {
+  isScheduleSelectionValid,
+  slotStartToIso,
+  type ScheduleSelection,
+} from "@/lib/schedule-slots";
 
 export type PayMethod = "upi" | "card" | "cod";
 
@@ -83,6 +89,10 @@ export class PlaceOrderAbortedError extends Error {
 type PlaceOrderOptions = {
   /** When true, stop before confirming COD / returning payment session. */
   isCancelled?: () => boolean;
+  /** Instant vs scheduled delivery slot (website cart). */
+  schedule?: ScheduleSelection;
+  /** Override contact mobile (avoids stale React state after prefill). */
+  contactMobile?: string;
 };
 
 type Options = {
@@ -92,9 +102,21 @@ type Options = {
 
 export function useWebCheckout(options: Options = {}) {
   const active = options.active !== false;
-  const { lines, store, subtotal, clearCart } = useCart();
+  const { lines, store, subtotal, clearCart, orderType: cartOrderType, setOrderType: setCartOrderType } = useCart();
 
-  const [orderType, setOrderType] = useState<WebOrderType>("delivery");
+  const [orderType, setOrderTypeState] = useState<WebOrderType>(() => cartOrderType ?? "delivery");
+  const setOrderType = useCallback(
+    (next: WebOrderType) => {
+      setOrderTypeState(next);
+      setCartOrderType(next);
+    },
+    [setCartOrderType],
+  );
+
+  useEffect(() => {
+    if (cartOrderType) setOrderTypeState(cartOrderType);
+  }, [cartOrderType]);
+
   const [payMethod, setPayMethod] = useState<PayMethod>("upi");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -255,7 +277,9 @@ export function useWebCheckout(options: Options = {}) {
         throw new PlaceOrderAbortedError();
       }
     };
-    const mobile = normalizeIndianMobile(phone.trim());
+    const mobile = normalizeIndianMobile(
+      (options.contactMobile ?? phone).trim(),
+    );
     if (!isValidIndianMobile(mobile)) {
       throw new Error("Enter a valid 10-digit mobile number.");
     }
@@ -330,6 +354,16 @@ export function useWebCheckout(options: Options = {}) {
         deliveryLng: deliveryCoords?.lng,
       });
 
+      const schedule = options.schedule;
+      if (
+        schedule?.mode === "scheduled" &&
+        (!schedule.slot || !isScheduleSelectionValid(schedule))
+      ) {
+        throw new Error(
+          "That delivery slot is no longer available. Pick another time.",
+        );
+      }
+
       const order = await createWebOrder({
         storeId: store.backendStoreId,
         orderType,
@@ -362,6 +396,22 @@ export function useWebCheckout(options: Options = {}) {
         customerLatitude: deliveryCoords?.lat,
         customerLongitude: deliveryCoords?.lng,
         customerNotes: notes.trim() || undefined,
+        fulfillmentMode:
+          schedule?.mode === "scheduled" && schedule.slot
+            ? "scheduled"
+            : "instant",
+        scheduledForAt:
+          schedule?.mode === "scheduled" && schedule.slot
+            ? slotStartToIso(schedule.slot)
+            : undefined,
+        scheduleDate:
+          schedule?.mode === "scheduled" && schedule.slot
+            ? schedule.slot.dateKey
+            : undefined,
+        scheduleHour:
+          schedule?.mode === "scheduled" && schedule.slot
+            ? schedule.slot.startHour
+            : undefined,
       });
       createdOrderId = order.order_id;
 
@@ -549,6 +599,13 @@ export function useWebCheckout(options: Options = {}) {
     subtotal,
   ]);
 
+  const applyAddressHint = useCallback((hint: DeliveryAddressHint) => {
+    setAddressHint(hint);
+    setPinReady(true);
+    setPinMessage(null);
+    cacheDeliveryAddressHint(hint);
+  }, []);
+
   return {
     store,
     lines,
@@ -591,6 +648,7 @@ export function useWebCheckout(options: Options = {}) {
     clearLocationDenied,
     validateOrderStep,
     applySavedAddress,
+    applyAddressHint,
     placeOrder,
   };
 }

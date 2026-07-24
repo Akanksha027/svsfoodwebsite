@@ -70,7 +70,7 @@ export function collectItemSheetImageUrls(
     pickUrl(categoryImageUrl),
   ];
   for (const v of item.variants || []) {
-    urls.push(pickUrl(v.image_url));
+    urls.push(pickUrl(v.image_url, categoryImageUrl));
   }
   return [...new Set(urls.filter(Boolean) as string[])];
 }

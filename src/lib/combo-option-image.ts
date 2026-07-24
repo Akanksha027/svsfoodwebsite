@@ -10,8 +10,6 @@ import type {
   MenuItem,
 } from "@/lib/menu-types";
 
-export const COMBO_OPTION_FALLBACK = "/logo/on-mark.svg";
-
 export function isComboItem(
   item: MenuItem,
   categories: MenuCategory[],
@@ -48,6 +46,9 @@ type ComboImageContext = {
 export function buildComboImageContext(input: ComboImageContext) {
   const { item, categories, items, isCombo } = input;
   const catById = new Map(categories.map((c) => [c.id, c] as const));
+  const comboItemCategoryImage = resolveCategoryImageUrl(
+    catById.get(item.category_id),
+  );
 
   const comboOptionImageByName = new Map<string, string>();
   if (isCombo) {
@@ -59,10 +60,14 @@ export function buildComboImageContext(input: ComboImageContext) {
   }
 
   const beverageCategoryIds = new Set<string>();
+  let beverageCategoryImage: string | null = null;
   for (const c of categories) {
     const n = c.name.trim().toLowerCase();
     if (/^beverages?$/.test(n) || /^drinks?$/.test(n)) {
       beverageCategoryIds.add(c.id);
+      if (!beverageCategoryImage) {
+        beverageCategoryImage = resolveCategoryImageUrl(c);
+      }
     }
   }
 
@@ -175,7 +180,9 @@ export function buildComboImageContext(input: ComboImageContext) {
         registry ??
         exact ??
         findComboBeverageItemImage(optionName) ??
-        (isCombo ? COMBO_OPTION_FALLBACK : null)
+        beverageCategoryImage ??
+        comboGroupFallbackById.get(group.id) ??
+        comboItemCategoryImage
       );
     }
 
@@ -184,7 +191,7 @@ export function buildComboImageContext(input: ComboImageContext) {
       exact ??
       findComboOptionCategoryFallback(optionName) ??
       comboGroupFallbackById.get(group.id) ??
-      (isCombo ? COMBO_OPTION_FALLBACK : null)
+      comboItemCategoryImage
     );
   }
 

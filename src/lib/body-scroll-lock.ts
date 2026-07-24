@@ -18,6 +18,11 @@ function preventScroll(e: Event) {
   e.preventDefault();
 }
 
+function readLockedScrollY() {
+  const fromBody = Math.abs(parseInt(document.body.style.top || "0", 10));
+  return lockedScrollY || fromBody || 0;
+}
+
 function applyHardLock() {
   lockedScrollY = window.scrollY || window.pageYOffset || 0;
   const html = document.documentElement;
@@ -42,6 +47,8 @@ function applyHardLock() {
 
 function clearHardLock() {
   const html = document.documentElement;
+  const scrollY = readLockedScrollY();
+
   html.classList.remove("svs-scroll-locked");
   html.style.overflow = "";
   html.style.overflowY = "";
@@ -59,7 +66,15 @@ function clearHardLock() {
   window.removeEventListener("wheel", preventScroll);
   window.removeEventListener("touchmove", preventScroll);
 
-  window.scrollTo(0, lockedScrollY);
+  // Restore after releasing fixed body — double rAF avoids the jump-to-top flash.
+  requestAnimationFrame(() => {
+    window.scrollTo({ top: scrollY, left: 0, behavior: "instant" });
+    requestAnimationFrame(() => {
+      if (Math.abs(window.scrollY - scrollY) > 2) {
+        window.scrollTo({ top: scrollY, left: 0, behavior: "instant" });
+      }
+    });
+  });
 }
 
 function applySoftLock() {

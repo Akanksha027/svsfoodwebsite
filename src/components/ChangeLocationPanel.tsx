@@ -12,11 +12,12 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
-import { searchDeliveryLocations } from "@/lib/location-search";
+import { searchDeliveryLocations, resolvePlaceLocation } from "@/lib/location-search";
 import {
   applyMenuDeliverySelection,
   applySavedAddressSelection,
   formatSavedAddressDisplay,
+  readMenuDeliveryLocation,
 } from "@/lib/menu-delivery-location";
 import { fetchDeliveryAddressHint } from "@/lib/reverse-geocode";
 import {
@@ -252,15 +253,19 @@ export default function ChangeLocationPanel({
   useEffect(() => {
     if (!open) return;
     const q = search.trim();
-    if (q.length < 3) {
+    if (q.length < 2) {
       setSearchResults([]);
       return;
     }
 
+    const bias = readMenuDeliveryLocation();
     const seq = ++searchSeq.current;
     setSearchBusy(true);
     const timer = window.setTimeout(() => {
-      void searchDeliveryLocations(q)
+      void searchDeliveryLocations(q, {
+        lat: bias?.lat ?? undefined,
+        lng: bias?.lng ?? undefined,
+      })
         .then((results) => {
           if (searchSeq.current !== seq) return;
           setSearchResults(results);
@@ -331,6 +336,27 @@ export default function ChangeLocationPanel({
       );
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const onSelectSearchResult = async (
+    row: Awaited<ReturnType<typeof searchDeliveryLocations>>[number],
+  ) => {
+    if (row.lat != null && row.lng != null) {
+      finishPick(row.label, row.lat, row.lng, "search");
+      return;
+    }
+    if (!row.placeId) return;
+    setSearchBusy(true);
+    try {
+      const resolved = await resolvePlaceLocation(row.placeId);
+      if (!resolved?.lat || !resolved.lng) {
+        setMessage("Could not load that place. Try another result.");
+        return;
+      }
+      finishPick(resolved.label, resolved.lat, resolved.lng, "search");
+    } finally {
+      setSearchBusy(false);
     }
   };
 
@@ -415,7 +441,7 @@ export default function ChangeLocationPanel({
               placeholder="search delivery location"
               className="h-11 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm text-gray-900 outline-none focus:border-[#f16a34] focus:ring-2 focus:ring-[#f16a34]/15"
             />
-            {search.trim().length >= 3 ? (
+            {search.trim().length >= 2 ? (
               <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-10 max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-lg">
                 {searchBusy ? (
                   <p className="px-3 py-3 text-sm text-gray-500">Searching…</p>
@@ -428,9 +454,7 @@ export default function ChangeLocationPanel({
                     <button
                       key={row.id}
                       type="button"
-                      onClick={() =>
-                        finishPick(row.label, row.lat, row.lng, "search")
-                      }
+                      onClick={() => void onSelectSearchResult(row)}
                       className="block w-full border-0 border-b border-gray-100 bg-white px-3 py-2.5 text-left text-sm text-gray-800 cursor-pointer hover:bg-orange-50 last:border-b-0"
                     >
                       {row.label}

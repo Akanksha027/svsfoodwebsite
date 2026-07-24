@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -206,13 +204,11 @@ function FlyingItem({
 }
 
 export default function CartBar() {
-  const pathname = usePathname();
-  const onMenu = pathname === "/menu" || pathname.startsWith("/menu/");
   const { openCart } = useMenuCart();
   const { lines, itemCount, subtotal, lastAddFly, acknowledgeAddFly } =
     useCart();
 
-  const pillRef = useRef<HTMLAnchorElement>(null);
+  const pillRef = useRef<HTMLButtonElement>(null);
   const chipSlotRefs = useRef<Array<HTMLDivElement | null>>([]);
   const [flyAnim, setFlyAnim] = useState<FlyAnim | null>(null);
   const [cartBarReady, setCartBarReady] = useState(false);
@@ -372,16 +368,11 @@ export default function CartBar() {
 
       {itemCount > 0 ? (
         <div className="cart-bar-shell fixed bottom-[max(1rem,env(safe-area-inset-bottom,0px))] left-0 right-0 z-[900] px-4 pointer-events-none">
-          <Link
+          <button
+            type="button"
             ref={pillRef}
-            href="/cart"
-            onClick={(e) => {
-              if (onMenu) {
-                e.preventDefault();
-                openCart();
-              }
-            }}
-            className="pointer-events-auto mx-auto max-w-[560px] relative flex items-center h-[72px] rounded-2xl bg-svs-orange text-white shadow-[0_12px_32px_rgba(241,106,52,0.38)] no-underline overflow-visible"
+            onClick={() => openCart()}
+            className="pointer-events-auto mx-auto max-w-[560px] relative flex items-center h-[72px] rounded-2xl bg-svs-orange text-white shadow-[0_12px_32px_rgba(241,106,52,0.38)] border-0 cursor-pointer overflow-visible w-full"
           >
             <div
               className="absolute left-0 top-0 bottom-0 flex items-center overflow-visible z-[2]"
@@ -442,7 +433,7 @@ export default function CartBar() {
             >
               <AnimatedPrice value={subtotal} fontSize={20} color="#ffffff" />
             </div>
-          </Link>
+          </button>
         </div>
       ) : null}
     </>

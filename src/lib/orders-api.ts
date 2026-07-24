@@ -66,6 +66,10 @@ export async function createWebOrder(input: {
   customerLatitude?: number;
   customerLongitude?: number;
   customerNotes?: string;
+  fulfillmentMode?: "instant" | "scheduled";
+  scheduledForAt?: string;
+  scheduleDate?: string;
+  scheduleHour?: number;
 }) {
   return apiRequest<{
     order_id: string;
@@ -89,6 +93,10 @@ export async function createWebOrder(input: {
       customer_latitude: input.customerLatitude,
       customer_longitude: input.customerLongitude,
       customer_notes: input.customerNotes || undefined,
+      fulfillment_mode: input.fulfillmentMode || "instant",
+      scheduled_for_at: input.scheduledForAt || undefined,
+      schedule_date: input.scheduleDate || undefined,
+      schedule_hour: input.scheduleHour,
     },
   });
 }

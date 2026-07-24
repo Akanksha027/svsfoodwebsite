@@ -191,6 +191,9 @@ export default function AddItemSheet({
   }, [onClose]);
 
   const requestClose = useCallback(() => {
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     setVisible(false);
     window.setTimeout(onClose, 280);
   }, [onClose]);
@@ -268,7 +271,7 @@ export default function AddItemSheet({
 
   const heroImage = useMemo(() => {
     if (hasDistinctVariantImages && selectedVariant?.image_url) {
-      return pickImageUrl(selectedVariant.image_url) || fallbackImage;
+      return pickImageUrl(selectedVariant.image_url, fallbackImage) || fallbackImage;
     }
     return fallbackImage;
   }, [hasDistinctVariantImages, selectedVariant, fallbackImage]);
@@ -343,13 +346,14 @@ export default function AddItemSheet({
       className="fixed inset-0 z-[1600] flex items-end sm:items-center justify-center sm:p-5 md:p-8"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <button
-        type="button"
-        aria-label="Close"
-        className={`absolute inset-0 border-0 cursor-pointer transition-opacity duration-300 ease-out ${
+      <div
+        role="presentation"
+        aria-hidden
+        className={`absolute inset-0 cursor-pointer transition-opacity duration-300 ease-out ${
           visible ? "opacity-100" : "opacity-0"
         }`}
         style={{ backgroundColor: "rgba(15, 15, 15, 0.55)" }}
+        onMouseDown={(e) => e.preventDefault()}
         onClick={requestClose}
       />
 
@@ -357,7 +361,7 @@ export default function AddItemSheet({
         role="dialog"
         aria-modal="true"
         aria-label={`Customise ${item.name}`}
-        className={`relative z-[1601] flex flex-col w-full sm:w-[min(100%,56rem)] md:w-[min(100%,62rem)] max-h-[min(94dvh,820px)] rounded-t-[1.5rem] sm:rounded-[1.5rem] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`relative z-[1601] flex flex-col w-full sm:w-[min(100%,56rem)] h-[min(76dvh,560px)] min-h-[min(76dvh,560px)] max-h-[min(76dvh,560px)] rounded-t-[1.5rem] sm:rounded-[1.5rem] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.28)] overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           visible
             ? "opacity-100 translate-y-0 sm:scale-100"
             : "opacity-0 translate-y-8 sm:translate-y-4 sm:scale-[0.96]"
@@ -365,10 +369,10 @@ export default function AddItemSheet({
         onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
       >
-        <div className="flex flex-1 min-h-0 flex-col md:flex-row">
+        <div className="flex flex-1 min-h-0 flex-col md:flex-row h-full">
           {/* Left — hero image (kiosk-style: main photo stays here while picking) */}
-          <div className="relative shrink-0 md:w-[42%] lg:w-[40%] bg-white border-b md:border-b-0 md:border-r border-gray-100">
-            <div className="relative w-full aspect-[4/3] md:aspect-auto md:absolute md:inset-0 md:flex md:items-center md:justify-center md:p-6 lg:p-8 max-h-[min(38vh,280px)] md:max-h-none">
+          <div className="relative shrink-0 md:w-[38%] lg:w-[36%] h-[min(28vh,200px)] md:h-full bg-white border-b md:border-b-0 md:border-r border-gray-100">
+            <div className="relative w-full h-full md:absolute md:inset-0 md:flex md:items-center md:justify-center md:p-6 lg:p-8">
               {heroImage ? (
                 <SheetImage
                   src={heroImage}
@@ -483,7 +487,8 @@ export default function AddItemSheet({
                         <div className="space-y-2">
                           {group.items.map((option) => {
                             const selected = picks.includes(option.id);
-                            const optionImage = resolveAddonImageUrl(option.name);
+                            const optionImage =
+                              resolveAddonImageUrl(option.name) ?? fallbackImage;
                             return (
                               <button
                                 key={option.id}

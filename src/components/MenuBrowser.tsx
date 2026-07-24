@@ -404,69 +404,72 @@ export default function MenuBrowser({
   }, [focusItemId, menu, setSearchQuery]);
 
   return (
-    <div className="max-w-[920px] mx-auto">
-      {/* Search + categories scroll up together, then stick under the logo bar */}
-      <div
-        ref={stickyStackRef}
-        className="menu-sticky-stack sticky z-[1390] -mx-4 sm:mx-0 px-4 sm:px-0 pt-4 md:pt-5 pb-2 sm:pb-3 bg-white"
-      >
-        <div className="menu-sticky-search lg:hidden mb-1 w-full mt-0 flex justify-center">
-          <MenuNavSearch docked />
-        </div>
-
-        {!isSearching && visibleCategories.length > 0 ? (
-          <div
-            ref={categoryScrollRef}
-            className="menu-category-scroll flex gap-2.5 sm:gap-3 md:gap-3.5 overflow-x-auto pt-2 md:pt-4 pb-0.5 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            {visibleCategories.map((cat) => {
-              const active = cat.id === activeCategoryId;
-              const catImage = cat.image_url || cat.icon_url || null;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  ref={(node) => {
-                    categoryBtnRefs.current[cat.id] = node;
-                  }}
-                  onClick={() => scrollToCategory(cat.id)}
-                  className={`menu-category-btn shrink-0 cursor-pointer border-0 p-0 outline-none flex flex-col items-center gap-1.5 bg-transparent ${
-                    active ? "menu-category-btn--active" : ""
-                  }`}
-                  aria-current={active ? "true" : undefined}
-                >
-                  <div
-                    className={`menu-category-tile ${
-                      active ? "menu-category-tile--active" : ""
-                    }`}
-                  >
-                    <span className="menu-category-tile__icon-ring" aria-hidden>
-                      {catImage ? (
-                        <span className="menu-category-tile__icon-media">
-                          <Image
-                            src={catImage}
-                            alt=""
-                            fill
-                            draggable={false}
-                            className="object-contain pointer-events-none select-none"
-                            sizes="96px"
-                          />
-                        </span>
-                      ) : (
-                        <span className="menu-category-tile__icon-fallback">SVS</span>
-                      )}
-                    </span>
-                  </div>
-                  <span className="menu-category-tile__label">
-                    {titleCaseName(cat.name)}
-                  </span>
-                </button>
-              );
-            })}
+    <div className="w-full">
+      {/* Categories + mobile search — match navbar width */}
+      <div className="max-w-[1100px] mx-auto w-full">
+        <div
+          ref={stickyStackRef}
+          className="menu-sticky-stack sticky z-[1390] w-full pt-4 md:pt-5 pb-2 sm:pb-3 bg-white"
+        >
+          <div className="menu-sticky-search lg:hidden mb-1 w-full mt-0 flex justify-center">
+            <MenuNavSearch docked />
           </div>
-        ) : null}
+
+          {!isSearching && visibleCategories.length > 0 ? (
+            <div
+              ref={categoryScrollRef}
+              className="menu-category-scroll flex gap-2.5 sm:gap-3 md:gap-3.5 overflow-x-auto pt-2 md:pt-4 pb-0.5 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {visibleCategories.map((cat) => {
+                const active = cat.id === activeCategoryId;
+                const catImage = cat.image_url || cat.icon_url || null;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    ref={(node) => {
+                      categoryBtnRefs.current[cat.id] = node;
+                    }}
+                    onClick={() => scrollToCategory(cat.id)}
+                    className={`menu-category-btn shrink-0 cursor-pointer border-0 p-0 outline-none flex flex-col items-center gap-1.5 bg-transparent ${
+                      active ? "menu-category-btn--active" : ""
+                    }`}
+                    aria-current={active ? "true" : undefined}
+                  >
+                    <div
+                      className={`menu-category-tile ${
+                        active ? "menu-category-tile--active" : ""
+                      }`}
+                    >
+                      <span className="menu-category-tile__icon-ring" aria-hidden>
+                        {catImage ? (
+                          <span className="menu-category-tile__icon-media">
+                            <Image
+                              src={catImage}
+                              alt=""
+                              fill
+                              draggable={false}
+                              className="object-contain pointer-events-none select-none"
+                              sizes="96px"
+                            />
+                          </span>
+                        ) : (
+                          <span className="menu-category-tile__icon-fallback">SVS</span>
+                        )}
+                      </span>
+                    </div>
+                    <span className="menu-category-tile__label">
+                      {titleCaseName(cat.name)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
       </div>
 
+      <div className="max-w-[920px] mx-auto w-full">
       {errorMessage && (
         <div className="mt-8 rounded-2xl border border-svs-orange/20 bg-svs-cream px-5 py-8 text-center text-svs-orange-dark">
           {errorMessage}
@@ -533,6 +536,7 @@ export default function MenuBrowser({
         ))}
       </div>
       ) : null}
+      </div>
     </div>
   );
 }
@@ -824,61 +828,61 @@ function MenuItemCard({
               </span>
             </div>
           ) : null}
+
+          {available ? (
+            <div
+              className="absolute bottom-1.5 right-1.5 z-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {quantity > 0 ? (
+                <div className="inline-flex items-center h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm">
+                  <button
+                    type="button"
+                    onClick={onDecrement}
+                    className="w-8 h-full flex items-center justify-center font-bold text-sm cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
+                    aria-label={`Remove one ${item.name}`}
+                  >
+                    −
+                  </button>
+                  <span className="min-w-[20px] flex items-center justify-center text-xs font-bold">
+                    <RollingCounter value={quantity} fontSize={13} color="#ffffff" />
+                  </span>
+                  <button
+                    type="button"
+                    disabled={!available}
+                    onClick={onIncrement}
+                    className="w-8 h-full flex items-center justify-center font-bold text-sm cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
+                    aria-label={`Add one ${item.name}`}
+                  >
+                    +
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  disabled={!available}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAdd();
+                  }}
+                  className="inline-flex h-8 min-w-[52px] items-center justify-center gap-0.5 rounded-lg border-[0.75px] border-svs-orange bg-white px-2.5 font-bagoss text-[14px] font-semibold leading-4 tracking-[0.2px] text-svs-orange shadow-[1px_1px_0_0_rgb(241,106,52)] cursor-pointer transition-[width] duration-200 ease-in-out disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:shadow-none disabled:cursor-not-allowed"
+                >
+                  ADD
+                </button>
+              )}
+            </div>
+          ) : null}
         </div>
 
-        {/* Info + action — fixed footer inside the square */}
+        {/* Info */}
         <div className="flex flex-col shrink-0 px-2 sm:px-2.5 pt-0.5 pb-1.5 gap-0.5">
           <h3 className="text-[12px] font-semibold text-svs-ink leading-snug line-clamp-1">
             {item.name}
           </h3>
 
-          <div className="flex items-center justify-between gap-1 min-h-7 sm:min-h-8">
-            <p className="text-[12px] sm:text-[13px] font-bold text-svs-ink leading-none tabular-nums">
-              {formatInr(unitPrice)}
-            </p>
-
-            <div className="shrink-0 min-w-[72px] flex justify-end">
-            {quantity > 0 ? (
-              <div
-                className="inline-flex items-center h-7 sm:h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  type="button"
-                  onClick={onDecrement}
-                  className="w-7 sm:w-8 h-full flex items-center justify-center font-bold text-sm cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
-                  aria-label={`Remove one ${item.name}`}
-                >
-                  −
-                </button>
-                <span className="min-w-[20px] flex items-center justify-center text-xs sm:text-sm font-bold">
-                  <RollingCounter value={quantity} fontSize={13} color="#ffffff" />
-                </span>
-                <button
-                  type="button"
-                  disabled={!available}
-                  onClick={onIncrement}
-                  className="w-7 sm:w-8 h-full flex items-center justify-center font-bold text-sm cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
-                  aria-label={`Add one ${item.name}`}
-                >
-                  +
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                disabled={!available}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAdd();
-                }}
-                className="h-7 sm:h-8 min-w-[52px] px-2.5 sm:px-3 rounded-lg border-2 border-svs-orange bg-svs-white text-svs-orange text-xs sm:text-sm font-bold uppercase tracking-normal cursor-pointer hover:bg-svs-orange hover:text-white disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:cursor-not-allowed transition-all duration-150"
-              >
-                ADD
-              </button>
-            )}
-            </div>
-          </div>
+          <p className="text-[12px] sm:text-[13px] font-bold text-svs-ink leading-none tabular-nums">
+            {formatInr(unitPrice)}
+          </p>
         </div>
       </article>
 
