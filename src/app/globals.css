@@ -58,7 +58,7 @@ optgroup {
   font-family: inherit;
 }
 
-/* Lenis owns scroll on /theorymenu — disable native smooth to avoid fighting it */
+/* Legacy Lenis classes (unused) — kept for safety if re-enabled */
 html.theorymenu-smooth {
   scroll-behavior: auto;
 }

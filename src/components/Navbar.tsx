@@ -52,6 +52,27 @@ function GiftCardNavIcon({ className }: { className?: string }) {
   );
 }
 
+/** Plate + fork — common “Explore our food” mark used by QSR brands */
+function ExploreFoodNavIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.65"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2" />
+      <path d="M5 2v20" />
+      <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z" />
+      <path d="M18 15v7" />
+    </svg>
+  );
+}
+
 function NavOrderNowTypewriter({ hero }: { hero?: boolean }) {
   const full = "ORDER NOW";
   const [text, setText] = useState("");
@@ -441,6 +462,21 @@ function NavIcons({
             onNavigate?.();
           }}
         />
+      ) : null}
+
+      {homePage ? (
+        <Link
+          href="/explore"
+          className={btn}
+          id="btn-explore"
+          aria-label="Explore our food"
+          onClick={onNavigate}
+        >
+          <ExploreFoodNavIcon className={svgClass} />
+          {stacked ? (
+            <span className="text-sm font-semibold">Explore</span>
+          ) : null}
+        </Link>
       ) : null}
 
       {showCartAndLocation && !accountPage && !cartPage ? (
