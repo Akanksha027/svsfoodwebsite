@@ -2,8 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useInView } from "framer-motion";
-import { useRef, type RefObject } from "react";
+import { type RefObject } from "react";
 
 /** Top 3 Recommended burgers from live svsfood.com/products/burgers */
 const SPECIALTIES = [
@@ -14,7 +13,6 @@ const SPECIALTIES = [
       "A classic Jain burger with raw banana patty and sauces — pure, thoughtful flavour without onion or garlic.",
     image: "/combo/vegBurgerDairy.png",
     href: "/menu",
-    /** Filled by scroll-flying burger from hero — no local image */
     receivesFlight: false,
   },
   {
@@ -37,117 +35,77 @@ const SPECIALTIES = [
   },
 ] as const;
 
-/** Exactly 3 unique items per side */
 const FLOATS = [
-  /* LEFT: tomato · cheese · lettuce — smaller / faded on phones */
   {
     id: "left-tomato",
     src: "/images/tomato.png",
     className:
       "absolute left-[-4%] top-[4%] z-[2] hidden h-16 w-16 opacity-50 sm:left-[1%] sm:block sm:h-28 sm:w-28 sm:opacity-100 md:left-[2%] md:h-40 md:w-40 lg:left-[3%] lg:h-52 lg:w-52",
-    side: "left" as const,
-    delay: 0.05,
   },
   {
     id: "left-cheese",
     src: "/images/cheese.png",
     className:
       "absolute left-[-2%] top-[38%] z-[2] hidden h-14 w-14 -rotate-[16deg] opacity-50 sm:left-[2%] sm:block sm:h-24 sm:w-24 sm:opacity-100 md:left-[3%] md:h-36 md:w-36 lg:left-[4%] lg:h-44 lg:w-44",
-    side: "left" as const,
-    delay: 0.18,
   },
   {
     id: "left-lettuce",
     src: "/images/lettuce.png",
     className:
       "absolute bottom-[6%] left-[-4%] z-[2] hidden h-14 w-14 rotate-[10deg] opacity-50 sm:left-[1%] sm:block sm:h-24 sm:w-24 sm:opacity-100 md:left-[2%] md:h-36 md:w-36 lg:left-[3%] lg:h-48 lg:w-48",
-    side: "left" as const,
-    delay: 0.3,
   },
-  /* RIGHT: cheese · tomato */
   {
     id: "right-cheese",
     src: "/images/cheese.png",
     className:
       "absolute right-[-4%] top-[4%] z-[2] hidden h-16 w-16 rotate-[18deg] opacity-50 sm:right-[1%] sm:block sm:h-28 sm:w-28 sm:opacity-100 md:right-[2%] md:h-40 md:w-40 lg:right-[3%] lg:h-52 lg:w-52",
-    side: "right" as const,
-    delay: 0.08,
   },
   {
     id: "right-tomato",
     src: "/images/tomato.png",
     className:
       "absolute bottom-[6%] right-[-4%] z-[2] hidden h-14 w-14 rotate-[12deg] opacity-50 sm:right-[1%] sm:block sm:h-24 sm:w-24 sm:opacity-100 md:right-[2%] md:h-36 md:w-36 lg:right-[3%] lg:h-48 lg:w-48",
-    side: "right" as const,
-    delay: 0.32,
   },
 ] as const;
 
-const spinEase = [0.16, 1, 0.3, 1] as const;
-const softEase = [0.25, 0.1, 0.25, 1] as const;
-
 type WhatsOnOurPlateSectionProps = {
-  /** Landing pad for the scroll-flying burger (Maharaja center) */
   landingRef?: RefObject<HTMLDivElement | null>;
 };
 
 export default function WhatsOnOurPlateSection({
   landingRef,
 }: WhatsOnOurPlateSectionProps = {}) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const inView = useInView(sectionRef, { amount: 0.25, once: false });
-
   return (
     <section
-      ref={sectionRef}
-      className="relative isolate w-full overflow-hidden bg-transparent py-12 sm:py-20 lg:min-h-[100svh] lg:py-24"
+      className="relative z-20 isolate w-full overflow-hidden bg-transparent py-12 sm:py-20 lg:min-h-[100svh] lg:py-24"
       data-theory-snap
     >
-      {FLOATS.map((item) => {
-        const fromX = item.side === "left" ? -220 : 220;
-        return (
-          <motion.div
-            key={item.id}
-            className={`pointer-events-none select-none ${item.className}`}
-            initial={{ x: fromX, opacity: 0 }}
-            animate={
-              inView
-                ? { x: 0, opacity: 1 }
-                : { x: fromX, opacity: 0 }
-            }
-            transition={{
-              duration: 1.15,
-              delay: inView ? item.delay : 0,
-              ease: softEase,
-            }}
-            aria-hidden
-          >
-            <Image
-              src={item.src}
-              alt=""
-              width={220}
-              height={220}
-              className="h-full w-full object-contain drop-shadow-[0_14px_24px_rgba(26,26,26,0.18)] [mix-blend-mode:screen]"
-              priority
-            />
-          </motion.div>
-        );
-      })}
+      {FLOATS.map((item) => (
+        <div
+          key={item.id}
+          className={`pointer-events-none select-none ${item.className}`}
+          aria-hidden
+        >
+          <Image
+            src={item.src}
+            alt=""
+            width={220}
+            height={220}
+            className="h-full w-full object-contain drop-shadow-[0_14px_24px_rgba(26,26,26,0.18)] [mix-blend-mode:screen]"
+            priority
+          />
+        </div>
+      ))}
 
       <div className="relative z-10 mx-auto max-w-[1100px] px-5 sm:px-8">
-        <motion.header
-          className="mx-auto max-w-2xl text-center"
-          initial={{ opacity: 0, y: 24 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-          transition={{ duration: 0.9, ease: softEase }}
-        >
+        <header className="mx-auto max-w-2xl text-center">
           <h2 className="font-serif text-[clamp(2rem,5vw,3.25rem)] font-semibold leading-tight tracking-tight text-svs-ink">
             What&apos;s on our Plate
           </h2>
           <p className="mt-3 text-sm font-medium text-svs-ink/45 sm:text-[15px]">
             Our top recommended burger specialties — fresh from the grill
           </p>
-        </motion.header>
+        </header>
 
         <div className="relative mt-10 grid grid-cols-1 gap-10 sm:mt-14 sm:grid-cols-3 sm:gap-6 lg:mt-16 lg:gap-8">
           {SPECIALTIES.map((item, index) => {
@@ -162,39 +120,13 @@ export default function WhatsOnOurPlateSection({
               >
                 <div className="relative mx-auto flex h-[200px] w-full max-w-[240px] items-center justify-center sm:h-[260px] sm:max-w-[280px] lg:h-[300px] lg:max-w-[320px] [perspective:900px]">
                   {isLanding ? (
-                    /* Empty pad — flying burger from hero lands here */
                     <div
                       ref={landingRef}
                       className="relative h-full w-full"
                       aria-label="Maharaja burger landing spot"
                     />
                   ) : (
-                    <motion.div
-                      className="h-full w-full will-change-transform"
-                      initial={{ rotate: -360, scale: 0.78, opacity: 0 }}
-                      animate={
-                        inView
-                          ? { rotate: 0, scale: 1, opacity: 1 }
-                          : { rotate: -360, scale: 0.78, opacity: 0 }
-                      }
-                      transition={{
-                        rotate: {
-                          duration: 2.6,
-                          delay: inView ? 0.12 + index * 0.2 : 0,
-                          ease: spinEase,
-                        },
-                        scale: {
-                          duration: 2.2,
-                          delay: inView ? 0.12 + index * 0.2 : 0,
-                          ease: spinEase,
-                        },
-                        opacity: {
-                          duration: 1.4,
-                          delay: inView ? 0.12 + index * 0.2 : 0,
-                          ease: "easeOut",
-                        },
-                      }}
-                    >
+                    <div className="h-full w-full">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -204,21 +136,11 @@ export default function WhatsOnOurPlateSection({
                         sizes="320px"
                         priority={index === 0}
                       />
-                    </motion.div>
+                    </div>
                   )}
                 </div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={
-                    inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }
-                  }
-                  transition={{
-                    duration: 0.85,
-                    delay: inView ? 0.9 + index * 0.12 : 0,
-                    ease: softEase,
-                  }}
-                >
+                <div>
                   <h3 className="mt-6 font-serif text-xl font-semibold tracking-tight text-svs-ink sm:text-[1.35rem]">
                     {item.name}
                   </h3>
@@ -231,7 +153,7 @@ export default function WhatsOnOurPlateSection({
                   >
                     Order now
                   </Link>
-                </motion.div>
+                </div>
               </article>
             );
           })}
