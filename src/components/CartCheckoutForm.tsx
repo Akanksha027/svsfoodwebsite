@@ -320,7 +320,7 @@ export default function CartCheckoutForm({
                     type="button"
                     disabled={pinBusy}
                     onClick={() => void applyLocation(true)}
-                    className="text-[11px] font-semibold text-[#f16a34] border border-[#f16a34] rounded-lg px-2.5 py-1 hover:bg-[#f16a34]/5 cursor-pointer disabled:opacity-50 shrink-0 bg-white"
+                    className="text-xs font-bold text-[#f16a34] border border-[#f16a34]/40 rounded-lg px-3 py-1.5 hover:bg-[#f16a34]/8 cursor-pointer disabled:opacity-50 shrink-0 transition-colors bg-white"
                   >
                     Update pin
                   </button>
