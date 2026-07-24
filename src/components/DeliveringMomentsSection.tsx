@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function DeliveringMomentsSection() {
   return (
     <section
-      className="relative w-full overflow-hidden bg-svs-cream px-4 py-10 sm:px-6 sm:py-14 md:px-10 md:py-16 lg:px-16 lg:py-20 xl:px-24"
+      className="relative w-full overflow-hidden bg-white px-4 py-10 sm:px-6 sm:py-14 md:px-10 md:py-16 lg:px-16 lg:py-20 xl:px-24"
       id="delivering-moments"
       aria-labelledby="flavour-delivered-heading"
     >

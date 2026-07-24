@@ -6,6 +6,7 @@ import DeliveringMomentsSection from "@/components/DeliveringMomentsSection";
 import Footer from "@/components/Footer";
 import FestiveDrops from "@/components/FestiveDrops";
 import AppDownloadSection from "@/components/AppDownloadSection";
+import AppFeaturesSection from "@/components/AppFeaturesSection";
 import CitiesWeServeSection from "@/components/CitiesWeServeSection";
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
       <HeroVideoSection />
 
       <DeliveringMomentsSection />
+      <AppFeaturesSection />
       <SharkTankSection />
       <JourneySection />
       {/* <DeliveringSection /> */}
