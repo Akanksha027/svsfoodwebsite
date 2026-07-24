@@ -176,10 +176,23 @@ function PlayStoreInstallScreen() {
   );
 }
 
-/** Desktop layout — mirrors Zomato homepage “What’s waiting for you on the app?” */
-function DesktopFeatures() {
+function RisingPhone({
+  containerClassName = "",
+  phoneClassName = "",
+  risenTranslate = "translate-y-[-40%]",
+  hiddenTranslate = "translate-y-[110%]",
+  variant = "inline",
+}: {
+  containerClassName?: string;
+  phoneClassName?: string;
+  risenTranslate?: string;
+  hiddenTranslate?: string;
+  /** stacked = mobile-safe bottom rise; inline = desktop grid cell */
+  variant?: "inline" | "stacked";
+}) {
   const phoneRef = useRef<HTMLDivElement>(null);
   const [risen, setRisen] = useState(false);
+  const stacked = variant === "stacked";
 
   useEffect(() => {
     const el = phoneRef.current;
@@ -197,13 +210,60 @@ function DesktopFeatures() {
       ([entry]) => {
         setRisen(entry.isIntersecting);
       },
-      { threshold: 0.2, rootMargin: "0px 0px -10% 0px" },
+      { threshold: stacked ? 0.12 : 0.15, rootMargin: "0px 0px -6% 0px" },
     );
 
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [stacked]);
 
+  const phoneTransform = risen ? risenTranslate : hiddenTranslate;
+
+  return (
+    <div
+      ref={phoneRef}
+      className={`relative overflow-hidden ${
+        stacked
+          ? "mx-auto h-[clamp(300px,46vh,380px)] w-full max-w-[320px] [border-radius:0_0_50%_50%/0_0_2rem_2rem]"
+          : `flex items-end justify-center ${containerClassName}`
+      }`}
+    >
+      <div
+        className={`will-change-transform transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          stacked
+            ? `absolute bottom-0 left-1/2 -translate-x-1/2 ${phoneTransform}`
+            : phoneTransform
+        } ${phoneClassName}`}
+        style={{
+          maskImage: stacked
+            ? undefined
+            : "linear-gradient(to bottom, black 0%, black 86%, transparent 100%)",
+          WebkitMaskImage: stacked
+            ? undefined
+            : "linear-gradient(to bottom, black 0%, black 86%, transparent 100%)",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={PHONE_FRAME}
+          alt=""
+          className="relative z-10 block h-auto w-full max-h-[255px] select-none sm:max-h-none"
+          loading="lazy"
+        />
+        <PlayStoreInstallScreen />
+      </div>
+      {!stacked ? (
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-40 h-[18%] bg-[linear-gradient(to_top,#FFFFFF_0%,rgba(255,255,255,0.75)_55%,rgba(255,255,255,0)_100%)]"
+          aria-hidden
+        />
+      ) : null}
+    </div>
+  );
+}
+
+/** Desktop layout — mirrors Zomato homepage “What’s waiting for you on the app?” */
+function DesktopFeatures() {
   return (
     <div className="relative flex min-h-[100dvh] w-full items-center justify-center overflow-hidden bg-white px-4 py-8 sm:py-10">
       <div className="flex w-full max-w-[1024px] flex-col items-center gap-3 xl:gap-4">
@@ -224,7 +284,7 @@ function DesktopFeatures() {
           </p>
         </div>
 
-        <div className="relative mx-auto grid aspect-[2/1] w-full max-w-[920px] grid-cols-6 grid-rows-2 gap-3 xl:max-w-[1024px] xl:gap-4">
+        <div className="relative mx-auto grid aspect-[2/1] min-h-[340px] w-full max-w-[920px] grid-cols-6 grid-rows-2 gap-3 sm:min-h-[380px] md:min-h-[420px] xl:max-w-[1024px] xl:gap-4">
           {/* Left cluster — Zomato stagger: scale 0.68 + offset toward phone */}
           <div className="relative col-span-2 col-start-1 row-span-2 grid h-full grid-cols-2 grid-rows-2 gap-3 xl:gap-4">
             <FeatureCard
@@ -262,35 +322,11 @@ function DesktopFeatures() {
           </div>
 
           {/* Center phone + Play Store art — rises into view */}
-          <div
-            ref={phoneRef}
-            className="relative col-span-2 col-start-3 row-span-2 flex h-full items-end justify-center overflow-hidden [border-radius:0_0_50%_50%/0_0_2.5rem_2.5rem] xl:[border-radius:0_0_50%_50%/0_0_3.25rem_3.25rem]"
-          >
-            <div
-              className={`relative w-[98%] max-w-[340px] will-change-transform transition-transform duration-[1100ms] ease-[cubic-bezier(0.22,1,0.36,1)] xl:w-full xl:max-w-[380px] ${
-                risen ? "translate-y-[-40%]" : "translate-y-[110%]"
-              }`}
-              style={{
-                maskImage:
-                  "linear-gradient(to bottom, black 0%, black 86%, transparent 100%)",
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, black 0%, black 86%, transparent 100%)",
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={PHONE_FRAME}
-                alt=""
-                className="relative z-10 block h-auto w-full select-none"
-                loading="lazy"
-              />
-              <PlayStoreInstallScreen />
-            </div>
-            <div
-              className="pointer-events-none absolute inset-x-0 bottom-0 z-40 h-[18%] bg-[linear-gradient(to_top,#FFFFFF_0%,rgba(255,255,255,0.75)_55%,rgba(255,255,255,0)_100%)]"
-              aria-hidden
-            />
-          </div>
+          <RisingPhone
+            containerClassName="col-span-2 col-start-3 row-span-2 h-full min-h-[300px] [border-radius:0_0_50%_50%/0_0_2.5rem_2.5rem] xl:[border-radius:0_0_50%_50%/0_0_3.25rem_3.25rem]"
+            phoneClassName="w-[98%] max-w-[340px] xl:w-full xl:max-w-[380px]"
+            risenTranslate="translate-y-[-26%] sm:translate-y-[-30%] lg:translate-y-[-40%]"
+          />
 
           {/* Right cluster — mirrored Zomato stagger */}
           <div className="relative col-span-2 col-start-5 row-span-2 grid h-full -translate-x-5 grid-cols-2 grid-rows-2 gap-3 xl:gap-4">
@@ -335,23 +371,26 @@ function DesktopFeatures() {
   );
 }
 
-/** Mobile layout — 3-column staggered grid */
+/** Mobile layout — subheading, phone, then feature cards */
 function MobileFeatures() {
   return (
-    <div className="flex min-h-[100dvh] w-full flex-col gap-8 rounded-t-3xl bg-white pt-16">
-      <div className="mb-12 flex w-full flex-col items-center justify-center">
-        <h2
-          className="w-8/12 whitespace-pre-line text-center text-[26px] font-semibold leading-8 text-svs-orange"
-        >
+    <div className="flex min-h-[100dvh] w-full flex-col gap-6 rounded-t-3xl bg-white px-4 pt-14 pb-10">
+      <div className="flex w-full flex-col items-center justify-center">
+        <h2 className="w-11/12 whitespace-pre-line text-center text-[26px] font-semibold leading-8 text-svs-orange">
           What’s waiting for you on the app?
         </h2>
-        <p
-          className="mt-4 w-7/12 text-center text-sm font-light text-svs-ink/60"
-        >
+        <p className="mt-4 w-10/12 text-center text-sm font-light text-svs-ink/60">
           Our app is packed with features made for pure-veg food lovers —
           fresh, fast, and chemical-free.
         </p>
       </div>
+
+      <RisingPhone
+        variant="stacked"
+        phoneClassName="w-[min(72vw,220px)]"
+        hiddenTranslate="translate-y-[92%]"
+        risenTranslate="-translate-y-[10%]"
+      />
 
       <div className="mx-auto grid w-fit grid-cols-3 gap-4">
         <div className="flex w-[88px] flex-col gap-4">
