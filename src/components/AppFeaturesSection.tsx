@@ -18,7 +18,6 @@ const FEATURE_ICON = {
   madeFresh: "/app-features/made-fresh.png",
 } as const;
 
-const SVS_CREAM = "#fff4ee";
 const SVS_SLATE = "#3E4152";
 const SVS_BORDER = "#E6E9EF";
 
@@ -206,10 +205,7 @@ function DesktopFeatures() {
   }, []);
 
   return (
-    <div
-      className="relative flex min-h-[100dvh] w-full items-center justify-center overflow-hidden px-4 py-8 sm:py-10"
-      style={{ background: `linear-gradient(0deg, #FFFFFF 0%, ${SVS_CREAM} 100%)` }}
-    >
+    <div className="relative flex min-h-[100dvh] w-full items-center justify-center overflow-hidden bg-white px-4 py-8 sm:py-10">
       <div className="flex w-full max-w-[1024px] flex-col items-center gap-3 xl:gap-4">
         <div className="flex flex-col items-center text-center">
           <h2
@@ -342,12 +338,7 @@ function DesktopFeatures() {
 /** Mobile layout — 3-column staggered grid */
 function MobileFeatures() {
   return (
-    <div
-      className="flex min-h-[100dvh] w-full flex-col gap-8 rounded-t-3xl pt-16"
-      style={{
-        background: `linear-gradient(180deg, ${SVS_CREAM} -19.64%, #FFF 60%)`,
-      }}
-    >
+    <div className="flex min-h-[100dvh] w-full flex-col gap-8 rounded-t-3xl bg-white pt-16">
       <div className="mb-12 flex w-full flex-col items-center justify-center">
         <h2
           className="w-8/12 whitespace-pre-line text-center text-[26px] font-semibold leading-8 text-svs-orange"

@@ -11,6 +11,7 @@ import type { MenuPayload } from "@/lib/menu-types";
 type MenuLoaderProps = {
   store: StoreLocation;
   initialQuery?: string;
+  focusItemId?: string;
   /** Optional server-fetched menu (SEO / cold start). */
   initialMenu?: MenuPayload | null;
   initialError?: string | null;
@@ -30,6 +31,7 @@ function resolveInitialMenu(
 export default function MenuLoader({
   store,
   initialQuery = "",
+  focusItemId = "",
   initialMenu = null,
   initialError = null,
 }: MenuLoaderProps) {
@@ -100,6 +102,7 @@ export default function MenuLoader({
     <MenuBrowser
       store={store}
       initialQuery={initialQuery}
+      focusItemId={focusItemId}
       menu={menu}
       errorMessage={errorMessage}
     />

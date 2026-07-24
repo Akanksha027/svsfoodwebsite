@@ -23,6 +23,8 @@ import {
 type MenuBrowserProps = {
   store: StoreLocation;
   initialQuery?: string;
+  /** Scroll/highlight this menu item id when the page opens. */
+  focusItemId?: string;
   menu: MenuPayload | null;
   errorMessage?: string | null;
 };
@@ -72,6 +74,7 @@ function findDessertsCategory(categories: MenuCategory[]): MenuCategory | null {
 export default function MenuBrowser({
   store,
   initialQuery = "",
+  focusItemId = "",
   menu,
   errorMessage,
 }: MenuBrowserProps) {
@@ -87,6 +90,7 @@ export default function MenuBrowser({
   const lastActiveRef = useRef<string | null>(null);
   const stripScrollRaf = useRef<number | null>(null);
   const stripScrollTimer = useRef<number | null>(null);
+  const didFocusItem = useRef(false);
 
   useEffect(() => {
     if (initialQuery.trim()) setSearchQuery(initialQuery.trim());
@@ -359,6 +363,45 @@ export default function MenuBrowser({
       scrollingToRef.current = false;
     }, 1000);
   };
+
+  // Deep-link from homepage “Try them today” (+): land on that menu item.
+  useEffect(() => {
+    const id = focusItemId.trim();
+    if (!id || !menu || didFocusItem.current) return;
+
+    const target =
+      menu.items.find((i) => i.id === id) ||
+      menu.items.find((i) =>
+        (i.variants || []).some((v) => v.item_id === id),
+      );
+    if (!target) return;
+
+    didFocusItem.current = true;
+    setSearchQuery("");
+
+    const run = () => {
+      const el = document.getElementById(`menu-item-${target.id}`);
+      if (!el) return false;
+      lastActiveRef.current = target.category_id;
+      setActiveCategoryId(target.category_id);
+      scrollingToRef.current = true;
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("ring-2", "ring-svs-orange", "ring-offset-2");
+      window.setTimeout(() => {
+        scrollingToRef.current = false;
+        el.classList.remove("ring-2", "ring-svs-orange", "ring-offset-2");
+      }, 1800);
+      return true;
+    };
+
+    if (run()) return;
+    const t1 = window.setTimeout(run, 120);
+    const t2 = window.setTimeout(run, 450);
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
+  }, [focusItemId, menu, setSearchQuery]);
 
   return (
     <div className="max-w-[1100px] mx-auto">
@@ -708,6 +751,7 @@ function MenuItemCard({
   return (
     <>
       <article
+        id={`menu-item-${item.id}`}
         ref={articleRef}
         role={customisable && available ? "button" : undefined}
         tabIndex={customisable && available ? 0 : undefined}
@@ -719,7 +763,7 @@ function MenuItemCard({
             openCard();
           }
         }}
-        className={`flex flex-col w-full rounded-xl border border-svs-cream bg-svs-white overflow-hidden ${
+        className={`flex flex-col w-full rounded-xl border border-svs-cream bg-svs-white overflow-hidden scroll-mt-[var(--menu-nav-scroll-mt,11.75rem)] ${
           available ? "" : "opacity-60"
         } ${customisable && available ? "cursor-pointer" : ""}`}
       >
