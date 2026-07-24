@@ -147,9 +147,7 @@ function MenuCenterBar({
   open: boolean;
 }) {
   const { store } = useCart();
-  const fallback = truncateText(
-    `${storeDisplayName(store)} · ${store.address}`,
-  );
+  const fallback = `${storeDisplayName(store)} · ${store.address}`;
   const locationLine = useMenuDeliveryLocationLine(fallback);
 
   return (

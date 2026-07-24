@@ -18,7 +18,6 @@ const TOP_ROW: IconItem[] = [
   { src: "/images/lettuce.png", alt: "Lettuce", delay: 0.1, rotate: -10 },
   { src: "/nobg/vegies/im6.png", alt: "Broccoli", delay: 0.14, rotate: -4 },
   { src: "/nobg/vegies/im1.png", alt: "Pepper", delay: 0.18, rotate: 8 },
-  { src: "/images/tikki.png", alt: "Tikki", delay: 0.22, rotate: 6 },
 ];
 
 /** Bottom rail — equal slots */

@@ -64,7 +64,7 @@ const FLOATS = [
     side: "left" as const,
     delay: 0.3,
   },
-  /* RIGHT: cheese · tikki · tomato */
+  /* RIGHT: cheese · tomato */
   {
     id: "right-cheese",
     src: "/images/cheese.png",
@@ -72,14 +72,6 @@ const FLOATS = [
       "absolute right-[-4%] top-[4%] z-[2] hidden h-16 w-16 rotate-[18deg] opacity-50 sm:right-[1%] sm:block sm:h-28 sm:w-28 sm:opacity-100 md:right-[2%] md:h-40 md:w-40 lg:right-[3%] lg:h-52 lg:w-52",
     side: "right" as const,
     delay: 0.08,
-  },
-  {
-    id: "right-tikki",
-    src: "/images/tikki.png",
-    className:
-      "absolute right-[-2%] top-[38%] z-[2] hidden h-14 w-14 -rotate-[10deg] opacity-50 sm:right-[2%] sm:block sm:h-24 sm:w-24 sm:opacity-100 md:right-[3%] md:h-36 md:w-36 lg:right-[4%] lg:h-44 lg:w-44",
-    side: "right" as const,
-    delay: 0.2,
   },
   {
     id: "right-tomato",
