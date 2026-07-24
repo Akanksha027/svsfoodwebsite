@@ -404,7 +404,7 @@ export default function MenuBrowser({
   }, [focusItemId, menu, setSearchQuery]);
 
   return (
-    <div className="max-w-[1100px] mx-auto">
+    <div className="max-w-[920px] mx-auto">
       {/* Search + categories scroll up together, then stick under the logo bar */}
       <div
         ref={stickyStackRef}
@@ -493,7 +493,7 @@ export default function MenuBrowser({
               {`No items match "${searchQuery.trim()}".`}
             </div>
           ) : (
-            <ul className="mt-4 sm:mt-6 grid grid-cols-1 min-[360px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-3.5 pb-20">
+            <ul className="mt-4 sm:mt-6 grid grid-cols-2 min-[360px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-2.5 pb-20">
               {searchResults.items.map(({ item, category }) => (
                 <li key={item.id}>
                   <MenuItemCard
@@ -568,7 +568,7 @@ function CategorySection({
         </span>
       </div>
 
-      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-3.5 md:gap-4 lg:gap-5">
+      <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-2.5 md:gap-3">
         {items.map((item) => (
           <li key={item.id}>
             <MenuItemCard
@@ -763,13 +763,13 @@ function MenuItemCard({
             openCard();
           }
         }}
-        className={`flex flex-col w-full rounded-xl border border-svs-cream bg-svs-white overflow-hidden scroll-mt-[var(--menu-nav-scroll-mt,11.75rem)] ${
+        className={`flex flex-col w-full rounded-lg border border-svs-cream bg-svs-white overflow-hidden scroll-mt-[var(--menu-nav-scroll-mt,11.75rem)] ${
           available ? "" : "opacity-60"
         } ${customisable && available ? "cursor-pointer" : ""}`}
       >
         <div
           ref={imageRef}
-          className="relative aspect-square w-full flex items-center justify-center bg-white overflow-hidden p-3.5 sm:p-4"
+          className="relative aspect-square w-full flex items-center justify-center bg-white overflow-hidden p-2 sm:p-2.5"
         >
           {displayImage ? (
             <div className="relative h-full w-full">
@@ -796,37 +796,37 @@ function MenuItemCard({
         </div>
 
         {/* Info + action — fixed footer inside the square */}
-        <div className="flex flex-col shrink-0 px-3.5 sm:px-4 pt-1.5 pb-2.5 gap-1">
-          <h3 className="text-[15px] font-semibold text-svs-ink leading-snug line-clamp-2">
+        <div className="flex flex-col shrink-0 px-2 sm:px-2.5 pt-0.5 pb-1.5 gap-0.5">
+          <h3 className="text-[12px] font-semibold text-svs-ink leading-snug line-clamp-2">
             {item.name}
           </h3>
 
-          <div className="flex items-center justify-between gap-1.5">
-            <p className="text-[15px] font-bold text-svs-ink leading-none tabular-nums">
+          <div className="flex items-center justify-between gap-1">
+            <p className="text-[12px] font-bold text-svs-ink leading-none tabular-nums">
               {formatInr(unitPrice)}
             </p>
 
             {quantity > 0 ? (
               <div
-                className="shrink-0 inline-flex items-center h-[30px] rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm"
+                className="shrink-0 inline-flex items-center h-6 rounded-md bg-svs-orange text-white overflow-hidden shadow-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
                   type="button"
                   onClick={onDecrement}
-                  className="w-[30px] h-full flex items-center justify-center font-bold text-[15px] cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
+                  className="w-6 h-full flex items-center justify-center font-bold text-sm cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
                   aria-label={`Remove one ${item.name}`}
                 >
                   −
                 </button>
-                <span className="min-w-[20px] flex items-center justify-center text-[13px] font-bold">
-                  <RollingCounter value={quantity} fontSize={13} color="#ffffff" />
+                <span className="min-w-[18px] flex items-center justify-center text-[11px] font-bold">
+                  <RollingCounter value={quantity} fontSize={11} color="#ffffff" />
                 </span>
                 <button
                   type="button"
                   disabled={!available}
                   onClick={onIncrement}
-                  className="w-[30px] h-full flex items-center justify-center font-bold text-[15px] cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
+                  className="w-6 h-full flex items-center justify-center font-bold text-sm cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
                   aria-label={`Add one ${item.name}`}
                 >
                   +
@@ -840,9 +840,9 @@ function MenuItemCard({
                   e.stopPropagation();
                   onAdd();
                 }}
-                className="shrink-0 h-[30px] min-w-[58px] px-2.5 rounded-lg border-2 border-svs-orange bg-svs-cream text-svs-orange text-[11px] font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
+                className="shrink-0 inline-flex h-6 min-w-[44px] items-center justify-center px-1.5 rounded-md border-2 border-svs-orange bg-svs-cream text-svs-orange text-[9px] font-extrabold uppercase tracking-wide leading-none cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
               >
-                Add
+                ADD
               </button>
             )}
           </div>
