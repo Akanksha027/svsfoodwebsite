@@ -5,16 +5,16 @@ export function accountOverlayShellClass(_isHome: boolean) {
   return "fixed inset-0 z-[1600] pointer-events-none";
 }
 
-/** Landing `/` — no dim; elsewhere full-screen tint. */
+/** Landing `/` — no dim; show page/hero through the overlay. */
 export function accountOverlayBackdropClass(
   isHome: boolean,
   variant: "login" | "menu" = "menu",
 ) {
-  if (variant === "login") {
-    return "pointer-events-auto absolute inset-0 bg-black/45 backdrop-blur-[2px] cursor-default touch-none border-0";
-  }
   if (isHome) {
     return "pointer-events-auto absolute inset-0 bg-transparent cursor-default touch-none border-0";
+  }
+  if (variant === "login") {
+    return "pointer-events-auto absolute inset-0 bg-black/45 backdrop-blur-[2px] cursor-default touch-none border-0";
   }
   return "pointer-events-auto absolute inset-0 bg-black/25 cursor-default touch-none border-0";
 }

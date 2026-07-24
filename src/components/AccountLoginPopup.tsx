@@ -10,6 +10,7 @@ import OtpSixBoxes from "@/components/OtpSixBoxes";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import { useInlinePhoneOtp } from "@/hooks/useInlinePhoneOtp";
 import { useBodyScrollLock } from "@/lib/body-scroll-lock";
+import { useHeroBackdropSnapshot } from "@/hooks/useHeroBackdropSnapshot";
 import { formatIndianMobileInput } from "@/lib/indian-phone";
 import {
   SVS_APP_STORE_URL,
@@ -177,7 +178,8 @@ export default function AccountLoginPopup() {
     }
   }, [loginOpen, clearOtpStep]);
 
-  useBodyScrollLock(loginOpen);
+  useBodyScrollLock(loginOpen, isHome);
+  const heroBackdrop = useHeroBackdropSnapshot(loginOpen, isHome);
 
   useEffect(() => {
     if (!codeSentForCurrent) verifyLock.current = false;
@@ -219,6 +221,14 @@ export default function AccountLoginPopup() {
       aria-modal
       aria-labelledby="login-popup-title"
     >
+      {heroBackdrop ? (
+        <div
+          className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${heroBackdrop})` }}
+          aria-hidden
+        />
+      ) : null}
+
       <button
         type="button"
         className={accountOverlayBackdropClass(isHome, "login")}

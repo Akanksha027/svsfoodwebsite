@@ -20,6 +20,25 @@ function getDuration(slide: StorySlide): number {
   return slide.durationMs ?? DEFAULT_STORY_DURATION_MS;
 }
 
+function Chevron({ dir }: { dir: "left" | "right" }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.25"
+      aria-hidden
+    >
+      {dir === "left" ? (
+        <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+      ) : (
+        <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+      )}
+    </svg>
+  );
+}
+
 export default function StoryViewer({
   open,
   onClose,
@@ -62,14 +81,7 @@ export default function StoryViewer({
     setPaused(false);
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
+  // No scroll lock and no canvas snapshot — live sticky hero stays under the dim and scrolls.
 
   useEffect(() => {
     if (!open) return;
@@ -138,152 +150,142 @@ export default function StoryViewer({
 
   if (!mounted || !open || !slide) return null;
 
+  const showPrev = index > 0;
+
   return createPortal(
     <div
-      className="fixed inset-0 z-[2000] bg-black flex items-stretch justify-center"
+      className="pointer-events-none fixed inset-0 z-[2000] flex items-center justify-center"
       role="dialog"
       aria-modal="true"
       aria-label="SVS Food stories"
     >
-      {/* Desktop prev arrow — outside story column */}
-      {index > 0 ? (
-        <button
-          type="button"
-          className="hidden md:flex fixed left-6 top-1/2 -translate-y-1/2 z-[2002] w-12 h-12 rounded-full bg-white/15 hover:bg-white/25 text-white items-center justify-center transition-colors"
-          aria-label="Previous story"
-          onClick={goPrev}
-        >
-          <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-      ) : null}
+      {/* Dim only — no pointer capture so page (incl. sticky hero) keeps scrolling */}
+      <div className="absolute inset-0 bg-black/70" aria-hidden />
 
-      {/* Story panel — header first, image fills remaining viewport */}
-      <div className="flex h-[100svh] w-full justify-center px-3 sm:px-4">
-        <div className="flex h-full w-full max-w-[560px] flex-col">
-          {/* Progress + header — fixed strip at top */}
-          <div className="shrink-0 px-1 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
-            <div className="mb-3 flex gap-1.5">
+      <div className="relative z-[1] flex max-h-[100svh] w-full items-center justify-center px-11 sm:px-16">
+        <div className="pointer-events-auto relative flex items-center justify-center">
+          <button
+            type="button"
+            className={`absolute right-full z-10 mr-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/25 text-white shadow-sm backdrop-blur-md transition-colors hover:bg-white/40 sm:mr-4 sm:h-11 sm:w-11 ${
+              showPrev ? "opacity-100" : "pointer-events-none opacity-0"
+            }`}
+            aria-label="Previous story"
+            onClick={goPrev}
+            tabIndex={showPrev ? 0 : -1}
+          >
+            <Chevron dir="left" />
+          </button>
+
+          <div className="relative flex w-[min(72vw,calc((100svh-4.5rem)*9/16),400px)] flex-col sm:w-[min(48vw,calc((100svh-4.5rem)*9/16),400px)]">
+            {/* Progress bars — fill over each slide duration */}
+            <div className="mb-2.5 flex gap-1.5 px-0.5 sm:mb-3">
               {slides.map((s, i) => {
                 const filled = i < index ? 1 : i === index ? progress : 0;
                 return (
                   <div
                     key={s.id}
-                    className="h-1 sm:h-[3px] flex-1 overflow-hidden rounded-full bg-white/40"
+                    className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/35"
                   >
                     <div
-                      className="h-full rounded-full bg-white"
-                      style={{ width: `${filled * 100}%` }}
+                      className="h-full origin-left rounded-full bg-white"
+                      style={{
+                        width: `${filled * 100}%`,
+                        transition: i === index ? "none" : "width 0.2s ease",
+                      }}
                     />
                   </div>
                 );
               })}
             </div>
 
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-extrabold uppercase tracking-[0.14em] text-white sm:text-base">
-                {slide.title}
-              </p>
-              <div className="flex shrink-0 items-center gap-4 text-white">
-                <button
-                  type="button"
-                  className="flex h-8 w-8 items-center justify-center transition-opacity hover:opacity-80"
-                  aria-label={paused ? "Play" : "Pause"}
-                  onClick={() => setPaused((p) => !p)}
-                >
-                  {paused ? (
-                    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
+            <div
+              className="relative w-full overflow-hidden bg-white shadow-[0_20px_60px_rgba(0,0,0,0.28)]"
+              style={{ aspectRatio: "9 / 16" }}
+            >
+              <button
+                type="button"
+                className="absolute right-2.5 top-2.5 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-black/5 text-xl leading-none text-svs-ink/70 transition-colors hover:bg-black/10 hover:text-svs-ink"
+                aria-label="Close stories"
+                onClick={onClose}
+              >
+                ×
+              </button>
+
+              <button
+                type="button"
+                className="absolute inset-y-0 left-0 z-20 w-[32%]"
+                aria-label="Previous"
+                onClick={goPrev}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 z-20 w-[32%]"
+                aria-label="Next"
+                onClick={advanceStory}
+              />
+              <button
+                type="button"
+                className="absolute inset-x-[32%] inset-y-0 z-20"
+                aria-label={paused ? "Play" : "Pause"}
+                onClick={() => setPaused((p) => !p)}
+              />
+
+              <div className="pointer-events-none absolute inset-0 z-10 flex flex-col px-5 pb-5 pt-5 sm:px-6 sm:pb-6 sm:pt-6">
+                <p className="text-[13px] font-extrabold uppercase tracking-[0.08em] text-svs-ink sm:text-sm">
+                  {slide.title}
+                </p>
+
+                <div className="relative mx-auto mt-3 w-full flex-1 min-h-0 sm:mt-4">
+                  {slide.type === "video" ? (
+                    <video
+                      ref={videoRef}
+                      src={slide.src}
+                      className="absolute inset-0 h-full w-full object-contain"
+                      playsInline
+                      muted
+                    />
                   ) : (
-                    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-                      <rect x="6" y="5" width="4" height="14" rx="1" />
-                      <rect x="14" y="5" width="4" height="14" rx="1" />
-                    </svg>
+                    <Image
+                      src={slide.src}
+                      alt={slide.alt ?? slide.title}
+                      fill
+                      className="object-contain"
+                      sizes="(max-width: 420px) 86vw, 400px"
+                      priority
+                    />
                   )}
-                </button>
-                <button
-                  type="button"
-                  className="flex h-8 w-8 items-center justify-center text-2xl leading-none transition-opacity hover:opacity-80"
-                  aria-label="Close stories"
-                  onClick={onClose}
-                >
-                  ×
-                </button>
+                </div>
+
+                <div className="mt-3 flex flex-col items-center gap-2.5 text-center sm:mt-4 sm:gap-3">
+                  {slide.headline ? (
+                    <p className="text-[1.05rem] font-extrabold leading-snug tracking-tight text-svs-ink sm:text-[1.2rem]">
+                      {slide.headline}
+                    </p>
+                  ) : null}
+                  {slide.ctaLabel && slide.ctaHref ? (
+                    <Link
+                      href={slide.ctaHref}
+                      className="pointer-events-auto inline-flex min-h-10 items-center justify-center rounded-full bg-[#cfcfcf] px-8 py-2.5 text-[13px] font-semibold text-white no-underline transition-colors hover:bg-[#bdbdbd] sm:min-h-11 sm:px-10 sm:text-sm"
+                      onClick={onClose}
+                    >
+                      {slide.ctaLabel}
+                    </Link>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Image / video frame — fills space below bars */}
-          <div className="relative min-h-0 flex-1 w-full overflow-hidden bg-black">
-            <div className="absolute inset-0">
-              {slide.type === "video" ? (
-                <video
-                  ref={videoRef}
-                  src={slide.src}
-                  className="h-full w-full object-cover"
-                  playsInline
-                  muted
-                />
-              ) : (
-                <Image
-                  src={slide.src}
-                  alt={slide.alt ?? slide.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 560px) 94vw, 560px"
-                  priority
-                />
-              )}
-            </div>
-
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/65" />
-
-            <button
-              type="button"
-              className="absolute inset-y-0 left-0 z-10 w-[35%]"
-              aria-label="Previous"
-              onClick={goPrev}
-            />
-            <button
-              type="button"
-              className="absolute inset-y-0 right-0 z-10 w-[35%]"
-              aria-label="Next"
-              onClick={advanceStory}
-            />
-
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-center">
-              {slide.headline ? (
-                <p className="mb-4 text-xl font-extrabold tracking-tight text-white drop-shadow-lg sm:text-2xl">
-                  {slide.headline}
-                </p>
-              ) : null}
-              {slide.ctaLabel && slide.ctaHref ? (
-                <Link
-                  href={slide.ctaHref}
-                  className="pointer-events-auto inline-block rounded-full border border-white/35 bg-white/20 px-8 py-3 text-sm font-semibold text-white no-underline backdrop-blur-md transition-colors hover:bg-white/30 sm:text-base"
-                  onClick={onClose}
-                >
-                  {slide.ctaLabel}
-                </Link>
-              ) : null}
-            </div>
-          </div>
+          <button
+            type="button"
+            className="absolute left-full z-10 ml-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/40 bg-white/25 text-white shadow-sm backdrop-blur-md transition-colors hover:bg-white/40 sm:ml-4 sm:h-11 sm:w-11"
+            aria-label="Next story"
+            onClick={advanceStory}
+          >
+            <Chevron dir="right" />
+          </button>
         </div>
       </div>
-
-      {/* Desktop next arrow */}
-      <button
-        type="button"
-        className="hidden md:flex fixed right-6 top-1/2 -translate-y-1/2 z-[2002] w-12 h-12 rounded-full bg-white/15 hover:bg-white/25 text-white items-center justify-center transition-colors"
-        aria-label="Next story"
-        onClick={advanceStory}
-      >
-        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
     </div>,
     document.body,
   );

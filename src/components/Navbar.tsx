@@ -20,13 +20,13 @@ const HANDLING_FEE = 2;
 const iconBtnBase =
   "flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full border-none bg-transparent cursor-pointer transition-colors duration-200 no-underline shrink-0";
 
-const iconBtnDefault = `${iconBtnBase} text-gray-400 hover:bg-white/10 hover:text-gray-300`;
-const iconBtnHero = `${iconBtnBase} text-gray-400 hover:bg-white/10 hover:text-gray-300`;
+const iconBtnDefault = `${iconBtnBase} text-gray-400 hover:bg-black/5 hover:text-gray-600`;
+const iconBtnHero = `${iconBtnBase} text-white hover:bg-white/15 hover:text-white`;
 
 const navOrderBtn =
-  "flex items-center justify-center relative overflow-visible w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-14 lg:h-14 rounded-full border-none bg-transparent cursor-pointer transition-[color,transform] duration-300 no-underline shrink-0 text-gray-400 hover:text-gray-300 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/40 focus-visible:ring-offset-2";
+  "flex items-center justify-center relative overflow-visible w-12 h-12 sm:w-[52px] sm:h-[52px] lg:w-14 lg:h-14 rounded-full border-none bg-transparent cursor-pointer transition-[color,transform] duration-300 no-underline shrink-0 text-gray-400 hover:text-gray-600 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400/40 focus-visible:ring-offset-2";
 
-const navOrderBtnHero = `${navOrderBtn} text-gray-400 hover:text-gray-300 focus-visible:ring-gray-400/50`;
+const navOrderBtnHero = `${navOrderBtn} text-white hover:text-white focus-visible:ring-white/50`;
 
 const iconSvg = "w-5 h-5 sm:w-[22px] sm:h-[22px] lg:w-7 lg:h-7";
 
@@ -52,9 +52,75 @@ function GiftCardNavIcon({ className }: { className?: string }) {
   );
 }
 
-function truncateText(text: string, max = 48) {
-  if (text.length <= max) return text;
-  return `${text.slice(0, max).trimEnd()}…`;
+/** Plate + fork — common “Explore our food” mark used by QSR brands */
+function ExploreFoodNavIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.65"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2" />
+      <path d="M5 2v20" />
+      <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3z" />
+      <path d="M18 15v7" />
+    </svg>
+  );
+}
+
+function NavOrderNowTypewriter({ hero }: { hero?: boolean }) {
+  const full = "ORDER NOW";
+  const [text, setText] = useState("");
+  const [phase, setPhase] = useState<"typing" | "hold" | "deleting">("typing");
+
+  useEffect(() => {
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setText(full);
+      return;
+    }
+
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (phase === "typing") {
+      if (text.length < full.length) {
+        timer = setTimeout(() => setText(full.slice(0, text.length + 1)), 90);
+      } else {
+        timer = setTimeout(() => setPhase("hold"), 1200);
+      }
+    } else if (phase === "hold") {
+      timer = setTimeout(() => setPhase("deleting"), 400);
+    } else if (phase === "deleting") {
+      if (text.length > 0) {
+        timer = setTimeout(() => setText(full.slice(0, text.length - 1)), 55);
+      } else {
+        timer = setTimeout(() => setPhase("typing"), 350);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [text, phase]);
+
+  return (
+    <span
+      className={`nav-order-now-chip pointer-events-none absolute -top-1 -right-2 z-10 inline-flex min-w-[4.6em] items-center justify-start whitespace-nowrap rounded-full px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide sm:-top-1.5 sm:-right-2.5 sm:min-w-[5em] sm:text-[9px] lg:-top-2 lg:-right-1 lg:px-2 lg:text-[10px] ${
+        hero
+          ? "bg-white text-svs-orange shadow-sm"
+          : "bg-svs-orange text-white shadow-sm"
+      }`}
+      aria-hidden
+    >
+      <span>{text}</span>
+      <span className="nav-order-now-caret ml-px inline-block h-[0.85em] w-[1.5px] bg-current" />
+    </span>
+  );
 }
 
 function StoryTriggerButton({
@@ -102,9 +168,7 @@ function MenuCenterBar({
   open: boolean;
 }) {
   const { store } = useCart();
-  const fallback = truncateText(
-    `${storeDisplayName(store)} · ${store.address}`,
-  );
+  const fallback = `${storeDisplayName(store)} · ${store.address}`;
   const locationLine = useMenuDeliveryLocationLine(fallback);
 
   return (
@@ -294,6 +358,7 @@ function NavIcons({
   hero = false,
   menuMode = false,
   homePage = false,
+  explorePage = false,
   accountPage = false,
   cartPage = false,
   stacked = false,
@@ -304,6 +369,7 @@ function NavIcons({
   hero?: boolean;
   menuMode?: boolean;
   homePage?: boolean;
+  explorePage?: boolean;
   accountPage?: boolean;
   cartPage?: boolean;
   stacked?: boolean;
@@ -321,7 +387,7 @@ function NavIcons({
   const svgClass = menuMode
     ? "w-4 h-4 min-[400px]:w-[18px] min-[400px]:h-[18px] sm:w-5 sm:h-5"
     : iconSvg;
-  const showCartAndLocation = !menuMode && !homePage;
+  const showCartAndLocation = !menuMode && !homePage && !explorePage;
   const btn = stacked ? stackedBtn : iconBtn;
 
   return (
@@ -400,6 +466,21 @@ function NavIcons({
         />
       ) : null}
 
+      {homePage ? (
+        <Link
+          href="/explore"
+          className={btn}
+          id="btn-explore"
+          aria-label="Explore our food"
+          onClick={onNavigate}
+        >
+          <ExploreFoodNavIcon className={svgClass} />
+          {stacked ? (
+            <span className="text-sm font-semibold">Explore</span>
+          ) : null}
+        </Link>
+      ) : null}
+
       {showCartAndLocation && !accountPage && !cartPage ? (
         <Link
           href="/locations"
@@ -466,7 +547,7 @@ function NavIcons({
             stacked
               ? `${btn} !justify-start`
               : homePage
-                ? `${hero ? navOrderBtnHero : navOrderBtn} w-10 h-10 sm:w-11 sm:h-11 lg:w-16 lg:h-16 xl:w-20 xl:h-20`
+                ? `${hero ? navOrderBtnHero : navOrderBtn} relative w-10 h-10 sm:w-11 sm:h-11 lg:w-16 lg:h-16 xl:w-20 xl:h-20`
                 : `${iconBtn} relative flex items-center justify-center`
           }
           id="btn-menu"
@@ -475,16 +556,20 @@ function NavIcons({
         >
           <img
             src="/Package.png"
-            alt="Order now"
+            alt=""
             className={
               stacked
                 ? "h-6 w-6 object-contain"
                 : homePage
-                  ? "h-9 w-9 sm:h-10 sm:w-10 lg:h-14 lg:w-14 xl:h-16 xl:w-16 object-contain hover:scale-110 transition-transform duration-200"
-                  : "w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 object-contain hover:scale-110 transition-transform duration-200"
+                  ? "h-9 w-9 sm:h-10 sm:w-10 lg:h-14 lg:w-14 xl:h-16 xl:w-16 object-contain transition-transform duration-200 group-hover:scale-110"
+                  : "w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 object-contain transition-transform duration-200 hover:scale-110"
             }
           />
-          {stacked ? <span className="text-sm font-semibold">Order now</span> : null}
+          {stacked ? (
+            <span className="text-sm font-semibold">Order now</span>
+          ) : (
+            <NavOrderNowTypewriter hero={hero} />
+          )}
         </Link>
       ) : null}
     </>
@@ -495,6 +580,7 @@ export default function Navbar({
   variant = "default",
   menuMode = false,
   homePage = false,
+  explorePage = false,
   accountPage = false,
   cartPage = false,
 }: {
@@ -503,6 +589,8 @@ export default function Navbar({
   menuMode?: boolean;
   /** Home `/` — hide cart + location icons in the bar */
   homePage?: boolean;
+  /** Explore `/explore` — hide cart + location icons in the bar */
+  explorePage?: boolean;
   /** Account/profile — sit slightly lower with white page bg */
   accountPage?: boolean;
   /** Cart page — hide the cart bag icon */
@@ -593,9 +681,9 @@ export default function Navbar({
           ? "flex flex-nowrap items-end h-12 sm:h-14 md:h-16 lg:h-[72px]"
           : "flex flex-nowrap items-center min-h-12 sm:min-h-14"
         } pl-3 sm:pl-4 md:pl-6 lg:pl-8 pr-2 sm:pr-3 md:pr-3 lg:pr-4 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b ${menuMode ? "border-black/10" : "border-transparent"} shadow-none ${homePage
-          ? "top-3 sm:top-4 lg:top-5 pb-1 sm:pb-1.5 lg:pb-2.5"
+          ? "top-5 sm:top-6 lg:top-8 pb-1 sm:pb-1.5 lg:pb-2.5"
           : "top-0 pt-2.5 sm:pt-3 md:pt-4 pb-2 sm:pb-3"
-        } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} text-gray-400`}
+        } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-400"}`}
       id="main-navbar"
     >
       {menuMode ? (
@@ -638,6 +726,7 @@ export default function Navbar({
                   hero={hero}
                   menuMode={menuMode}
                   homePage={homePage}
+                  explorePage={explorePage}
                   accountPage={accountPage}
                   onNavigate={handleNavAction}
                   onOpenStories={() => setStoriesOpen(true)}
@@ -683,6 +772,7 @@ export default function Navbar({
               hero={hero}
               menuMode={menuMode}
               homePage={homePage}
+              explorePage={explorePage}
               accountPage={accountPage}
               cartPage={cartPage}
               onNavigate={handleNavAction}
@@ -714,6 +804,7 @@ export default function Navbar({
               hero={hero}
               menuMode={menuMode}
               homePage={homePage}
+              explorePage={explorePage}
               accountPage={accountPage}
               cartPage={cartPage}
               onNavigate={handleNavAction}

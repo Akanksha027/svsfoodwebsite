@@ -9,7 +9,7 @@ import { resolveStoreLocation, storeDisplayName } from "@/data/locations";
 import { fetchStoreMenu } from "@/lib/menu-api";
 
 type MenuPageProps = {
-  searchParams: Promise<{ q?: string; store?: string }>;
+  searchParams: Promise<{ q?: string; store?: string; item?: string }>;
 };
 
 export async function generateMetadata({
@@ -24,10 +24,11 @@ export async function generateMetadata({
 }
 
 export default async function MenuPage({ searchParams }: MenuPageProps) {
-  const { q, store: storeParam } = await searchParams;
+  const { q, store: storeParam, item: itemParam } = await searchParams;
   const hasStoreParam = Boolean(storeParam?.trim());
   const store = resolveStoreLocation(storeParam);
   const query = (q || "").trim();
+  const focusItemId = (itemParam || "").trim();
 
   let menu = null;
   let errorMessage: string | null = null;
@@ -54,6 +55,7 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
             key={store.backendStoreId}
             store={store}
             initialQuery={query}
+            focusItemId={focusItemId}
             initialMenu={menu}
             initialError={errorMessage}
           />

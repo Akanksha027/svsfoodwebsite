@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import AppDownloadPromo from "@/components/AppDownloadPromo";
 import { useBodyScrollLock } from "@/lib/body-scroll-lock";
+import { useHeroBackdropSnapshot } from "@/hooks/useHeroBackdropSnapshot";
 import {
   accountMenuPanelClass,
   accountOverlayBackdropClass,
@@ -42,7 +43,8 @@ export default function AccountMenuDropdown() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
-  useBodyScrollLock(accountMenuOpen);
+  useBodyScrollLock(accountMenuOpen, isHome);
+  const heroBackdrop = useHeroBackdropSnapshot(accountMenuOpen, isHome);
 
   useEffect(() => {
     if (!accountMenuOpen) return;
@@ -72,6 +74,14 @@ export default function AccountMenuDropdown() {
       role="dialog"
       aria-label="My account menu"
     >
+      {heroBackdrop ? (
+        <div
+          className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${heroBackdrop})` }}
+          aria-hidden
+        />
+      ) : null}
+
       <button
         type="button"
         className={accountOverlayBackdropClass(isHome, "menu")}

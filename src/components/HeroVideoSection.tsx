@@ -145,13 +145,13 @@ export default function HeroVideoSection() {
   }, [drawFrame, ready]);
 
   const t = copyProgress(progress);
-  // Phone: milder left travel + less -translateX so scrolled copy isn't clipped.
-  const scale = 1 - t * (narrow ? 0.22 : 0.38);
-  const xPct = 50 - t * (narrow ? 16 : 32); // phone ends ~34%
-  const yPct = (narrow ? 40 : 28) - t * (narrow ? 14 : 16);
-  const gap = narrow ? 1 : 1.25;
-  // Start centered (-50%); on phone ease toward -26% so block sits further right.
-  const translateX = narrow ? -50 + t * 24 : -50;
+  // Scrolled end position: +10% right, +20% down from prior top-left anchor.
+  // Large screens shrink less so headline + CTA stay readable on the left.
+  const scale = 1 - t * (narrow ? 0.22 : 0.12);
+  const xPct = 50 - t * (narrow ? 6 : 17); // desktop: less left drift (~33% at rest)
+  const yPct = (narrow ? 40 : 28) - t * (narrow ? 14 : 16) + t * 20; // +20% down at full scroll
+  const gap = narrow ? 1 : 1.35;
+  const translateX = narrow ? -50 + t * 34 : -50 + t * 15; // nudge right when scrolled
   const scrolledLeft = narrow && t > 0.35;
 
   return (
@@ -183,7 +183,7 @@ export default function HeroVideoSection() {
               ? scrolledLeft
                 ? "w-[min(72vw,360px)] items-start pl-1 pr-2 text-left"
                 : "w-[min(88vw,720px)] items-center px-5 text-center"
-              : "w-[min(88vw,780px)] items-start px-4 sm:px-6 md:px-0"
+              : "w-[min(92vw,920px)] items-start px-4 sm:px-6 md:px-0"
           }`}
           style={{
             left: `${xPct}%`,
@@ -194,8 +194,12 @@ export default function HeroVideoSection() {
           }}
         >
           <h1
-            className={`font-bagoss text-[clamp(1.75rem,8vw,7.5rem)] font-bold leading-[0.92] tracking-[-0.03em] text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.5)] ${
+            className={`font-bagoss font-bold leading-[0.92] tracking-[-0.03em] text-white drop-shadow-[0_4px_28px_rgba(0,0,0,0.5)] ${
               narrow && !scrolledLeft ? "text-center" : "text-left"
+            } ${
+              narrow
+                ? "text-[clamp(1.45rem,4.8vw,3.65rem)]"
+                : "text-[clamp(2.75rem,5.4vw,5rem)]"
             }`}
           >
             <span className="block max-[420px]:whitespace-normal sm:whitespace-nowrap">
@@ -207,7 +211,11 @@ export default function HeroVideoSection() {
           </h1>
           <Link
             href="/menu"
-            className="pointer-events-auto inline-flex min-h-[2.65rem] items-center justify-center rounded-full bg-[#f16a34] px-7 py-3 text-[1.05rem] font-semibold text-white shadow-lg shadow-black/25 transition hover:brightness-110 active:scale-[0.98] sm:min-h-[3.25rem] sm:px-11 sm:py-4 sm:text-[1.5rem] md:min-h-[3.5rem] md:px-12 md:py-5 md:text-[1.65rem] lg:min-h-[3.75rem] lg:px-14 lg:py-6 lg:text-[1.85rem] xl:text-[2rem]"
+            className={`pointer-events-auto inline-flex items-center justify-center rounded-full bg-[#f16a34] font-semibold text-white shadow-lg shadow-black/25 transition hover:brightness-110 active:scale-[0.98] ${
+              narrow
+                ? "min-h-[2.35rem] px-6 py-2.5 text-[0.95rem] sm:min-h-[2.5rem] sm:px-7 sm:text-[1.05rem]"
+                : "min-h-[3.35rem] px-11 py-3.5 text-[1.35rem] xl:min-h-[3.65rem] xl:px-12 xl:text-[1.5rem]"
+            }`}
           >
             Order now
           </Link>

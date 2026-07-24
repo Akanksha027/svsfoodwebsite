@@ -53,14 +53,14 @@ function OrderTypeArt({
 }) {
   const art = ORDER_TYPE_ART[type];
   return (
-    <span className="relative flex h-[4.5rem] w-[4.5rem] sm:h-[5rem] sm:w-[5rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#fff4ee] ring-1 ring-black/[0.04]">
+    <span className="relative flex h-[3.5rem] w-[3.5rem] sm:h-[3.75rem] sm:w-[3.75rem] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#fff4ee] ring-1 ring-black/[0.04]">
       <Image
         src={art.src}
         alt={art.alt}
         fill
         unoptimized
         className="object-contain object-center p-1"
-        sizes="80px"
+        sizes="64px"
       />
     </span>
   );
@@ -133,24 +133,24 @@ function QtyStepper({
 }) {
   return (
     <div
-      className="inline-flex h-8 items-center overflow-hidden rounded-lg text-sm font-bold text-white shadow-sm"
+      className="inline-flex h-[28px] items-center overflow-hidden rounded-md text-xs font-bold text-white shadow-sm"
       style={{ backgroundColor: SVS_ORANGE }}
     >
       <button
         type="button"
         onClick={onDec}
-        className="flex h-full w-8 items-center justify-center border-0 bg-transparent cursor-pointer hover:bg-black/10"
+        className="flex h-full w-7 items-center justify-center border-0 bg-transparent cursor-pointer hover:bg-black/10 text-[13px]"
         aria-label="Decrease quantity"
       >
         −
       </button>
-      <span className="min-w-[26px] flex items-center justify-center">
-        <RollingCounter value={quantity} fontSize={14} color="#ffffff" />
+      <span className="min-w-[20px] flex items-center justify-center">
+        <RollingCounter value={quantity} fontSize={12} color="#ffffff" />
       </span>
       <button
         type="button"
         onClick={onInc}
-        className="flex h-full w-8 items-center justify-center border-0 bg-transparent cursor-pointer hover:bg-black/10"
+        className="flex h-full w-7 items-center justify-center border-0 bg-transparent cursor-pointer hover:bg-black/10 text-[13px]"
         aria-label="Increase quantity"
       >
         +
@@ -711,7 +711,7 @@ export default function CartDrawer() {
             </div>
 
             {/* Order type picker */}
-            <div className="mx-4 mb-3 bg-white">
+            <div className="mx-4 mb-3 mt-4 bg-white sm:mt-5">
               <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400 mb-2.5">
                 How would you like it?
               </p>
