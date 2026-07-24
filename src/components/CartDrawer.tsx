@@ -22,6 +22,7 @@ import { persistCheckoutDeliveryAddress } from "@/lib/website-customer-api";
 import { abandonCheckoutPayment } from "@/lib/orders-api";
 import { resolveDeliveryCoords } from "@/lib/reverse-geocode";
 
+const PG_PENDING_KEY = "svs_pending_pg_payment";
 const SVS_ORANGE = "#f16a34";
 const HANDLING_FEE = 2;
 
@@ -273,11 +274,16 @@ export default function CartDrawer() {
     cancelActivePlaceOrder();
     setPendingPay(null);
 
-    if (pending) {
+    if (pending && pending.channel === "upi") {
       void abandonCheckoutPayment({
         storeId: pending.storeId,
         orderId: pending.orderId,
         transactionId: pending.transactionId,
+      }).catch(() => undefined);
+    } else if (pending) {
+      void abandonCheckoutPayment({
+        storeId: pending.storeId,
+        orderId: pending.orderId,
       }).catch(() => undefined);
     }
 
@@ -330,9 +336,9 @@ export default function CartDrawer() {
 
   const handlePlaceOrder = useCallback(async () => {
     const attempt = ++placeOrderAttemptRef.current;
-    const payingOnline = checkout.effectivePay === "online";
+    const payingUpi = checkout.effectivePay === "upi";
     setPaymentCancelNotice(null);
-    if (payingOnline) {
+    if (payingUpi) {
       // Switch to pay shell immediately so we never flash empty cart.
       setPendingPay(null);
       setStep("pay");
@@ -347,6 +353,11 @@ export default function CartDrawer() {
             storeId: result.pending.storeId,
             orderId: result.pending.orderId,
             transactionId: result.pending.transactionId,
+          }).catch(() => undefined);
+        } else if (result.kind === "online_pg") {
+          void abandonCheckoutPayment({
+            storeId: result.pending.storeId,
+            orderId: result.pending.orderId,
           }).catch(() => undefined);
         }
         setPaymentCancelNotice(
@@ -366,6 +377,11 @@ export default function CartDrawer() {
         );
         return;
       }
+      if (result.kind === "online_pg") {
+        sessionStorage.setItem(PG_PENDING_KEY, JSON.stringify(result.pending));
+        window.location.assign(result.pending.redirectUrl);
+        return;
+      }
       setPendingPay(result.pending);
       setStep("pay");
       // Keep cart until UPI succeeds — cancel returns to cart with items.
@@ -381,7 +397,7 @@ export default function CartDrawer() {
         setPendingPay(null);
         return;
       }
-      if (payingOnline) {
+      if (payingUpi) {
         setStep("checkout2");
         setPendingPay(null);
       }
@@ -500,7 +516,7 @@ export default function CartDrawer() {
             onClose={finishAndClose}
           />
         ) : step === "pay" ? (
-          pendingPay ? (
+          pendingPay && pendingPay.channel === "upi" ? (
             <CartDrawerPayStep
               pending={pendingPay}
               onPaid={handlePaid}
@@ -712,7 +728,7 @@ export default function CartDrawer() {
                       type="button"
                       onClick={() => {
                         checkout.setOrderType(type);
-                        if (type === "dine_in") checkout.setPayMethod("online");
+                        if (type === "dine_in") checkout.setPayMethod("upi");
                       }}
                       className={[
                         "min-h-[7.5rem] sm:min-h-[8.25rem] flex flex-col items-center justify-center gap-2 rounded-2xl text-[11px] sm:text-xs font-bold border-[3px] cursor-pointer transition-all px-1.5 py-2.5",

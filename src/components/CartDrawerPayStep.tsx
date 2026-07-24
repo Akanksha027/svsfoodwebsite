@@ -5,13 +5,13 @@ import { useEffect, useMemo, useState } from "react";
 import { resolveStoreLocation } from "@/data/locations";
 import { getPaymentStatus } from "@/lib/orders-api";
 import { formatInr } from "@/lib/menu-api";
-import type { PendingPayment } from "@/hooks/useWebCheckout";
+import type { PendingUpiPayment } from "@/hooks/useWebCheckout";
 
 /** How long we wait for UPI confirmation before expiring the session UI. */
 const PAY_TIMEOUT_SEC = 5 * 60;
 
 type Props = {
-  pending: PendingPayment;
+  pending: PendingUpiPayment;
   onPaid: (orderId: string, storeSlug: string) => void;
   onCancel: () => void;
 };

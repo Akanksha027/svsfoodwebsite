@@ -221,7 +221,7 @@ export function assertCheckoutAllowed(input: {
   policy: WebsiteStorePolicy;
   orderType: "dine_in" | "takeaway" | "delivery";
   subtotal: number;
-  payMethod: "online" | "cod";
+  payMethod: "upi" | "card" | "cod";
   deliveryLat?: number | null;
   deliveryLng?: number | null;
 }): void {

@@ -19,11 +19,14 @@ import {
 } from "@/lib/user-location";
 import {
   createPaymentSession,
+  createPgPaymentSession,
   createWebOrder,
   confirmCodPlace,
   abandonCheckoutPayment,
+  fetchPgPaymentsAvailable,
   type WebOrderType,
 } from "@/lib/orders-api";
+import { SITE_URL } from "@/lib/config";
 import { isValidIndianMobile, normalizeIndianMobile } from "@/lib/indian-phone";
 import type { WebsiteCustomerAddress } from "@/lib/website-customer-api";
 import {
@@ -33,9 +36,10 @@ import {
   type WebsiteStorePolicy,
 } from "@/lib/store-policies";
 
-export type PayMethod = "online" | "cod";
+export type PayMethod = "upi" | "card" | "cod";
 
-export type PendingPayment = {
+export type PendingUpiPayment = {
+  channel: "upi";
   orderId: string;
   orderNumber: string | number;
   storeSlug: string;
@@ -46,6 +50,20 @@ export type PendingPayment = {
   isMock?: boolean;
 };
 
+export type PendingPgPayment = {
+  channel: "pg";
+  orderId: string;
+  orderNumber: string | number;
+  storeSlug: string;
+  storeId: string;
+  pgOrderId: string;
+  redirectUrl: string;
+  amount: string;
+  isMock?: boolean;
+};
+
+export type PendingPayment = PendingUpiPayment | PendingPgPayment;
+
 export type CheckoutPlaced =
   | {
       kind: "cod";
@@ -53,7 +71,8 @@ export type CheckoutPlaced =
       orderNumber: string | number;
       storeSlug: string;
     }
-  | { kind: "online"; pending: PendingPayment };
+  | { kind: "online"; pending: PendingUpiPayment }
+  | { kind: "online_pg"; pending: PendingPgPayment };
 
 export class PlaceOrderAbortedError extends Error {
   constructor() {
@@ -77,7 +96,7 @@ export function useWebCheckout(options: Options = {}) {
   const { lines, store, subtotal, clearCart } = useCart();
 
   const [orderType, setOrderType] = useState<WebOrderType>("delivery");
-  const [payMethod, setPayMethod] = useState<PayMethod>("online");
+  const [payMethod, setPayMethod] = useState<PayMethod>("upi");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [flat, setFlat] = useState("");
@@ -121,17 +140,46 @@ export function useWebCheckout(options: Options = {}) {
     [subtotal, orderType, policy.delivery_fee],
   );
 
+  const [pgAvailable, setPgAvailable] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchPgPaymentsAvailable({ storeId: store.backendStoreId })
+      .then((r) => {
+        if (!cancelled) setPgAvailable(r.available);
+      })
+      .catch(() => {
+        if (!cancelled) setPgAvailable(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [store.backendStoreId]);
+
   const codAllowed =
     (orderType === "delivery" || orderType === "takeaway") &&
     policy.web_cod_enabled;
-  const effectivePay: PayMethod =
-    orderType === "dine_in" || !codAllowed ? "online" : payMethod;
+  const effectivePay: PayMethod = useMemo(() => {
+    if (orderType === "dine_in") {
+      return payMethod === "card" && pgAvailable ? "card" : "upi";
+    }
+    if (!codAllowed) {
+      return payMethod === "card" && pgAvailable ? "card" : "upi";
+    }
+    return payMethod;
+  }, [orderType, codAllowed, payMethod, pgAvailable]);
 
   useEffect(() => {
     if (!codAllowed && payMethod === "cod") {
-      setPayMethod("online");
+      setPayMethod("upi");
     }
   }, [codAllowed, payMethod]);
+
+  useEffect(() => {
+    if (payMethod === "card" && !pgAvailable) {
+      setPayMethod("upi");
+    }
+  }, [payMethod, pgAvailable]);
 
   const fullAddress = useMemo(
     () =>
@@ -360,6 +408,32 @@ export function useWebCheckout(options: Options = {}) {
         };
       }
 
+      if (effectivePay === "card") {
+        const redirectUrl = `${SITE_URL}/pay/return?order=${encodeURIComponent(order.order_id)}&store=${encodeURIComponent(store.id)}`;
+        const pgSession = await createPgPaymentSession({
+          storeId: store.backendStoreId,
+          orderId: order.order_id,
+          amount: totals.grandTotal,
+          redirectUrl,
+        });
+
+        throwIfCancelled();
+
+        const pending: PendingPgPayment = {
+          channel: "pg",
+          orderId: order.order_id,
+          orderNumber: order.order_number,
+          storeSlug: store.id,
+          storeId: store.backendStoreId,
+          pgOrderId: pgSession.pg_order_id,
+          redirectUrl: pgSession.redirect_url,
+          amount: pgSession.amount || String(totals.grandTotal),
+          isMock: pgSession.mode === "mock",
+        };
+
+        return { kind: "online_pg", pending };
+      }
+
       const session = await createPaymentSession({
         storeId: store.backendStoreId,
         orderId: order.order_id,
@@ -369,7 +443,8 @@ export function useWebCheckout(options: Options = {}) {
 
       throwIfCancelled();
 
-      const pending: PendingPayment = {
+      const pending: PendingUpiPayment = {
+        channel: "upi",
         orderId: order.order_id,
         orderNumber: order.order_number,
         storeSlug: store.id,
@@ -380,7 +455,6 @@ export function useWebCheckout(options: Options = {}) {
         isMock: session.is_mock === true,
       };
 
-      // Keep cart until payment succeeds — cancel restores checkout UX.
       return { kind: "online", pending };
     } catch (err) {
       if (err instanceof PlaceOrderAbortedError) {
@@ -465,7 +539,7 @@ export function useWebCheckout(options: Options = {}) {
           policy,
           orderType,
           subtotal,
-          payMethod: "online",
+          payMethod: effectivePay,
           deliveryLat: coords?.lat,
           deliveryLng: coords?.lng,
         });
@@ -474,7 +548,7 @@ export function useWebCheckout(options: Options = {}) {
           policy,
           orderType,
           subtotal,
-          payMethod: "online",
+          payMethod: effectivePay,
         });
       }
     } catch (err) {
@@ -501,6 +575,7 @@ export function useWebCheckout(options: Options = {}) {
     setOrderType,
     payMethod,
     setPayMethod,
+    pgAvailable,
     name,
     setName,
     phone,

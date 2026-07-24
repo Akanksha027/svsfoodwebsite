@@ -9,16 +9,11 @@ import { abandonCheckoutPayment, getPaymentStatus } from "@/lib/orders-api";
 import { formatInr } from "@/lib/menu-api";
 import { useCart } from "@/context/CartContext";
 
-type PendingPayment = {
-  orderId: string;
-  orderNumber: string | number;
-  storeSlug: string;
-  storeId: string;
-  transactionId: string;
-  qrPayload: string;
-  amount: string;
-  isMock?: boolean;
-};
+import type { PendingUpiPayment } from "@/hooks/useWebCheckout";
+
+const UPI_PENDING_KEY = "svs_pending_payment";
+
+type PendingPayment = PendingUpiPayment;
 
 function PayInner() {
   const router = useRouter();
@@ -34,7 +29,7 @@ function PayInner() {
 
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem("svs_pending_payment");
+      const raw = sessionStorage.getItem(UPI_PENDING_KEY);
       if (!raw) {
         setError("Payment session not found. Please checkout again.");
         return;
@@ -65,7 +60,7 @@ function PayInner() {
         if (cancelled) return;
         if (result.internal_status === "paid") {
           setStatus("paid");
-          sessionStorage.removeItem("svs_pending_payment");
+          sessionStorage.removeItem(UPI_PENDING_KEY);
           clearCart();
           router.replace(
             `/order/${encodeURIComponent(pending.orderId)}?store=${encodeURIComponent(store.id)}`,
@@ -99,7 +94,7 @@ function PayInner() {
     } catch {
       /* still leave pay screen */
     }
-    sessionStorage.removeItem("svs_pending_payment");
+    sessionStorage.removeItem(UPI_PENDING_KEY);
     router.replace("/cart");
   };
 

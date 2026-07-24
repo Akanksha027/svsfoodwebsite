@@ -116,6 +116,55 @@ export async function createPaymentSession(input: {
   });
 }
 
+/** PhonePe PG hosted checkout — cards / netbanking (not UPI QR). */
+export async function createPgPaymentSession(input: {
+  storeId: string;
+  orderId: string;
+  amount: number;
+  redirectUrl: string;
+}) {
+  return apiRequest<{
+    order_id: string;
+    merchant_order_id: string;
+    pg_order_id: string;
+    redirect_url: string;
+    state: string;
+    amount_paise: number;
+    amount?: string;
+    mode?: string;
+  }>("/payments/pg/session", {
+    method: "POST",
+    storeId: input.storeId,
+    body: {
+      order_id: input.orderId,
+      amount: input.amount,
+      redirect_url: input.redirectUrl,
+    },
+  });
+}
+
+export async function getPgPaymentStatus(input: {
+  storeId: string;
+  orderId: string;
+}) {
+  return apiRequest<{
+    merchant_order_id: string;
+    pg_order_id?: string | null;
+    state?: string;
+    internal_status: string;
+    payment_details?: unknown;
+    txn_id?: string | null;
+  }>(`/payments/pg/status/${encodeURIComponent(input.orderId)}`, {
+    storeId: input.storeId,
+  });
+}
+
+export async function fetchPgPaymentsAvailable(input: { storeId: string }) {
+  return apiRequest<{ available: boolean }>("/payments/pg/available", {
+    storeId: input.storeId,
+  });
+}
+
 export async function getPaymentStatus(input: {
   storeId: string;
   transactionId: string;

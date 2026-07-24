@@ -14,6 +14,9 @@ import { useWebsiteAuth } from "@/context/WebsiteAuthContext";
 import { persistCheckoutDeliveryAddress } from "@/lib/website-customer-api";
 import { resolveDeliveryCoords } from "@/lib/reverse-geocode";
 
+const UPI_PENDING_KEY = "svs_pending_payment";
+const PG_PENDING_KEY = "svs_pending_pg_payment";
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { itemCount, store } = useCart();
@@ -48,10 +51,12 @@ export default function CheckoutPage() {
         );
         return;
       }
-      sessionStorage.setItem(
-        "svs_pending_payment",
-        JSON.stringify(result.pending),
-      );
+      if (result.kind === "online_pg") {
+        sessionStorage.setItem(PG_PENDING_KEY, JSON.stringify(result.pending));
+        window.location.assign(result.pending.redirectUrl);
+        return;
+      }
+      sessionStorage.setItem(UPI_PENDING_KEY, JSON.stringify(result.pending));
       router.push(
         `/pay?order=${encodeURIComponent(result.pending.orderId)}&store=${encodeURIComponent(result.pending.storeSlug)}`,
       );

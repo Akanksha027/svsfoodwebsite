@@ -160,6 +160,7 @@ export default function CartCheckoutForm({
     totals,
     codAllowed,
     effectivePay,
+    pgAvailable,
     applyLocation,
     clearLocationDenied,
     validateOrderStep,
@@ -224,7 +225,7 @@ export default function CartCheckoutForm({
 
   const pickType = (type: WebOrderType) => {
     setOrderType(type);
-    if (type === "dine_in") setPayMethod("online");
+    if (type === "dine_in") setPayMethod("upi");
     setStepError(null);
   };
 
@@ -521,7 +522,7 @@ export default function CartCheckoutForm({
     <div className="flex flex-col min-h-0 flex-1">
       <CheckoutProgress page={2} />
       <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-6 space-y-6 pt-4">
-        {codAllowed ? (
+        {codAllowed || pgAvailable ? (
           <section>
             <h3 className="text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-3">
               Payment
@@ -529,33 +530,48 @@ export default function CartCheckoutForm({
             <div className="grid grid-cols-1 gap-3">
               <button
                 type="button"
-                onClick={() => setPayMethod("online")}
+                onClick={() => setPayMethod("upi")}
                 className={`rounded-xl px-4 py-3.5 text-left text-[13px] font-bold border cursor-pointer ${
-                  effectivePay === "online"
+                  effectivePay === "upi"
                     ? "bg-[#f16a34] text-white border-[#f16a34]"
                     : "bg-white text-gray-900 border-gray-200"
                 }`}
               >
-                Pay online · UPI QR
+                Pay with UPI · scan QR
               </button>
-              <button
-                type="button"
-                onClick={() => setPayMethod("cod")}
-                className={`rounded-xl px-4 py-3.5 text-left text-[13px] font-bold border cursor-pointer ${
-                  effectivePay === "cod"
-                    ? "bg-[#f16a34] text-white border-[#f16a34]"
-                    : "bg-white text-gray-900 border-gray-200"
-                }`}
-              >
-                {orderType === "delivery"
-                  ? "Cash on delivery"
-                  : "Pay at counter (cash)"}
-              </button>
+              {pgAvailable ? (
+                <button
+                  type="button"
+                  onClick={() => setPayMethod("card")}
+                  className={`rounded-xl px-4 py-3.5 text-left text-[13px] font-bold border cursor-pointer ${
+                    effectivePay === "card"
+                      ? "bg-[#f16a34] text-white border-[#f16a34]"
+                      : "bg-white text-gray-900 border-gray-200"
+                  }`}
+                >
+                  Pay with card / netbanking
+                </button>
+              ) : null}
+              {codAllowed ? (
+                <button
+                  type="button"
+                  onClick={() => setPayMethod("cod")}
+                  className={`rounded-xl px-4 py-3.5 text-left text-[13px] font-bold border cursor-pointer ${
+                    effectivePay === "cod"
+                      ? "bg-[#f16a34] text-white border-[#f16a34]"
+                      : "bg-white text-gray-900 border-gray-200"
+                  }`}
+                >
+                  {orderType === "delivery"
+                    ? "Cash on delivery"
+                    : "Pay at counter (cash)"}
+                </button>
+              ) : null}
             </div>
           </section>
         ) : (
           <p className="text-xs text-gray-500 rounded-lg bg-gray-50 px-3 py-2">
-            Dine-in orders are paid online via UPI.
+            Dine-in orders are paid online via UPI QR.
           </p>
         )}
 
@@ -635,10 +651,14 @@ export default function CartCheckoutForm({
           className="w-full h-14 rounded-2xl bg-[#f16a34] text-white font-bold text-sm cursor-pointer disabled:opacity-50 shadow-md"
         >
           {busy
-            ? "Placing order…"
+            ? effectivePay === "card"
+              ? "Redirecting to payment…"
+              : "Placing order…"
             : effectivePay === "cod"
               ? `Confirm order · ${formatInr(totals.grandTotal)}`
-              : `Pay ${formatInr(totals.grandTotal)}`}
+              : effectivePay === "card"
+                ? `Continue to pay · ${formatInr(totals.grandTotal)}`
+                : `Pay ${formatInr(totals.grandTotal)} · UPI`}
         </button>
       </div>
     </div>
