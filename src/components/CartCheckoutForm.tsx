@@ -55,7 +55,7 @@ function TypeOption({
       }`}
     >
       <span
-        className={`block text-[13px] font-extrabold ${
+        className={`block text-[13px] font-bold ${
           active ? "text-[#f16a34]" : "text-gray-900"
         }`}
       >
@@ -523,7 +523,7 @@ export default function CartCheckoutForm({
       <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-6 space-y-6 pt-4">
         {codAllowed ? (
           <section>
-            <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-gray-400 mb-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-3">
               Payment
             </h3>
             <div className="grid grid-cols-1 gap-3">
@@ -560,7 +560,7 @@ export default function CartCheckoutForm({
         )}
 
         <section className="space-y-3.5">
-          <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-gray-400">
+          <h3 className="text-[11px] font-bold uppercase tracking-wide text-gray-400">
             Your details
           </h3>
           <label className="block">
@@ -602,7 +602,7 @@ export default function CartCheckoutForm({
         <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm space-y-2">
           <div className="flex justify-between">
             <span className="text-gray-600">To pay</span>
-            <span className="font-extrabold text-[#f16a34] tabular-nums">
+            <span className="font-bold text-[#f16a34] tabular-nums">
               {formatInr(totals.grandTotal)}
             </span>
           </div>
@@ -632,7 +632,7 @@ export default function CartCheckoutForm({
           type="button"
           disabled={busy}
           onClick={() => void handlePlaceOrderClick()}
-          className="w-full h-14 rounded-2xl bg-[#f16a34] text-white font-extrabold text-sm cursor-pointer disabled:opacity-50 shadow-md"
+          className="w-full h-14 rounded-2xl bg-[#f16a34] text-white font-bold text-sm cursor-pointer disabled:opacity-50 shadow-md"
         >
           {busy
             ? "Placing order…"

@@ -121,7 +121,7 @@ export default function CartDrawerPayStep({
               )}
             </svg>
           </div>
-          <h3 className="text-lg font-extrabold text-gray-900">
+          <h3 className="text-lg font-bold text-gray-900">
             {status === "expired" ? "Payment time expired" : "Payment failed"}
           </h3>
           <p className="mt-2 text-sm text-gray-500 max-w-[280px]">
@@ -136,7 +136,7 @@ export default function CartDrawerPayStep({
         <button
           type="button"
           onClick={onCancel}
-          className="h-12 w-full rounded-xl bg-[#f16a34] text-white text-sm font-extrabold border-0 cursor-pointer"
+          className="h-12 w-full rounded-xl bg-[#f16a34] text-white text-sm font-bold border-0 cursor-pointer"
         >
           Back to cart
         </button>
@@ -155,10 +155,10 @@ export default function CartDrawerPayStep({
     <div className="flex-1 flex flex-col min-h-0">
       <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-4">
         <div className="mt-2 rounded-2xl border border-gray-100 bg-gradient-to-b from-[#fff8f4] to-white p-4 text-center">
-          <p className="text-[11px] font-extrabold uppercase tracking-wider text-gray-400">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-gray-400">
             Amount to pay
           </p>
-          <p className="mt-1 text-3xl font-extrabold text-gray-900 tabular-nums tracking-tight">
+          <p className="mt-1 text-3xl font-bold text-gray-900 tabular-nums tracking-tight">
             {formatInr(pending.amount)}
           </p>
           <p className="mt-1 text-xs text-gray-500 tabular-nums">
@@ -174,7 +174,7 @@ export default function CartDrawerPayStep({
             </p>
           </div>
           <div
-            className={`shrink-0 rounded-lg px-2.5 py-1.5 text-sm font-extrabold tabular-nums ${
+            className={`shrink-0 rounded-lg px-2.5 py-1.5 text-sm font-bold tabular-nums ${
               urgent
                 ? "bg-red-50 text-red-600"
                 : "bg-gray-100 text-gray-700"
@@ -212,7 +212,7 @@ export default function CartDrawerPayStep({
 
         <a
           href={pending.qrPayload}
-          className="mt-5 flex w-full h-12 items-center justify-center gap-2 rounded-xl bg-[#f16a34] text-white font-extrabold text-sm no-underline shadow-sm"
+          className="mt-5 flex w-full h-12 items-center justify-center gap-2 rounded-xl bg-[#f16a34] text-white font-bold text-sm no-underline shadow-sm"
         >
           <svg
             className="h-5 w-5"

@@ -22,7 +22,7 @@ export default function CartDrawerDoneStep({
       <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-3xl mb-4">
         ✓
       </div>
-      <h2 className="text-lg font-extrabold text-gray-900">Order confirmed</h2>
+      <h2 className="text-lg font-bold text-gray-900">Order confirmed</h2>
       <p className="text-sm text-gray-500 mt-2">
         Order #{orderNumber}
       </p>

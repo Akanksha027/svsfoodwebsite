@@ -417,7 +417,7 @@ export default function CartBar() {
                 })}
                 {hiddenCount > 0 ? (
                   <div
-                    className="shrink-0 flex items-center justify-center rounded-full bg-white/25 text-white text-xs font-extrabold backdrop-blur-[2px]"
+                    className="shrink-0 flex items-center justify-center rounded-full bg-white/25 text-white text-xs font-bold backdrop-blur-[2px]"
                     style={{
                       width: CHIP_SIZE,
                       height: CHIP_SIZE,
@@ -431,7 +431,7 @@ export default function CartBar() {
             </div>
 
             <div className="absolute inset-0 flex items-center justify-center z-[1] pointer-events-none px-[92px]">
-              <span className="text-[13px] sm:text-sm font-extrabold tracking-[0.06em] uppercase text-center leading-tight">
+              <span className="text-[13px] sm:text-sm font-bold tracking-normal text-center leading-tight">
                 View cart
               </span>
             </div>

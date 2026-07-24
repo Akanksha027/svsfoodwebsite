@@ -103,7 +103,7 @@ function DigitRoll({ digit, fontSize, color, durationMs }: DigitRollProps) {
         {Array.from({ length: 10 }).map((_, i) => (
           <span
             key={i}
-            className="flex items-center justify-center font-extrabold tabular-nums leading-none select-none"
+            className="flex items-center justify-center font-bold tabular-nums leading-none select-none"
             style={{
               height: rowH,
               fontSize,
@@ -156,7 +156,7 @@ export function AnimatedPrice({
     >
       {prefix ? (
         <span
-          className="font-extrabold leading-none select-none"
+          className="font-bold leading-none select-none"
           style={{ fontSize, color, lineHeight: `${fontSize}px` }}
           aria-hidden
         >

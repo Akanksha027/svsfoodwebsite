@@ -449,7 +449,7 @@ export default function CartDrawer() {
         data-scroll-lock-allow
         aria-label="My cart"
         aria-hidden={!isOpen}
-        className={`flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,450px)] xl:w-[480px] overflow-hidden bg-white rounded-tl-[2rem] rounded-bl-[2rem] border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
+        className={`font-bagoss flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,450px)] xl:w-[480px] overflow-hidden bg-white rounded-tl-[2rem] rounded-bl-[2rem] border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
         style={{
@@ -696,7 +696,7 @@ export default function CartDrawer() {
 
             {/* Order type picker */}
             <div className="mx-4 mb-3 bg-white">
-              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2.5">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400 mb-2.5">
                 How would you like it?
               </p>
               <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
@@ -715,7 +715,7 @@ export default function CartDrawer() {
                         if (type === "dine_in") checkout.setPayMethod("online");
                       }}
                       className={[
-                        "min-h-[7.5rem] sm:min-h-[8.25rem] flex flex-col items-center justify-center gap-2 rounded-2xl text-[11px] sm:text-xs font-extrabold border-[3px] cursor-pointer transition-all px-1.5 py-2.5",
+                        "min-h-[7.5rem] sm:min-h-[8.25rem] flex flex-col items-center justify-center gap-2 rounded-2xl text-[11px] sm:text-xs font-bold border-[3px] cursor-pointer transition-all px-1.5 py-2.5",
                         active
                           ? "bg-orange-50 border-[#f16a34] text-[#f16a34] shadow-[0_2px_10px_rgba(241,106,52,0.18)]"
                           : "bg-white border-gray-200 text-gray-500 hover:border-[#f16a34]/40",
@@ -743,7 +743,7 @@ export default function CartDrawer() {
                 className="flex items-center justify-between w-full h-[52px] rounded-2xl px-4 text-white border-0 cursor-pointer shadow-md"
                 style={{ backgroundColor: SVS_ORANGE }}
               >
-                <span className="text-sm font-bold uppercase tracking-wide opacity-95">
+                <span className="text-sm font-bold tracking-normal opacity-95">
                   {formatInr(grandWithHandling)} total
                 </span>
                 <span className="flex items-center gap-1 text-sm font-bold">
