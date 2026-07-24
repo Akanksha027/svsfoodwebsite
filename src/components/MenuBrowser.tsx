@@ -808,25 +808,25 @@ function MenuItemCard({
 
             {quantity > 0 ? (
               <div
-                className="shrink-0 inline-flex items-center h-7 sm:h-8 rounded-lg bg-svs-orange text-white overflow-hidden"
+                className="shrink-0 inline-flex items-center h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
                   type="button"
                   onClick={onDecrement}
-                  className="w-7 sm:w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
+                  className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
                   aria-label={`Remove one ${item.name}`}
                 >
                   −
                 </button>
-                <span className="min-w-[20px] flex items-center justify-center text-[13px] font-bold">
-                  <RollingCounter value={quantity} fontSize={13} color="#ffffff" />
+                <span className="min-w-[22px] flex items-center justify-center text-sm font-bold">
+                  <RollingCounter value={quantity} fontSize={14} color="#ffffff" />
                 </span>
                 <button
                   type="button"
                   disabled={!available}
                   onClick={onIncrement}
-                  className="w-7 sm:w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
+                  className="w-8 h-full flex items-center justify-center font-bold text-base cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
                   aria-label={`Add one ${item.name}`}
                 >
                   +
@@ -840,9 +840,9 @@ function MenuItemCard({
                   e.stopPropagation();
                   onAdd();
                 }}
-                className="shrink-0 h-7 sm:h-8 min-w-[52px] px-2.5 sm:px-3 rounded-lg border-2 border-svs-orange bg-svs-white text-svs-orange text-[11px] sm:text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-orange hover:text-white disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:cursor-not-allowed transition-all duration-150"
+                className="shrink-0 h-8 min-w-[64px] px-3 rounded-lg border-2 border-svs-orange bg-svs-cream text-svs-orange text-xs font-extrabold uppercase tracking-wide cursor-pointer hover:bg-svs-cream disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:bg-svs-cream/50 disabled:cursor-not-allowed transition-colors"
               >
-                ADD
+                Add
               </button>
             )}
           </div>
