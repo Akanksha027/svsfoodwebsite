@@ -358,6 +358,7 @@ function NavIcons({
   hero = false,
   menuMode = false,
   homePage = false,
+  explorePage = false,
   accountPage = false,
   cartPage = false,
   stacked = false,
@@ -368,6 +369,7 @@ function NavIcons({
   hero?: boolean;
   menuMode?: boolean;
   homePage?: boolean;
+  explorePage?: boolean;
   accountPage?: boolean;
   cartPage?: boolean;
   stacked?: boolean;
@@ -385,7 +387,7 @@ function NavIcons({
   const svgClass = menuMode
     ? "w-4 h-4 min-[400px]:w-[18px] min-[400px]:h-[18px] sm:w-5 sm:h-5"
     : iconSvg;
-  const showCartAndLocation = !menuMode && !homePage;
+  const showCartAndLocation = !menuMode && !homePage && !explorePage;
   const btn = stacked ? stackedBtn : iconBtn;
 
   return (
@@ -578,6 +580,7 @@ export default function Navbar({
   variant = "default",
   menuMode = false,
   homePage = false,
+  explorePage = false,
   accountPage = false,
   cartPage = false,
 }: {
@@ -586,6 +589,8 @@ export default function Navbar({
   menuMode?: boolean;
   /** Home `/` — hide cart + location icons in the bar */
   homePage?: boolean;
+  /** Explore `/explore` — hide cart + location icons in the bar */
+  explorePage?: boolean;
   /** Account/profile — sit slightly lower with white page bg */
   accountPage?: boolean;
   /** Cart page — hide the cart bag icon */
@@ -721,6 +726,7 @@ export default function Navbar({
                   hero={hero}
                   menuMode={menuMode}
                   homePage={homePage}
+                  explorePage={explorePage}
                   accountPage={accountPage}
                   onNavigate={handleNavAction}
                   onOpenStories={() => setStoriesOpen(true)}
@@ -766,6 +772,7 @@ export default function Navbar({
               hero={hero}
               menuMode={menuMode}
               homePage={homePage}
+              explorePage={explorePage}
               accountPage={accountPage}
               cartPage={cartPage}
               onNavigate={handleNavAction}
@@ -797,6 +804,7 @@ export default function Navbar({
               hero={hero}
               menuMode={menuMode}
               homePage={homePage}
+              explorePage={explorePage}
               accountPage={accountPage}
               cartPage={cartPage}
               onNavigate={handleNavAction}

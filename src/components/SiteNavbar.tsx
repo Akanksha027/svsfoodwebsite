@@ -61,7 +61,8 @@ export default function SiteNavbar() {
     <Navbar
       variant={variant}
       menuMode={isMenu}
-      homePage={isHome || isExplore}
+      homePage={isHome}
+      explorePage={isExplore}
       accountPage={isAccount}
       cartPage={isCart}
     />
