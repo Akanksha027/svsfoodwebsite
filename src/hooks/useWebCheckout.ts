@@ -235,23 +235,19 @@ export function useWebCheckout(options: Options = {}) {
     setAddressLoading(true);
 
     const boot = async () => {
-      const saved = readSavedUserLocation();
-      if (!saved) {
-        await applyLocation(true);
-      } else {
-        setPinReady(true);
+      // Device GPS is only for optional area text — never the delivery pin.
+      // Delivery radius uses the address map pin / saved address coords only.
+      if (!readSavedUserLocation()) {
+        await applyLocation(false);
       }
       if (cancelled) return;
-      const hint = await fetchDeliveryAddressHint();
-      if (cancelled) return;
-      setAddressHint(hint);
-      if (hint) {
-        setPinReady(true);
-        setArea((prev) => prev || hint.formatted);
-        if (hint.postcode) {
-          setPincode((prev) => prev || hint.postcode || "");
-        }
-      }
+
+      setAddressHint((prev) => {
+        if (resolveDeliveryCoords(prev)) return prev;
+        // Keep null; saved address / map picker will set the real pin.
+        return prev;
+      });
+
       setAddressLoading(false);
       setBooted(true);
     };
@@ -261,12 +257,6 @@ export function useWebCheckout(options: Options = {}) {
       cancelled = true;
     };
   }, [active, booted, applyLocation]);
-
-  useEffect(() => {
-    if (!active || orderType !== "delivery") return;
-    if (pinReady || resolveDeliveryCoords(addressHint)) return;
-    void applyLocation(true);
-  }, [active, orderType, pinReady, addressHint, applyLocation]);
 
   const placeOrder = useCallback(async (
     options: PlaceOrderOptions = {},
@@ -305,43 +295,8 @@ export function useWebCheckout(options: Options = {}) {
         orderType === "delivery" ? resolveDeliveryCoords(addressHint) : null;
 
       if (orderType === "delivery" && !deliveryCoords) {
-        const result = await requestUserLocationDetailed({
-          force: true,
-          highAccuracy: true,
-          timeoutMs: 22000,
-          maximumAgeMs: 0,
-        });
-        if (result.ok) {
-          deliveryCoords = {
-            lat: result.location.lat,
-            lng: result.location.lng,
-          };
-          setPinReady(true);
-          setPinMessage(null);
-          setAddressHint((prev) =>
-            prev
-              ? {
-                  ...prev,
-                  lat: result.location.lat,
-                  lng: result.location.lng,
-                }
-              : {
-                  formatted: area.trim() || "Your location",
-                  lat: result.location.lat,
-                  lng: result.location.lng,
-                  savedAt: result.location.savedAt,
-                },
-          );
-        } else {
-          setPinReady(false);
-          setPinMessage(result.message);
-          throw new Error(result.message);
-        }
-      }
-
-      if (orderType === "delivery" && !deliveryCoords) {
         throw new Error(
-          "We need your location pin for the rider. Tap “Share location” and allow access.",
+          "Set your delivery location on the map so we can check if we deliver there.",
         );
       }
 
@@ -499,7 +454,9 @@ export function useWebCheckout(options: Options = {}) {
       setError(
         code === "PHONEPE_PG_NOT_CONFIGURED"
           ? "Card payments are being enabled on our server. Please use UPI for now, or try again later."
-          : message,
+          : /client not found/i.test(message)
+            ? "Card payments aren’t ready yet (PhonePe client credentials). Please pay with UPI QR for now."
+            : message,
       );
       throw err;
     } finally {
@@ -533,15 +490,33 @@ export function useWebCheckout(options: Options = {}) {
     setLandmark(addr.landmark || "");
     setPincode(addr.pincode || "");
     setAddressLabel(addr.label || "Home");
-    if (addr.latitude != null && addr.longitude != null) {
+    if (
+      addr.latitude != null &&
+      addr.longitude != null &&
+      Number.isFinite(addr.latitude) &&
+      Number.isFinite(addr.longitude)
+    ) {
       setPinReady(true);
       setPinMessage(null);
-      setAddressHint({
-        formatted: addr.area,
+      const hint = {
+        formatted:
+          addr.formatted_address?.trim() ||
+          [addr.flat, addr.street, addr.area].filter(Boolean).join(", ") ||
+          addr.area,
         lat: addr.latitude,
         lng: addr.longitude,
+        postcode: addr.pincode || undefined,
         savedAt: new Date().toISOString(),
-      });
+      };
+      setAddressHint(hint);
+      cacheDeliveryAddressHint(hint);
+    } else {
+      // Text fields without a map pin — clear any stale device-GPS pin.
+      setPinReady(false);
+      setAddressHint(null);
+      setPinMessage(
+        "Open Edit on the delivery address and confirm the map pin.",
+      );
     }
   }, []);
 
@@ -564,7 +539,7 @@ export function useWebCheckout(options: Options = {}) {
           return "Please complete your delivery address.";
         }
         if (!pinReady && !resolveDeliveryCoords(addressHint)) {
-          return "Share your location for the rider pin.";
+          return "Confirm your delivery pin on the map (Edit address).";
         }
         const coords = resolveDeliveryCoords(addressHint);
         assertCheckoutAllowed({

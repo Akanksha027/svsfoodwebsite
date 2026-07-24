@@ -241,6 +241,8 @@ export default function DeliveryAddressPopup({
 
     setSaving(true);
     try {
+      const hint = hintFromCoords(pin.lat, pin.lng, pin.label);
+      checkout.applyAddressHint(hint);
       await persistCheckoutDeliveryAddress({
         customer,
         flat: checkout.flat,
