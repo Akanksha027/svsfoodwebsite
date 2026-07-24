@@ -415,6 +415,11 @@ function OrderInner() {
                       {order.rider_status.replace(/_/g, " ")}
                     </p>
                   ) : null}
+                  {order.rider_vehicle_number ? (
+                    <p className="text-xs font-semibold text-svs-ink/55 tabular-nums">
+                      Vehicle · {order.rider_vehicle_number}
+                    </p>
+                  ) : null}
                 </div>
                 {order.rider_phone ? (
                   <a

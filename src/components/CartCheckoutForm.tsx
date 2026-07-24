@@ -19,8 +19,14 @@ import {
   setPreferredOrderContact,
 } from "@/lib/order-contact-mobile";
 
+const SVS_ORANGE = "#f16a34";
+
+const fieldLabelClass = "text-[11px] font-semibold text-gray-600";
+const sectionEyebrowClass =
+  "text-[10px] font-bold uppercase tracking-wide text-gray-400";
 const inputClass =
-  "mt-0.5 w-full h-9 rounded-lg border border-gray-200 bg-white px-3 text-[13px] text-gray-900 outline-none transition-[border-color,box-shadow] focus:border-[#f16a34] focus:ring-1 focus:ring-[#f16a34]/15 placeholder:text-gray-400";
+  "mt-1 w-full h-9 rounded-lg border border-gray-200 bg-white px-2.5 text-[13px] text-gray-900 outline-none transition-[border-color,box-shadow] placeholder:text-gray-400 focus:border-[#f16a34] focus:ring-2 focus:ring-[#f16a34]/10";
+const fieldErrorClass = "mt-1 text-[11px] font-medium text-[#f16a34] leading-snug";
 
 type Checkout = ReturnType<typeof useWebCheckout>;
 
@@ -33,42 +39,9 @@ type Props = {
   onAddressSelectionChange?: (id: string | "new") => void;
 };
 
-function TypeOption({
-  active,
-  label,
-  sub,
-  onClick,
-}: {
-  active: boolean;
-  label: string;
-  sub: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full rounded-xl px-3 py-2.5 text-left cursor-pointer border transition-all ${
-        active
-          ? "bg-orange-50 border-[#f16a34] ring-1 ring-[#f16a34]/25"
-          : "bg-white border-gray-200 hover:border-[#f16a34]/30"
-      }`}
-    >
-      <span
-        className={`block text-[13px] font-bold ${
-          active ? "text-[#f16a34]" : "text-gray-900"
-        }`}
-      >
-        {label}
-      </span>
-      <span className="block text-[11px] text-gray-500 mt-0.5">{sub}</span>
-    </button>
-  );
-}
-
 function CheckoutProgress({ page }: { page: 1 | 2 }) {
   return (
-    <div className="px-4 pt-2.5 pb-2 flex justify-center shrink-0 bg-white border-b border-gray-100">
+    <div className="px-4 pt-2.5 pb-2.5 flex justify-center shrink-0 bg-white border-b border-gray-100">
       <div className="flex items-center">
         <div className="flex items-center gap-1.5">
           <div
@@ -110,6 +83,79 @@ function CheckoutProgress({ page }: { page: 1 | 2 }) {
           </span>
         </div>
       </div>
+    </div>
+  );
+}
+
+function PaymentOption({
+  active,
+  title,
+  subtitle,
+  onClick,
+}: {
+  active: boolean;
+  title: string;
+  subtitle: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex w-full items-start gap-2.5 rounded-lg border px-3 py-2 text-left cursor-pointer transition-colors ${
+        active
+          ? "border-[#f16a34] bg-orange-50/45"
+          : "border-gray-200 bg-white hover:border-gray-300"
+      }`}
+    >
+      <span
+        className={`mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border-2 ${
+          active ? "border-[#f16a34]" : "border-gray-300"
+        }`}
+        aria-hidden
+      >
+        {active ? (
+          <span className="h-1.5 w-1.5 rounded-full bg-[#f16a34]" />
+        ) : null}
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[13px] font-semibold text-gray-900">{title}</span>
+        <span className="block text-[11px] font-medium text-gray-500 mt-0.5 leading-snug">
+          {subtitle}
+        </span>
+      </span>
+    </button>
+  );
+}
+
+function OrderSummaryCard({
+  grandTotal,
+  deliveryCharges,
+}: {
+  grandTotal: number;
+  deliveryCharges: number;
+}) {
+  return (
+    <div className="rounded-xl border border-gray-200 bg-[#fff8f4] px-3 py-2.5">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className={sectionEyebrowClass}>Order total</p>
+          <p className="mt-0.5 text-[11px] font-medium text-gray-500">
+            {deliveryCharges > 0 ? "Includes delivery fee" : "Before payment"}
+          </p>
+        </div>
+        <p className="text-base font-bold text-[#f16a34] tabular-nums">
+          {formatInr(grandTotal)}
+        </p>
+      </div>
+      {deliveryCharges > 0 ? (
+        <div className="mt-1.5 pt-1.5 border-t border-[#f16a34]/10 flex justify-between text-[11px] text-gray-600">
+          <span>Delivery</span>
+          <span className="font-medium tabular-nums">
+            {formatInr(deliveryCharges)}
+          </span>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -160,7 +206,6 @@ export default function CartCheckoutForm({
     totals,
     codAllowed,
     effectivePay,
-    pgAvailable,
     applyLocation,
     clearLocationDenied,
     validateOrderStep,
@@ -293,58 +338,70 @@ export default function CartCheckoutForm({
     return (
       <div className="flex flex-col min-h-0 flex-1 bg-white overflow-hidden">
         <CheckoutProgress page={1} />
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 pb-4 pt-2.5 bg-white">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 pb-3 pt-3 bg-white">
           {orderType === "delivery" ? (
             <section className="space-y-3 min-w-0">
-              {/* Header */}
-              <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <h3 className="text-[14px] font-bold text-gray-900 tracking-tight leading-tight">
-                    Delivery address
-                  </h3>
-                  {addressLoading || pinBusy ? (
-                    <p className="text-[11px] text-gray-500 truncate">
-                      Getting your location&hellip;
+              {/* Location status */}
+              <div className="rounded-xl border border-gray-200 bg-[#fff8f4] p-3">
+                <div className="flex items-start gap-2.5">
+                  <div
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+                    style={{ backgroundColor: `${SVS_ORANGE}18` }}
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      style={{ color: SVS_ORANGE }}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      aria-hidden
+                    >
+                      <path d="M12 21s7-4.5 7-11a7 7 0 10-14 0c0 6.5 7 11 7 11z" />
+                      <circle cx="12" cy="10" r="2.5" />
+                    </svg>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-[13px] font-semibold text-gray-900 leading-tight">
+                      Delivery address
+                    </h3>
+                    <p className="mt-0.5 text-[11px] font-medium text-gray-500 leading-snug">
+                      {addressLoading || pinBusy
+                        ? "Getting your location…"
+                        : pinReady
+                          ? "Location pinned. Add flat & street below"
+                          : "Share location so the rider can find you"}
                     </p>
-                  ) : pinReady ? (
-                    <p className="text-[11px] text-gray-500 truncate">
-                      Location pinned — add flat &amp; street
-                    </p>
+                  </div>
+                  {pinReady ? (
+                    <button
+                      type="button"
+                      disabled={pinBusy}
+                      onClick={() => void applyLocation(true)}
+                      className="shrink-0 h-8 rounded-lg border border-[#f16a34]/30 bg-white px-2.5 text-[11px] font-bold text-[#f16a34] cursor-pointer hover:bg-[#f16a34]/5 disabled:opacity-50 transition-colors"
+                    >
+                      Update pin
+                    </button>
                   ) : (
-                    <p className="text-[11px] text-gray-500 truncate">
-                      Share location for the rider pin
-                    </p>
+                    <button
+                      type="button"
+                      disabled={pinBusy}
+                      onClick={() => {
+                        clearLocationDenied();
+                        void applyLocation(true);
+                      }}
+                      className="shrink-0 h-8 rounded-lg bg-[#f16a34] px-2.5 text-[11px] font-bold text-white cursor-pointer disabled:opacity-60 hover:bg-[#e05a28] transition-colors"
+                    >
+                      {pinBusy ? "Asking…" : "Share location"}
+                    </button>
                   )}
                 </div>
-                {pinReady ? (
-                  <button
-                    type="button"
-                    disabled={pinBusy}
-                    onClick={() => void applyLocation(true)}
-                    className="text-xs font-bold text-[#f16a34] border border-[#f16a34]/40 rounded-lg px-3 py-1.5 hover:bg-[#f16a34]/8 cursor-pointer disabled:opacity-50 shrink-0 transition-colors bg-white"
-                  >
-                    Update pin
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    disabled={pinBusy}
-                    onClick={() => {
-                      clearLocationDenied();
-                      void applyLocation(true);
-                    }}
-                    className="h-7 rounded-lg bg-[#f16a34] px-2.5 text-[11px] font-semibold text-white cursor-pointer disabled:opacity-60 shrink-0 hover:bg-[#e05a28]"
-                  >
-                    {pinBusy ? "Asking…" : "Share location"}
-                  </button>
-                )}
+                {pinMessage ? (
+                  <p className="mt-2 text-[11px] font-medium text-gray-600 leading-snug border-t border-[#f16a34]/10 pt-2">
+                    {pinMessage}
+                  </p>
+                ) : null}
               </div>
-
-              {pinMessage ? (
-                <p className="text-[11px] text-gray-700 font-medium border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white line-clamp-2">
-                  {pinMessage}
-                </p>
-              ) : null}
 
               {customer && customer.addresses.length > 0 ? (
                 <SavedAddressPicker
@@ -361,10 +418,11 @@ export default function CartCheckoutForm({
               ) : null}
 
               {/* Address fields */}
-              <div className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-xl border border-gray-200 bg-white p-3 space-y-2.5">
+                <p className={sectionEyebrowClass}>Address details</p>
+                <div className="grid grid-cols-2 gap-2.5">
                   <label className="block">
-                    <span className="text-[11px] font-semibold text-gray-700">
+                    <span className={fieldLabelClass}>
                       Flat / House <span className="text-[#f16a34]">*</span>
                     </span>
                     <input
@@ -373,15 +431,15 @@ export default function CartCheckoutForm({
                         markNewIfEdited();
                         setFlat(e.target.value);
                       }}
-                      className={`${inputClass} ${attemptedSubmit && flat.trim().length < 2 ? "border-[#f16a34] focus:border-[#f16a34] focus:ring-[#f16a34]/15" : ""}`}
+                      className={`${inputClass} ${attemptedSubmit && flat.trim().length < 2 ? "border-[#f16a34] focus:border-[#f16a34] focus:ring-[#f16a34]/10" : ""}`}
                       placeholder="402, Tower B"
                     />
-                    {attemptedSubmit && flat.trim().length < 2 && (
-                      <p className="mt-1 text-[10px] text-[#f16a34] font-medium leading-tight">Enter flat / house</p>
-                    )}
+                    {attemptedSubmit && flat.trim().length < 2 ? (
+                      <p className={fieldErrorClass}>Enter flat / house</p>
+                    ) : null}
                   </label>
                   <label className="block">
-                    <span className="text-[11px] font-semibold text-gray-700">
+                    <span className={fieldLabelClass}>
                       Street <span className="text-[#f16a34]">*</span>
                     </span>
                     <input
@@ -390,16 +448,16 @@ export default function CartCheckoutForm({
                         markNewIfEdited();
                         setStreet(e.target.value);
                       }}
-                      className={`${inputClass} ${attemptedSubmit && street.trim().length < 3 ? "border-[#f16a34] focus:border-[#f16a34] focus:ring-[#f16a34]/15" : ""}`}
+                      className={`${inputClass} ${attemptedSubmit && street.trim().length < 3 ? "border-[#f16a34] focus:border-[#f16a34] focus:ring-[#f16a34]/10" : ""}`}
                       placeholder="Society, road"
                     />
-                    {attemptedSubmit && street.trim().length < 3 && (
-                      <p className="mt-1 text-[10px] text-[#f16a34] font-medium leading-tight">Enter street name</p>
-                    )}
+                    {attemptedSubmit && street.trim().length < 3 ? (
+                      <p className={fieldErrorClass}>Enter street name</p>
+                    ) : null}
                   </label>
                 </div>
                 <label className="block">
-                  <span className="text-[11px] font-semibold text-gray-700">
+                  <span className={fieldLabelClass}>
                     Area / Locality <span className="text-[#f16a34]">*</span>
                   </span>
                   <input
@@ -408,18 +466,16 @@ export default function CartCheckoutForm({
                       markNewIfEdited();
                       setArea(e.target.value);
                     }}
-                    className={`${inputClass} ${attemptedSubmit && area.trim().length < 6 ? "border-[#f16a34] focus:border-[#f16a34] focus:ring-[#f16a34]/15" : ""}`}
+                    className={`${inputClass} ${attemptedSubmit && area.trim().length < 6 ? "border-[#f16a34] focus:border-[#f16a34] focus:ring-[#f16a34]/10" : ""}`}
                     placeholder="Neighbourhood, city"
                   />
-                  {attemptedSubmit && area.trim().length < 6 && (
-                    <p className="mt-1 text-[10px] text-[#f16a34] font-medium leading-tight">Enter area / locality</p>
-                  )}
+                  {attemptedSubmit && area.trim().length < 6 ? (
+                    <p className={fieldErrorClass}>Enter area / locality</p>
+                  ) : null}
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2.5">
                   <label className="block">
-                    <span className="text-[11px] font-semibold text-gray-700">
-                      Landmark
-                    </span>
+                    <span className={fieldLabelClass}>Landmark</span>
                     <input
                       value={landmark}
                       onChange={(e) => {
@@ -431,9 +487,7 @@ export default function CartCheckoutForm({
                     />
                   </label>
                   <label className="block">
-                    <span className="text-[11px] font-semibold text-gray-700">
-                      PIN
-                    </span>
+                    <span className={fieldLabelClass}>PIN code</span>
                     <input
                       value={pincode}
                       onChange={(e) => {
@@ -461,10 +515,10 @@ export default function CartCheckoutForm({
               ) : null}
             </section>
           ) : (
-            <div className="rounded-xl border border-gray-200 bg-white px-4 py-3">
-              <p className="text-[13px] text-gray-600 leading-snug">
+            <div className="rounded-xl border border-gray-200 bg-white px-3 py-2.5">
+              <p className="text-[13px] font-medium text-gray-600 leading-snug">
                 {orderType === "dine_in"
-                  ? "You'll eat at the outlet — no delivery address needed."
+                  ? "You'll eat at the outlet. No delivery address needed."
                   : "Pick up your order at the store counter when it's ready."}
               </p>
             </div>
@@ -472,7 +526,7 @@ export default function CartCheckoutForm({
 
         </div>
 
-        <div className="shrink-0 border-t border-gray-100 px-4 py-2.5 bg-white flex flex-col gap-2.5 rounded-bl-[2rem]">
+        <div className="shrink-0 border-t border-gray-100 px-4 py-2 bg-white flex flex-col gap-2">
           {stepError && !stepError.startsWith("Enter") && !stepError.startsWith("Please complete") ? (
             <div className="flex items-start gap-1.5 px-3 py-2 bg-[#f16a34]/5 border border-[#f16a34]/20 rounded-lg">
               <svg className="w-4 h-4 text-[#f16a34] shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
@@ -484,7 +538,7 @@ export default function CartCheckoutForm({
           <button
             type="button"
             onClick={handleContinue}
-            className="w-full h-[52px] rounded-2xl bg-[#f16a34] text-white font-bold text-[14px] cursor-pointer hover:bg-[#e05a28] transition-colors shadow-md"
+            className="w-full h-11 rounded-xl bg-[#f16a34] text-white font-bold text-[13px] cursor-pointer hover:bg-[#e05a28] transition-colors shadow-sm"
           >
             Continue
           </button>
@@ -498,18 +552,18 @@ export default function CartCheckoutForm({
     return (
       <div className="flex flex-col min-h-0 flex-1 bg-white overflow-hidden">
         <CheckoutProgress page={2} />
-        <div className="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
-          <p className="text-base font-bold text-gray-900 mb-2">
+        <div className="flex flex-1 flex-col items-center justify-center px-6 py-8 text-center">
+          <p className="text-[13px] font-bold text-gray-900 mb-1.5">
             Log in to continue
           </p>
-          <p className="text-sm text-gray-500 mb-6 max-w-[280px] leading-relaxed">
+          <p className="text-[11px] text-gray-500 mb-5 max-w-[280px] leading-relaxed">
             Sign in with your mobile number to review payment options and place
             your order.
           </p>
           <button
             type="button"
             onClick={() => openLogin()}
-            className="h-11 px-6 rounded-xl bg-[#f16a34] text-white font-bold text-sm cursor-pointer hover:bg-[#e05a28]"
+            className="h-9 px-5 rounded-lg bg-[#f16a34] text-white font-bold text-[13px] cursor-pointer hover:bg-[#e05a28]"
           >
             Log in
           </button>
@@ -519,76 +573,28 @@ export default function CartCheckoutForm({
   }
 
   return (
-    <div className="flex flex-col min-h-0 flex-1">
+    <div className="flex flex-col min-h-0 flex-1 bg-white overflow-hidden">
       <CheckoutProgress page={2} />
-      <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-6 space-y-6 pt-4">
-        {codAllowed || pgAvailable ? (
-          <section>
-            <h3 className="text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-3">
-              Payment
-            </h3>
-            <div className="grid grid-cols-1 gap-3">
-              <button
-                type="button"
-                onClick={() => setPayMethod("upi")}
-                className={`rounded-xl px-4 py-3.5 text-left text-[13px] font-bold border cursor-pointer ${
-                  effectivePay === "upi"
-                    ? "bg-[#f16a34] text-white border-[#f16a34]"
-                    : "bg-white text-gray-900 border-gray-200"
-                }`}
-              >
-                Pay with UPI · scan QR
-              </button>
-              {pgAvailable ? (
-                <button
-                  type="button"
-                  onClick={() => setPayMethod("card")}
-                  className={`rounded-xl px-4 py-3.5 text-left text-[13px] font-bold border cursor-pointer ${
-                    effectivePay === "card"
-                      ? "bg-[#f16a34] text-white border-[#f16a34]"
-                      : "bg-white text-gray-900 border-gray-200"
-                  }`}
-                >
-                  Pay with card / netbanking
-                </button>
-              ) : null}
-              {codAllowed ? (
-                <button
-                  type="button"
-                  onClick={() => setPayMethod("cod")}
-                  className={`rounded-xl px-4 py-3.5 text-left text-[13px] font-bold border cursor-pointer ${
-                    effectivePay === "cod"
-                      ? "bg-[#f16a34] text-white border-[#f16a34]"
-                      : "bg-white text-gray-900 border-gray-200"
-                  }`}
-                >
-                  {orderType === "delivery"
-                    ? "Cash on delivery"
-                    : "Pay at counter (cash)"}
-                </button>
-              ) : null}
-            </div>
-          </section>
-        ) : (
-          <p className="text-xs text-gray-500 rounded-lg bg-gray-50 px-3 py-2">
-            Dine-in orders are paid online via UPI QR.
-          </p>
-        )}
+      <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-3 pt-3 space-y-3">
+        <OrderSummaryCard
+          grandTotal={totals.grandTotal}
+          deliveryCharges={totals.deliveryCharges}
+        />
 
-        <section className="space-y-3.5">
-          <h3 className="text-[11px] font-bold uppercase tracking-wide text-gray-400">
-            Your details
-          </h3>
+        <section className="rounded-xl border border-gray-200 bg-white p-3 space-y-2.5">
+          <p className={sectionEyebrowClass}>Contact</p>
           <label className="block">
-            <span className="text-xs font-semibold text-gray-700">Name</span>
+            <span className={fieldLabelClass}>Name</span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               className={inputClass}
               autoComplete="name"
+              placeholder="Your name"
             />
           </label>
           <PhoneWhatsAppAuth
+            embedded
             phone={phone}
             onPhoneChange={(v) => {
               phoneOtp.setOtpError(null);
@@ -605,50 +611,72 @@ export default function CartCheckoutForm({
             }
           />
           <label className="block">
-            <span className="text-xs font-semibold text-gray-700">Notes for kitchen</span>
+            <span className={fieldLabelClass}>
+              Notes for kitchen{" "}
+              <span className="font-medium text-gray-400">(optional)</span>
+            </span>
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value.slice(0, 250))}
               className={inputClass}
-              placeholder="Less spicy…"
+              placeholder="Less spicy, no onions…"
             />
           </label>
         </section>
 
-        <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 text-sm space-y-2">
-          <div className="flex justify-between">
-            <span className="text-gray-600">To pay</span>
-            <span className="font-bold text-[#f16a34] tabular-nums">
-              {formatInr(totals.grandTotal)}
-            </span>
+        <section className="rounded-xl border border-gray-200 bg-white p-3 space-y-2">
+          <p className={sectionEyebrowClass}>Payment method</p>
+          <div className="space-y-1.5">
+            <PaymentOption
+              active={effectivePay === "upi"}
+              title="UPI QR"
+              subtitle="Scan with GPay, PhonePe, Paytm, or any UPI app"
+              onClick={() => setPayMethod("upi")}
+            />
+            <PaymentOption
+              active={effectivePay === "card"}
+              title="Card or netbanking"
+              subtitle="Pay on PhonePe secure checkout"
+              onClick={() => setPayMethod("card")}
+            />
+            {codAllowed ? (
+              <PaymentOption
+                active={effectivePay === "cod"}
+                title={
+                  orderType === "delivery"
+                    ? "Cash on delivery"
+                    : "Pay at counter"
+                }
+                subtitle={
+                  orderType === "delivery"
+                    ? "Pay the rider when your order arrives"
+                    : "Pay with cash when you collect"
+                }
+                onClick={() => setPayMethod("cod")}
+              />
+            ) : null}
           </div>
-          {totals.deliveryCharges > 0 ? (
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>Includes delivery</span>
-              <span>{formatInr(totals.deliveryCharges)}</span>
-            </div>
-          ) : null}
-        </div>
+        </section>
 
         {error ? (
-          <p className="text-xs font-semibold text-[#c2410c] bg-orange-50 border border-orange-200 rounded-lg px-3 py-2">
+          <p className="text-[11px] font-semibold text-[#c2410c] bg-orange-50 border border-orange-200 rounded-lg px-2.5 py-2">
             {error}
           </p>
         ) : null}
 
         {stepError ? (
-          <p className="text-xs font-semibold text-[#c2410c] bg-orange-50 border border-orange-200 rounded-lg px-3 py-2">
+          <p className="text-[11px] font-semibold text-[#c2410c] bg-orange-50 border border-orange-200 rounded-lg px-2.5 py-2">
             {stepError}
           </p>
         ) : null}
       </div>
 
-      <div className="shrink-0 border-t border-gray-100 px-5 py-4 bg-white rounded-bl-[2rem]">
+      <div className="shrink-0 border-t border-gray-100 px-4 py-2.5 bg-white">
         <button
           type="button"
           disabled={busy}
           onClick={() => void handlePlaceOrderClick()}
-          className="w-full h-14 rounded-2xl bg-[#f16a34] text-white font-bold text-sm cursor-pointer disabled:opacity-50 shadow-md"
+          className="w-full h-11 rounded-xl bg-[#f16a34] text-white font-bold text-[13px] cursor-pointer disabled:opacity-50 shadow-sm"
         >
           {busy
             ? effectivePay === "card"

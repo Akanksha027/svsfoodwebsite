@@ -658,7 +658,7 @@ html.svs-scroll-locked body {
 }
 
 #main-navbar[data-menu-mode="true"] {
-  background-color: var(--color-svs-cream) !important;
+  background-color: #ffffff !important;
   isolation: isolate;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1079,10 +1079,10 @@ body:has(#main-navbar[data-menu-mode="true"]) {
   position: sticky;
   top: var(--menu-nav-sticky-top, 3rem);
   z-index: 1390;
-  background-color: var(--color-svs-cream);
+  background-color: #ffffff;
   border: none;
-  /* Cream seal upward so items never show between navbar and this stack */
-  box-shadow: 0 -14px 0 0 var(--color-svs-cream);
+  /* White seal upward so items never show between navbar and this stack */
+  box-shadow: 0 -14px 0 0 #ffffff;
   transform: none;
   transition: none;
   overflow-anchor: none;
@@ -1106,7 +1106,7 @@ body:has(#main-navbar[data-menu-mode="true"]) {
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
     padding-bottom: 0.5rem !important;
-    background-color: var(--color-svs-cream);
+    background-color: #ffffff;
   }
 
   .menu-sticky-search {

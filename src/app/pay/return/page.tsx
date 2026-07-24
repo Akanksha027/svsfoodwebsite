@@ -124,7 +124,7 @@ function PayReturnInner() {
         </h1>
         <p className="text-sm text-svs-ink/50 mb-6">
           {status === "waiting"
-            ? "Hang tight — we’re verifying your card payment with PhonePe."
+            ? "Hang tight. We’re verifying your card payment with PhonePe."
             : status === "failed"
               ? "You can try again from your cart."
               : "Redirecting to your order…"}

@@ -142,13 +142,6 @@ function PayInner() {
                 </div>
               ) : null}
 
-              <a
-                href={pending.qrPayload}
-                className="inline-flex w-full items-center justify-center h-12 rounded-full bg-svs-orange text-white font-bold no-underline"
-              >
-                Open UPI app
-              </a>
-
               <p className="text-sm font-semibold text-svs-orange animate-pulse">
                 {status === "waiting"
                   ? "Waiting for payment..."

@@ -21,9 +21,11 @@ async function apiRequest<T>(path: string, options: RequestOptions): Promise<T> 
 
   const payload = await res.json().catch(() => null);
   if (!res.ok || !payload?.success) {
-    throw new Error(
-      payload?.error?.message || `Request failed (${res.status}) for ${path}`,
-    );
+    const message =
+      payload?.error?.message || `Request failed (${res.status}) for ${path}`;
+    const error = new Error(message) as Error & { code?: string };
+    error.code = payload?.error?.code;
+    throw error;
   }
   return payload.data as T;
 }
@@ -251,6 +253,7 @@ export async function fetchOrder(input: { storeId: string; orderId: string }) {
     rider_name?: string | null;
     rider_phone?: string | null;
     rider_status?: string | null;
+    rider_vehicle_number?: string | null;
     channel?: string | null;
     created_at?: string;
     paid_at?: string | null;

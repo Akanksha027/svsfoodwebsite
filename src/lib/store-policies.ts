@@ -259,7 +259,7 @@ export function assertCheckoutAllowed(input: {
     ) {
       const km = deliveryDistanceKm(policy, lat, lng).toFixed(1);
       throw new Error(
-        `Sorry — you're about ${km} km away. We deliver within ${policy.delivery_radius_km} km of this outlet.`,
+        `Sorry, you're about ${km} km away. We deliver within ${policy.delivery_radius_km} km of this outlet.`,
       );
     }
   }

@@ -289,7 +289,7 @@ export default function CartDrawer() {
 
     // Keep cart; never send to order/map page on cancel.
     setPaymentCancelNotice(
-      "Payment cancelled. Your cart is still here — place the order again when you’re ready.",
+      "Payment cancelled. Your cart is still here. Place the order again when you’re ready.",
     );
     setStep("cart");
   }, [pendingPay, cancelActivePlaceOrder]);
@@ -316,7 +316,7 @@ export default function CartDrawer() {
       : step === "checkout1"
         ? "Delivery address"
         : step === "checkout2"
-          ? "Payment & details"
+            ? "Payment & contact"
           : step === "pay"
             ? "Pay with UPI"
             : "Order confirmed";
@@ -361,7 +361,7 @@ export default function CartDrawer() {
           }).catch(() => undefined);
         }
         setPaymentCancelNotice(
-          "Payment cancelled. Your cart is still here — place the order again when you’re ready.",
+          "Payment cancelled. Your cart is still here. Place the order again when you’re ready.",
         );
         setStep("cart");
         setPendingPay(null);
@@ -391,7 +391,7 @@ export default function CartDrawer() {
         isPlaceOrderCancelled(attempt)
       ) {
         setPaymentCancelNotice(
-          "Payment cancelled. Your cart is still here — place the order again when you’re ready.",
+          "Payment cancelled. Your cart is still here. Place the order again when you’re ready.",
         );
         setStep("cart");
         setPendingPay(null);
@@ -465,7 +465,7 @@ export default function CartDrawer() {
         data-scroll-lock-allow
         aria-label="My cart"
         aria-hidden={!isOpen}
-        className={`font-bagoss flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,450px)] xl:w-[480px] overflow-hidden bg-white rounded-tl-[2rem] rounded-bl-[2rem] border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
+        className={`font-bagoss flex flex-col fixed right-0 top-0 bottom-0 w-full sm:w-[min(100%,450px)] xl:w-[480px] overflow-hidden bg-white border-l border-gray-200 z-[1510] shadow-[-8px_0_32px_rgba(0,0,0,0.12)] transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
         style={{
@@ -745,7 +745,7 @@ export default function CartDrawer() {
               </div>
             </div>
 
-            <div className="shrink-0 border-t border-gray-200 bg-white px-4 py-3 rounded-bl-[2rem]">
+            <div className="shrink-0 border-t border-gray-200 bg-white px-4 py-3">
               <button
                 type="button"
                 onClick={() => {

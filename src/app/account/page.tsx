@@ -484,6 +484,7 @@ function LiveOrderPanel({
                     name: order.rider_name,
                     phone: order.rider_phone,
                     status: order.rider_status,
+                    vehicleNumber: order.rider_vehicle_number,
                   }
                 : null
             }

@@ -11,7 +11,11 @@ import type { useInlinePhoneOtp } from "@/hooks/useInlinePhoneOtp";
 type Otp = ReturnType<typeof useInlinePhoneOtp>;
 
 const fieldClass =
-  "h-11 flex-1 min-w-0 rounded-lg border border-gray-200 bg-white px-3 text-[15px] font-semibold tabular-nums text-gray-900 outline-none focus:border-[#f16a34] focus:ring-2 focus:ring-[#f16a34]/15";
+  "flex-1 min-w-0 rounded-lg border border-gray-200 bg-white px-2.5 text-[13px] font-semibold tabular-nums text-gray-900 outline-none focus:border-[#f16a34] focus:ring-2 focus:ring-[#f16a34]/15";
+const fieldClassEmbedded = `${fieldClass} h-9`;
+const fieldClassDefault = `${fieldClass} h-11 text-[15px]`;
+const prefixClass =
+  "flex shrink-0 items-center rounded-lg bg-gray-100 px-2.5 text-[13px] font-bold text-gray-600";
 
 type Props = {
   phone: string;
@@ -20,6 +24,8 @@ type Props = {
   signedInPhone?: string | null;
   /** Confirm contact mobile for this order when signed-in user taps Done. */
   onContactSave?: (mobile: string) => void | Promise<void>;
+  /** Flat layout when nested inside another checkout card. */
+  embedded?: boolean;
 };
 
 export default function PhoneWhatsAppAuth({
@@ -28,6 +34,7 @@ export default function PhoneWhatsAppAuth({
   otp,
   signedInPhone,
   onContactSave,
+  embedded = false,
 }: Props) {
   const verifyLock = useRef(false);
   const [editingContact, setEditingContact] = useState(false);
@@ -52,6 +59,11 @@ export default function PhoneWhatsAppAuth({
     mobile,
     showAuthUi,
   } = otp;
+
+  const inputFieldClass = embedded ? fieldClassEmbedded : fieldClassDefault;
+  const prefixBoxClass = embedded
+    ? `${prefixClass} h-9`
+    : `${prefixClass} h-11 px-3 text-sm`;
 
   useEffect(() => {
     if (!codeSentForCurrent) verifyLock.current = false;
@@ -98,10 +110,10 @@ export default function PhoneWhatsAppAuth({
     };
 
     return (
-      <div className="rounded-xl border border-gray-200 bg-white px-3 py-2.5 space-y-2">
+      <div className={embedded ? "space-y-2" : "rounded-xl border border-gray-200 bg-white px-3 py-2.5 space-y-2"}>
         <div className="flex items-center justify-between gap-2">
-          <p className="text-[11px] font-semibold text-gray-500">
-            Contact mobile
+          <p className={embedded ? "text-[11px] font-semibold text-gray-600" : "text-[11px] font-semibold text-gray-500"}>
+            Mobile number
           </p>
           {!editingContact ? (
             <button
@@ -121,7 +133,7 @@ export default function PhoneWhatsAppAuth({
         {editingContact ? (
           <>
             <div className="flex items-center gap-2">
-              <span className="flex h-11 shrink-0 items-center rounded-lg bg-gray-100 px-3 text-sm font-bold text-gray-600">
+              <span className={prefixBoxClass}>
                 +91
               </span>
               <input
@@ -129,7 +141,7 @@ export default function PhoneWhatsAppAuth({
                 inputMode="numeric"
                 autoComplete="tel-national"
                 placeholder="10-digit number"
-                className={fieldClass}
+                className={inputFieldClass}
                 value={draft}
                 autoFocus
                 onChange={(e) => {
@@ -187,15 +199,15 @@ export default function PhoneWhatsAppAuth({
         ) : (
           <>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-gray-500">+91</span>
-              <span className="text-[15px] font-semibold tabular-nums text-gray-900">
+              <span className="text-[13px] font-bold text-gray-500">+91</span>
+              <span className="text-[13px] font-semibold tabular-nums text-gray-900">
                 {displayPhone}
               </span>
             </div>
-            <p className="text-[11px] text-emerald-700 font-semibold">
+            <p className="text-[11px] font-medium text-emerald-700">
               {displayPhone === signedInPhone
-                ? "Using login number · tap Edit to change"
-                : "Order contact saved · tap Edit to change"}
+                ? "Using login number. Tap Edit to change."
+                : "Order contact saved. Tap Edit to change."}
             </p>
           </>
         )}
@@ -204,13 +216,13 @@ export default function PhoneWhatsAppAuth({
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-      <div className="px-3 pt-3 pb-3">
-        <p className="text-[11px] font-semibold text-gray-600 mb-1.5">
+    <div className={embedded ? "space-y-2" : "rounded-xl border border-gray-200 bg-white overflow-hidden"}>
+      <div className={embedded ? "space-y-1" : "px-3 pt-3 pb-3"}>
+        <p className={embedded ? "text-[11px] font-semibold text-gray-600" : "text-[11px] font-semibold text-gray-600 mb-1.5"}>
           Mobile number <span className="text-[#c2410c]">*</span>
         </p>
         <div className="flex items-center gap-2">
-          <span className="flex h-11 shrink-0 items-center rounded-lg bg-gray-100 px-3 text-sm font-bold text-gray-600">
+          <span className={prefixBoxClass}>
             +91
           </span>
           <input
@@ -218,7 +230,7 @@ export default function PhoneWhatsAppAuth({
             inputMode="numeric"
             autoComplete="tel-national"
             placeholder="10-digit number"
-            className={fieldClass}
+            className={inputFieldClass}
             value={phone}
             readOnly={codeSentForCurrent && !isVerified}
             onChange={(e) => {

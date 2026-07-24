@@ -656,7 +656,7 @@ export default function Navbar({
     hero && (homePage || accountPage)
       ? "border-black/10 bg-white text-black shadow-black/10"
       : menuMode
-        ? "border-black/10 bg-svs-cream text-black"
+        ? "border-black/10 bg-white text-black"
         : "border-black/10 bg-white text-black shadow-black/10";
 
   return (
@@ -674,7 +674,7 @@ export default function Navbar({
       data-navbar-variant={hero ? "hero" : "default"}
       data-menu-mode={menuMode ? "true" : "false"}
       data-account-page={accountPage ? "true" : "false"}
-      style={{ backgroundColor: menuMode ? "#fff4ee" : "transparent" }}
+      style={{ backgroundColor: menuMode ? "#ffffff" : "transparent" }}
       className={`fixed left-0 right-0 z-[1400] ${menuMode
         ? "flex flex-col md:flex-row md:items-center"
         : homePage
@@ -683,11 +683,11 @@ export default function Navbar({
         } pl-3 sm:pl-4 md:pl-6 lg:pl-8 pr-2 sm:pr-3 md:pr-3 lg:pr-4 transition-[background-color,border-color,color,box-shadow,top] duration-300 border-b ${menuMode ? "border-black/10" : "border-transparent"} shadow-none ${homePage
           ? "top-5 sm:top-6 lg:top-8 pb-1 sm:pb-1.5 lg:pb-2.5"
           : "top-0 pt-2.5 sm:pt-3 md:pt-4 pb-2 sm:pb-3"
-        } ${menuMode ? "bg-svs-cream menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-400"}`}
+        } ${menuMode ? "bg-white menu-nav-shell" : "bg-transparent"} ${hero ? "text-white" : "text-gray-400"}`}
       id="main-navbar"
     >
       {menuMode ? (
-        <div className="menu-nav-inner flex w-full flex-col md:contents min-w-0 bg-svs-cream">
+        <div className="menu-nav-inner flex w-full flex-col md:contents min-w-0 bg-white">
           <div className="menu-nav-top-row flex w-full max-w-[1100px] mx-auto items-center h-12 sm:h-14 md:h-20 lg:h-[72px] min-w-0 relative">
             <div className="flex min-w-0 flex-1 items-center md:max-w-[42%] lg:max-w-[38%] xl:max-w-[36%]">
               <Link

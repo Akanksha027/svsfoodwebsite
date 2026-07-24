@@ -23,7 +23,6 @@ import {
   createWebOrder,
   confirmCodPlace,
   abandonCheckoutPayment,
-  fetchPgPaymentsAvailable,
   type WebOrderType,
 } from "@/lib/orders-api";
 import { SITE_URL } from "@/lib/config";
@@ -140,46 +139,21 @@ export function useWebCheckout(options: Options = {}) {
     [subtotal, orderType, policy.delivery_fee],
   );
 
-  const [pgAvailable, setPgAvailable] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    void fetchPgPaymentsAvailable({ storeId: store.backendStoreId })
-      .then((r) => {
-        if (!cancelled) setPgAvailable(r.available);
-      })
-      .catch(() => {
-        if (!cancelled) setPgAvailable(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [store.backendStoreId]);
-
   const codAllowed =
     (orderType === "delivery" || orderType === "takeaway") &&
     policy.web_cod_enabled;
   const effectivePay: PayMethod = useMemo(() => {
-    if (orderType === "dine_in") {
-      return payMethod === "card" && pgAvailable ? "card" : "upi";
-    }
-    if (!codAllowed) {
-      return payMethod === "card" && pgAvailable ? "card" : "upi";
+    if (orderType === "dine_in" || !codAllowed) {
+      return payMethod === "cod" ? "upi" : payMethod;
     }
     return payMethod;
-  }, [orderType, codAllowed, payMethod, pgAvailable]);
+  }, [orderType, codAllowed, payMethod]);
 
   useEffect(() => {
     if (!codAllowed && payMethod === "cod") {
       setPayMethod("upi");
     }
   }, [codAllowed, payMethod]);
-
-  useEffect(() => {
-    if (payMethod === "card" && !pgAvailable) {
-      setPayMethod("upi");
-    }
-  }, [payMethod, pgAvailable]);
 
   const fullAddress = useMemo(
     () =>
@@ -468,7 +442,15 @@ export function useWebCheckout(options: Options = {}) {
       }
       const message =
         err instanceof Error ? err.message : "Checkout failed";
-      setError(message);
+      const code =
+        err instanceof Error
+          ? (err as Error & { code?: string }).code
+          : undefined;
+      setError(
+        code === "PHONEPE_PG_NOT_CONFIGURED"
+          ? "Card payments are being enabled on our server. Please use UPI for now, or try again later."
+          : message,
+      );
       throw err;
     } finally {
       setBusy(false);
@@ -575,7 +557,6 @@ export function useWebCheckout(options: Options = {}) {
     setOrderType,
     payMethod,
     setPayMethod,
-    pgAvailable,
     name,
     setName,
     phone,

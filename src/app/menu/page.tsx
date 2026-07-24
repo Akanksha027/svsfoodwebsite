@@ -49,7 +49,7 @@ export default async function MenuPage({ searchParams }: MenuPageProps) {
         currentStoreId={store.id}
         query={query}
       />
-      <main className="menu-page-main min-h-[70svh] pt-[var(--menu-nav-offset,4.5rem)] px-4 sm:px-6 lg:px-8 pb-24 lg:pb-24 bg-svs-cream">
+      <main className="menu-page-main min-h-[70svh] pt-[var(--menu-nav-offset,4.5rem)] px-4 sm:px-6 lg:px-8 pb-24 lg:pb-24 bg-white">
         <div className="pb-8 sm:pb-10 pt-0">
           <MenuLoader
             key={store.backendStoreId}

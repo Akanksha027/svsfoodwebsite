@@ -10,6 +10,7 @@ export type OrderStatusRider = {
   name?: string | null;
   phone?: string | null;
   status?: string | null;
+  vehicleNumber?: string | null;
 };
 
 type OrderStatusRailProps = {
@@ -165,6 +166,16 @@ function RiderInsideBox({
             ].join(" ")}
           >
             {statusLabel}
+          </p>
+        ) : null}
+        {rider.vehicleNumber ? (
+          <p
+            className={[
+              "truncate text-xs font-semibold mt-0.5 tabular-nums",
+              isDark ? "text-white/60" : "text-gray-600",
+            ].join(" ")}
+          >
+            Vehicle · {rider.vehicleNumber}
           </p>
         ) : null}
       </div>

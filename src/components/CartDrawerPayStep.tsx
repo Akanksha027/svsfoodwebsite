@@ -66,7 +66,7 @@ export default function CartDrawerPayStep({
           onPaid(pending.orderId, store.id);
         } else if (result.internal_status === "failed") {
           setStatus("failed");
-          setError("Payment failed. Your cart is still here — you can try again.");
+          setError("Payment failed. Your cart is still here. You can try again.");
         }
       } catch {
         /* keep polling */
@@ -126,7 +126,7 @@ export default function CartDrawerPayStep({
           </h3>
           <p className="mt-2 text-sm text-gray-500 max-w-[280px]">
             {status === "expired"
-              ? "We didn’t receive payment in time. Your cart is still saved — you can try again."
+              ? "We didn’t receive payment in time. Your cart is still saved. You can try again."
               : error || "Something went wrong with this payment. Your cart is still here."}
           </p>
           <p className="mt-3 text-xs font-semibold text-gray-400 tabular-nums">
@@ -170,7 +170,7 @@ export default function CartDrawerPayStep({
           <div className="min-w-0">
             <p className="text-sm font-bold text-gray-900">Scan &amp; pay</p>
             <p className="text-xs text-gray-500">
-              Any UPI app — GPay, PhonePe, Paytm…
+              Any UPI app: GPay, PhonePe, Paytm…
             </p>
           </div>
           <div
@@ -210,25 +210,7 @@ export default function CartDrawerPayStep({
           <div className="mx-auto mt-5 w-[240px] h-[240px] rounded-2xl bg-gray-50 animate-pulse" />
         )}
 
-        <a
-          href={pending.qrPayload}
-          className="mt-5 flex w-full h-12 items-center justify-center gap-2 rounded-xl bg-[#f16a34] text-white font-bold text-sm no-underline shadow-sm"
-        >
-          <svg
-            className="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            aria-hidden
-          >
-            <rect x="5" y="2" width="14" height="20" rx="2" />
-            <path d="M12 18h.01" strokeLinecap="round" />
-          </svg>
-          Open UPI app
-        </a>
-
-        <p className="mt-4 text-center text-sm font-semibold text-[#f16a34]">
+        <p className="mt-5 text-center text-sm font-semibold text-[#f16a34]">
           <span className="inline-flex items-center gap-2">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#f16a34]/50" />
@@ -248,7 +230,7 @@ export default function CartDrawerPayStep({
         ) : null}
       </div>
 
-      <div className="shrink-0 border-t border-gray-100 px-4 py-3 bg-white rounded-bl-[2rem]">
+      <div className="shrink-0 border-t border-gray-100 px-4 py-3 bg-white">
         <button
           type="button"
           onClick={onCancel}

@@ -408,7 +408,7 @@ export default function MenuBrowser({
       {/* Search + categories scroll up together, then stick under the logo bar */}
       <div
         ref={stickyStackRef}
-        className="menu-sticky-stack sticky z-[1390] -mx-4 sm:mx-0 px-4 sm:px-0 pt-4 md:pt-5 pb-2 sm:pb-3 bg-svs-cream"
+        className="menu-sticky-stack sticky z-[1390] -mx-4 sm:mx-0 px-4 sm:px-0 pt-4 md:pt-5 pb-2 sm:pb-3 bg-white"
       >
         <div className="menu-sticky-search lg:hidden mb-1 w-full mt-0 flex justify-center">
           <MenuNavSearch docked />
@@ -635,7 +635,7 @@ function MenuItemCard({
 
   /* Warm customise-sheet CDN URLs before Add is tapped (Next/Image cache ≠ raw URL). */
   useEffect(() => {
-    if (!customisable || !available) return;
+    if (!available) return;
     const node = articleRef.current;
     if (!node || typeof IntersectionObserver === "undefined") {
       void preloadItemSheetImages(item, categoryImageUrl);
@@ -651,7 +651,7 @@ function MenuItemCard({
     );
     io.observe(node);
     return () => io.disconnect();
-  }, [customisable, available, item, categoryImageUrl]);
+  }, [available, item, categoryImageUrl]);
 
   const openPicker = () => {
     void preloadItemSheetImages(item, categoryImageUrl);
@@ -783,7 +783,24 @@ function MenuItemCard({
       >
         <div
           ref={imageRef}
-          className="relative aspect-square w-full flex items-center justify-center bg-white overflow-hidden p-2 sm:p-2.5"
+          role={available ? "button" : undefined}
+          tabIndex={available ? 0 : undefined}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!available) return;
+            openPicker();
+          }}
+          onKeyDown={(e) => {
+            if (!available) return;
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              openPicker();
+            }
+          }}
+          className={`relative aspect-square w-full flex items-center justify-center bg-white overflow-hidden p-2 sm:p-2.5 ${
+            available ? "cursor-pointer" : ""
+          }`}
         >
           {displayImage ? (
             <div className="relative h-full w-full">
@@ -811,36 +828,37 @@ function MenuItemCard({
 
         {/* Info + action — fixed footer inside the square */}
         <div className="flex flex-col shrink-0 px-2 sm:px-2.5 pt-0.5 pb-1.5 gap-0.5">
-          <h3 className="text-[12px] font-semibold text-svs-ink leading-snug line-clamp-2">
+          <h3 className="text-[12px] font-semibold text-svs-ink leading-snug line-clamp-1">
             {item.name}
           </h3>
 
-          <div className="flex items-center justify-between gap-1">
-            <p className="text-[12px] font-bold text-svs-ink leading-none tabular-nums">
+          <div className="flex items-center justify-between gap-1 min-h-7 sm:min-h-8">
+            <p className="text-[12px] sm:text-[13px] font-bold text-svs-ink leading-none tabular-nums">
               {formatInr(unitPrice)}
             </p>
 
+            <div className="shrink-0 min-w-[72px] flex justify-end">
             {quantity > 0 ? (
               <div
-                className="shrink-0 inline-flex items-center h-6 rounded-md bg-svs-orange text-white overflow-hidden shadow-sm"
+                className="inline-flex items-center h-7 sm:h-8 rounded-lg bg-svs-orange text-white overflow-hidden shadow-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
                   type="button"
                   onClick={onDecrement}
-                  className="w-6 h-full flex items-center justify-center font-bold text-sm cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
+                  className="w-7 sm:w-8 h-full flex items-center justify-center font-bold text-sm cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark"
                   aria-label={`Remove one ${item.name}`}
                 >
                   −
                 </button>
-                <span className="min-w-[18px] flex items-center justify-center text-[11px] font-bold">
-                  <RollingCounter value={quantity} fontSize={11} color="#ffffff" />
+                <span className="min-w-[20px] flex items-center justify-center text-xs sm:text-sm font-bold">
+                  <RollingCounter value={quantity} fontSize={13} color="#ffffff" />
                 </span>
                 <button
                   type="button"
                   disabled={!available}
                   onClick={onIncrement}
-                  className="w-6 h-full flex items-center justify-center font-bold text-sm cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
+                  className="w-7 sm:w-8 h-full flex items-center justify-center font-bold text-sm cursor-pointer bg-transparent border-0 hover:bg-svs-orange-dark disabled:opacity-40"
                   aria-label={`Add one ${item.name}`}
                 >
                   +
@@ -854,11 +872,12 @@ function MenuItemCard({
                   e.stopPropagation();
                   onAdd();
                 }}
-                className="shrink-0 h-7 sm:h-8 min-w-[52px] px-2.5 sm:px-3 rounded-lg border-2 border-svs-orange bg-svs-white text-svs-orange text-xs sm:text-sm font-bold uppercase tracking-normal cursor-pointer hover:bg-svs-orange hover:text-white disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:cursor-not-allowed transition-all duration-150"
+                className="h-7 sm:h-8 min-w-[52px] px-2.5 sm:px-3 rounded-lg border-2 border-svs-orange bg-svs-white text-svs-orange text-xs sm:text-sm font-bold uppercase tracking-normal cursor-pointer hover:bg-svs-orange hover:text-white disabled:border-svs-ink/20 disabled:text-svs-ink/40 disabled:cursor-not-allowed transition-all duration-150"
               >
                 ADD
               </button>
             )}
+            </div>
           </div>
         </div>
       </article>

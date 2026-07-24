@@ -125,13 +125,6 @@ export default function CodOnlinePayPanel({
             PhonePe · Google Pay · Paytm · any UPI app
           </p>
 
-          <a
-            href={session.qrPayload}
-            className="flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-gray-900 text-white font-bold text-sm no-underline"
-          >
-            Open UPI app
-          </a>
-
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-[#f16a34] animate-pulse" />
             <p className="text-sm font-semibold text-[#f16a34]">Waiting for payment…</p>

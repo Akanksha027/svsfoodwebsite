@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, type RefObject } from "react";
-import { ArrowRight } from "lucide-react";
 import WhatsOnOurPlateSection from "@/components/WhatsOnOurPlateSection";
 // import PizzaPlatesSection from "@/components/PizzaPlatesSection";
 import VarietyFoodSection from "@/components/VarietyFoodSection";
@@ -159,7 +158,19 @@ export default function TheoryMenuPage() {
                   >
                     Add to bag
                     <span className="ml-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-svs-ink transition-transform group-hover:translate-x-0.5 sm:ml-4 sm:h-9 sm:w-9">
-                      <ArrowRight className="h-4 w-4" strokeWidth={2.6} />
+                      <svg
+                        className="h-4 w-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2.6}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden
+                      >
+                        <path d="M5 12h14" />
+                        <path d="m13 6 6 6-6 6" />
+                      </svg>
                     </span>
                   </Link>
                 </div>
