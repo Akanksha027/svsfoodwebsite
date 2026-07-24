@@ -132,24 +132,24 @@ function QtyStepper({
 }) {
   return (
     <div
-      className="inline-flex h-8 items-center overflow-hidden rounded-lg text-sm font-bold text-white shadow-sm"
+      className="inline-flex h-[28px] items-center overflow-hidden rounded-md text-xs font-bold text-white shadow-sm"
       style={{ backgroundColor: SVS_ORANGE }}
     >
       <button
         type="button"
         onClick={onDec}
-        className="flex h-full w-8 items-center justify-center border-0 bg-transparent cursor-pointer hover:bg-black/10"
+        className="flex h-full w-7 items-center justify-center border-0 bg-transparent cursor-pointer hover:bg-black/10 text-[13px]"
         aria-label="Decrease quantity"
       >
         −
       </button>
-      <span className="min-w-[26px] flex items-center justify-center">
-        <RollingCounter value={quantity} fontSize={14} color="#ffffff" />
+      <span className="min-w-[20px] flex items-center justify-center">
+        <RollingCounter value={quantity} fontSize={12} color="#ffffff" />
       </span>
       <button
         type="button"
         onClick={onInc}
-        className="flex h-full w-8 items-center justify-center border-0 bg-transparent cursor-pointer hover:bg-black/10"
+        className="flex h-full w-7 items-center justify-center border-0 bg-transparent cursor-pointer hover:bg-black/10 text-[13px]"
         aria-label="Increase quantity"
       >
         +
