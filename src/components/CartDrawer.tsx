@@ -52,14 +52,14 @@ function OrderTypeArt({
 }) {
   const art = ORDER_TYPE_ART[type];
   return (
-    <span className="relative flex h-[4.5rem] w-[4.5rem] sm:h-[5rem] sm:w-[5rem] shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#fff4ee] ring-1 ring-black/[0.04]">
+    <span className="relative flex h-[3.5rem] w-[3.5rem] sm:h-[3.75rem] sm:w-[3.75rem] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#fff4ee] ring-1 ring-black/[0.04]">
       <Image
         src={art.src}
         alt={art.alt}
         fill
         unoptimized
         className="object-contain object-center p-1"
-        sizes="80px"
+        sizes="64px"
       />
     </span>
   );
@@ -695,7 +695,7 @@ export default function CartDrawer() {
             </div>
 
             {/* Order type picker */}
-            <div className="mx-4 mb-3 bg-white">
+            <div className="mx-4 mb-3 mt-4 bg-white sm:mt-5">
               <p className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2.5">
                 How would you like it?
               </p>
@@ -715,7 +715,7 @@ export default function CartDrawer() {
                         if (type === "dine_in") checkout.setPayMethod("online");
                       }}
                       className={[
-                        "min-h-[7.5rem] sm:min-h-[8.25rem] flex flex-col items-center justify-center gap-2 rounded-2xl text-[11px] sm:text-xs font-extrabold border-[3px] cursor-pointer transition-all px-1.5 py-2.5",
+                        "min-h-[6rem] sm:min-h-[6.5rem] flex flex-col items-center justify-center gap-1.5 rounded-2xl text-[11px] sm:text-xs font-extrabold border-[3px] cursor-pointer transition-all px-1.5 py-2",
                         active
                           ? "bg-orange-50 border-[#f16a34] text-[#f16a34] shadow-[0_2px_10px_rgba(241,106,52,0.18)]"
                           : "bg-white border-gray-200 text-gray-500 hover:border-[#f16a34]/40",
